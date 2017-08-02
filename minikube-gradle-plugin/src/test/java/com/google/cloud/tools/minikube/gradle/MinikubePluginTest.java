@@ -1,7 +1,5 @@
 package com.google.cloud.tools.minikube.gradle;
 
-import com.google.cloud.tools.minikube.gradle.MinikubePlugin;
-import com.google.cloud.tools.minikube.gradle.MinikubeTask;
 import org.gradle.api.Project;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.tasks.TaskCollection;
@@ -19,8 +17,7 @@ import org.junit.rules.TemporaryFolder;
  * @author appu, @date 6/8/17 3:08 PM
  */
 public class MinikubePluginTest {
-  @Rule
-  public TemporaryFolder tmp = new TemporaryFolder();
+  @Rule public TemporaryFolder tmp = new TemporaryFolder();
 
   @Test
   public void testDefaultMinikubeTasks() {
@@ -36,11 +33,11 @@ public class MinikubePluginTest {
     MinikubeTask minikubeStart = tc.getByName("minikubeStart");
     Assert.assertEquals(minikubeStart.getMinikube(), "minikube");
     Assert.assertEquals(minikubeStart.getCommand(), "start");
-    Assert.assertArrayEquals(minikubeStart.getFlags(), new String[]{});
+    Assert.assertArrayEquals(minikubeStart.getFlags(), new String[] {});
 
     MinikubeTask minikubeStop = tc.getByName("minikubeStop");
     Assert.assertEquals(minikubeStop.getMinikube(), "minikube");
     Assert.assertEquals(minikubeStop.getCommand(), "stop");
-    Assert.assertArrayEquals(minikubeStop.getFlags(), new String[]{});
+    Assert.assertArrayEquals(minikubeStop.getFlags(), new String[] {});
   }
 }
