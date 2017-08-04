@@ -58,6 +58,8 @@ checkstyle {
   def fileExtensionsBefore = '<property name="fileExtensions" value="java, properties, xml"/>'
   def fileExtensionsAfter = '<property name="fileExtensions" value="properties, xml"/>'
   def googleChecksNoJava = googleChecks.replace(fileExtensionsBefore, fileExtensionsAfter)
+  assert !googleChecks.equals(googleChecksNoJava)
+
   config = resources.text.fromString(googleChecksNoJava)
 
   maxErrors = 0
