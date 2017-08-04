@@ -9,7 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-/** Created by appu on 8/2/17. */
+/** Tests for MinikubeTask */
 public class MinikubeTaskTest {
   @Rule public TemporaryFolder tmp = new TemporaryFolder();
 

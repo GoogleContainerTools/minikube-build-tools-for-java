@@ -61,7 +61,6 @@ public class MinikubeTask extends DefaultTask {
     this.flags = flags;
   }
 
-  /** Task entry point. */
   @TaskAction
   public void execMinikube() throws IOException, InterruptedException {
     ExecutorService executor = Executors.newSingleThreadExecutor();

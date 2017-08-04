@@ -52,8 +52,14 @@ check.dependsOn verifyGoogleJavaFormat
 /* CHECKSTYLE */
 checkstyle {
   toolVersion = "7.6.1"
-  // get the google_checks.xml file from the actual tool we're invoking
-  config = resources.text.fromArchiveEntry(configurations.checkstyle[0], 'google_checks.xml')
+
+  // get the google_checks.xml file from the checkstyle jar and take out the java checks
+  def googleChecks = resources.text.fromArchiveEntry(configurations.checkstyle[0], 'google_checks.xml').asString()
+  def fileExtensionsBefore = '<property name="fileExtensions" value="java, properties, xml"/>'
+  def fileExtensionsAfter = '<property name="fileExtensions" value="properties, xml"/>'
+  def googleChecksNoJava = googleChecks.replace(fileExtensionsBefore, fileExtensionsAfter)
+  config = resources.text.fromString(googleChecksNoJava)
+
   maxErrors = 0
   maxWarnings = 0
 }
@@ -78,15 +84,15 @@ task writePom {
     doLast {
       pom {
         project {
-          name 'App Engine Gradle Plugin'
-          description 'This Gradle plugin provides tasks to build and deploy Google App Engine applications.'
-          url 'https://github.com/GoogleCloudPlatform/app-gradle-plugin'
-          inceptionYear '2016'
+          name 'Minikube Gradle Plugin'
+          description 'This Gradle plugin provides tasks to manage a Minikube lifecycle'
+          url 'https://github.com/GoogleCloudPlatform/minikube-build-tools-for-java'
+          inceptionYear '2017'
 
           scm {
-            url 'https://github.com/GoogleCloudPlatform/app-gradle-plugin'
-            connection 'scm:https://github.com/GoogleCloudPlatform/app-gradle-plugin.git'
-            developerConnection 'scm:git://github.com/GoogleCloudPlatform/app-gradle-plugin.git'
+            url 'https://github.com/GoogleCloudPlatform/minikube-build-tools-for-java'
+            connection 'scm:https://github.com/GoogleCloudPlatform/minikube-build-tools-for-java.git'
+            developerConnection 'scm:git://github.com/GoogleCloudPlatform/minikube-build-tools-for-java.git'
           }
 
           licenses {
