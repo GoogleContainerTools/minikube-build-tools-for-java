@@ -14,7 +14,6 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.internal.impldep.com.google.common.annotations.VisibleForTesting;
 
 /** Generic Minikube task. */
 public class MinikubeTask extends DefaultTask {
@@ -101,7 +100,6 @@ public class MinikubeTask extends DefaultTask {
     }
   }
 
-  @VisibleForTesting
   List<String> buildMinikubeCommand() {
     List<String> execString = new ArrayList<>();
     execString.add(minikube);
