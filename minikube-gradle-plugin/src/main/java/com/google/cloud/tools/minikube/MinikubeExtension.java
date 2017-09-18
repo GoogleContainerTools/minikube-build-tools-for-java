@@ -3,8 +3,9 @@ package com.google.cloud.tools.minikube;
 import org.gradle.api.Project;
 import org.gradle.api.provider.PropertyState;
 
+/** Minikube configuration extension. */
 public class MinikubeExtension {
-  final PropertyState<String> minikube;
+  private final PropertyState<String> minikube;
 
   public MinikubeExtension(Project project) {
     minikube = project.property(String.class);
