@@ -16,7 +16,6 @@
 
 package com.google.cloud.tools.minikube;
 
-import java.io.File;
 import java.util.Arrays;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -28,6 +27,7 @@ import org.junit.rules.TemporaryFolder;
 
 /** Tests for MinikubeTask */
 public class MinikubeTaskTest {
+
   @Rule public TemporaryFolder tmp = new TemporaryFolder();
 
   private MinikubeTask createTestTask(Action<MinikubeTask> taskConfigPassthrough) {
@@ -41,21 +41,6 @@ public class MinikubeTaskTest {
         createTestTask(
             minikubeTask -> {
               minikubeTask.setMinikube("/test/path/to/minikube");
-              minikubeTask.setCommand("testCommand");
-              minikubeTask.setFlags(new String[] {"testFlag1", "testFlag2"});
-            });
-
-    Assert.assertEquals(
-        Arrays.asList("/test/path/to/minikube", "testCommand", "testFlag1", "testFlag2"),
-        testTask.buildMinikubeCommand());
-  }
-
-  @Test
-  public void testBuildCommand_withFilepathToMinikube() {
-    MinikubeTask testTask =
-        createTestTask(
-            minikubeTask -> {
-              minikubeTask.setMinikube(new File("/test/path/to/minikube"));
               minikubeTask.setCommand("testCommand");
               minikubeTask.setFlags(new String[] {"testFlag1", "testFlag2"});
             });

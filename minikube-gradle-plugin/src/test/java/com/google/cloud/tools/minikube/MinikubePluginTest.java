@@ -53,4 +53,22 @@ public class MinikubePluginTest {
     Assert.assertEquals(minikubeTask.getCommand(), taskCommand);
     Assert.assertArrayEquals(minikubeTask.getFlags(), new String[] {});
   }
+
+  @Test
+  public void testMinikubeExtensionSetProperties() {
+    Project project = ProjectBuilder.builder().withProjectDir(tmp.getRoot()).build();
+    project.getPluginManager().apply(MinikubePlugin.class);
+    MinikubeExtension ex = (MinikubeExtension) project.getExtensions().getByName("minikube");
+    ex.setMinikube("/some/custom/extension/path");
+
+    TaskContainer t = project.getTasks();
+    TaskCollection<MinikubeTask> tc = t.withType(MinikubeTask.class);
+
+    Assert.assertEquals(3, tc.size());
+
+    tc.forEach(
+        minikubeTask -> {
+          Assert.assertEquals(minikubeTask.getMinikube(), "/some/custom/extension/path");
+        });
+  }
 }

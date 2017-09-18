@@ -17,7 +17,6 @@
 package com.google.cloud.tools.minikube;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -28,30 +27,35 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.provider.PropertyState;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
 /** Generic Minikube task. */
 public class MinikubeTask extends DefaultTask {
 
-  /** minikube exectuable : windows users must explicitly configure this for now. */
-  private String minikube = "minikube";
+  /** minikube exectuable : lazily evaluated from extension input */
+  private PropertyState<String> minikube;
   /** The minikube command: start, stop, etc. */
   private String command;
   /** Flag passthrough */
   private String[] flags = {};
 
+  public MinikubeTask() {
+    minikube = getProject().property(String.class);
+  }
+
   @Input
   public String getMinikube() {
-    return minikube;
+    return minikube.get();
   }
 
   public void setMinikube(String minikube) {
-    this.minikube = minikube;
+    this.minikube.set(minikube);
   }
 
-  public void setMinikube(File minikube) {
-    this.minikube = minikube.getAbsolutePath();
+  public void setMinikube(PropertyState<String> minikube) {
+    this.minikube = minikube;
   }
 
   @Input
@@ -115,7 +119,7 @@ public class MinikubeTask extends DefaultTask {
   // @VisibleForTesting
   List<String> buildMinikubeCommand() {
     List<String> execString = new ArrayList<>();
-    execString.add(minikube);
+    execString.add(getMinikube());
     execString.add(command);
     execString.addAll(Arrays.asList(flags));
 

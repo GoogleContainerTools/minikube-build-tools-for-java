@@ -23,31 +23,42 @@ import org.gradle.api.Project;
 public class MinikubePlugin implements Plugin<Project> {
   private static String MINIKUBE_GROUP = "Minikube";
   private Project project;
+  private MinikubeExtension extension;
 
   @Override
   public void apply(Project project) {
     this.project = project;
 
+    createMinikubeExtension();
     createStartTask();
     createStopTask();
     createDeleteTask();
   }
 
+  private void createMinikubeExtension() {
+    extension = project.getExtensions().create("minikube", MinikubeExtension.class, project);
+  }
+
   private void createStartTask() {
     MinikubeTask task = project.getTasks().create("minikubeStart", MinikubeTask.class);
+    configureMinikubeTaskCommonProperties(task);
     task.setCommand("start");
-    task.setGroup(MINIKUBE_GROUP);
   }
 
   private void createStopTask() {
     MinikubeTask task = project.getTasks().create("minikubeStop", MinikubeTask.class);
+    configureMinikubeTaskCommonProperties(task);
     task.setCommand("stop");
-    task.setGroup(MINIKUBE_GROUP);
   }
 
   private void createDeleteTask() {
     MinikubeTask task = project.getTasks().create("minikubeDelete", MinikubeTask.class);
+    configureMinikubeTaskCommonProperties(task);
     task.setCommand("delete");
+  }
+
+  private void configureMinikubeTaskCommonProperties(MinikubeTask task) {
+    task.setMinikube(extension.getMinikubeProvider());
     task.setGroup(MINIKUBE_GROUP);
   }
 }
