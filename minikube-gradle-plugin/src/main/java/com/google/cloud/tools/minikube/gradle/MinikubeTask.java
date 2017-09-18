@@ -23,7 +23,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -35,16 +34,12 @@ import org.gradle.api.tasks.TaskAction;
 /** Generic Minikube task. */
 public class MinikubeTask extends DefaultTask {
 
-  /** minikube exectuable : default assumes it's on the path (set in constructor based on OS) */
-  private String minikube;
+  /** minikube exectuable : windows users must explicitly configure this for now. */
+  private String minikube = "minikube";
   /** The minikube command: start, stop, etc. */
   private String command;
   /** Flag passthrough */
   private String[] flags = {};
-
-  public MinikubeTask() {
-    minikube = isWindows() ? "minikube.exe" : "minikube";
-  }
 
   @Input
   public String getMinikube() {
@@ -125,9 +120,5 @@ public class MinikubeTask extends DefaultTask {
     execString.addAll(Arrays.asList(flags));
 
     return execString;
-  }
-
-  boolean isWindows() {
-    return System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows");
   }
 }

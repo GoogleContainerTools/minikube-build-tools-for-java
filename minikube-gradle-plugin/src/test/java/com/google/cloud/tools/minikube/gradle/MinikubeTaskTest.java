@@ -18,12 +18,10 @@ package com.google.cloud.tools.minikube.gradle;
 
 import java.io.File;
 import java.util.Arrays;
-import org.apache.commons.lang3.SystemUtils;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -65,23 +63,5 @@ public class MinikubeTaskTest {
     Assert.assertEquals(
         Arrays.asList("/test/path/to/minikube", "testCommand", "testFlag1", "testFlag2"),
         testTask.buildMinikubeCommand());
-  }
-
-  @Test
-  public void testMinikubeTask_defaultMinikubeWindows() {
-    // windows only test
-    Assume.assumeTrue(SystemUtils.IS_OS_WINDOWS);
-
-    MinikubeTask testTask = createTestTask(noop -> {});
-    Assert.assertEquals(testTask.getMinikube(), "minikube.exe");
-  }
-
-  @Test
-  public void testMinikubeTask_defaultMinikubeNix() {
-    // *nix only test
-    Assume.assumeFalse(SystemUtils.IS_OS_WINDOWS);
-
-    MinikubeTask testTask = createTestTask(noop -> {});
-    Assert.assertEquals(testTask.getMinikube(), "minikube");
   }
 }
