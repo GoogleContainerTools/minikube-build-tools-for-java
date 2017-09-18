@@ -30,9 +30,23 @@ public class MinikubePlugin implements Plugin<Project> {
     this.project = project;
 
     createMinikubeExtension();
+    configureMinikubeTaskAdditionCallback();
     createStartTask();
     createStopTask();
     createDeleteTask();
+  }
+
+  // Configure tasks as they are added. This allows us to configure our own AND any user configured
+  // tasks.
+  private void configureMinikubeTaskAdditionCallback() {
+    project
+        .getTasks()
+        .withType(MinikubeTask.class)
+        .whenTaskAdded(
+            task -> {
+              task.setMinikube(extension.getMinikubeProvider());
+              task.setGroup(MINIKUBE_GROUP);
+            });
   }
 
   private void createMinikubeExtension() {
@@ -41,24 +55,16 @@ public class MinikubePlugin implements Plugin<Project> {
 
   private void createStartTask() {
     MinikubeTask task = project.getTasks().create("minikubeStart", MinikubeTask.class);
-    configureMinikubeTaskCommonProperties(task);
     task.setCommand("start");
   }
 
   private void createStopTask() {
     MinikubeTask task = project.getTasks().create("minikubeStop", MinikubeTask.class);
-    configureMinikubeTaskCommonProperties(task);
     task.setCommand("stop");
   }
 
   private void createDeleteTask() {
     MinikubeTask task = project.getTasks().create("minikubeDelete", MinikubeTask.class);
-    configureMinikubeTaskCommonProperties(task);
     task.setCommand("delete");
-  }
-
-  private void configureMinikubeTaskCommonProperties(MinikubeTask task) {
-    task.setMinikube(extension.getMinikubeProvider());
-    task.setGroup(MINIKUBE_GROUP);
   }
 }
