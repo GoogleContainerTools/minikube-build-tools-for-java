@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.cloud.tools.minikube.gradle;
+package com.google.cloud.tools.minikube;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;

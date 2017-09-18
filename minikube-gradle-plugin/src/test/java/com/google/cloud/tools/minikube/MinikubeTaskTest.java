@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.cloud.tools.minikube.gradle;
+package com.google.cloud.tools.minikube;
 
 import java.io.File;
 import java.util.Arrays;
