@@ -26,10 +26,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.gradle.api.GradleException;
 import org.gradle.api.logging.Logger;
+import org.gradle.internal.impldep.com.google.common.annotations.VisibleForTesting;
 
 /** Executes a shell command. */
 public class CommandExecutor {
   private static final int TIMEOUT_SECONDS = 5;
+
+  @VisibleForTesting
+  public CommandExecutor setProcessBuilder(ProcessBuilder processBuilder) {
+    this.processBuilder = processBuilder;
+    return this;
+  }
 
   public CommandExecutor setLogger(Logger logger) {
     this.logger = logger;
