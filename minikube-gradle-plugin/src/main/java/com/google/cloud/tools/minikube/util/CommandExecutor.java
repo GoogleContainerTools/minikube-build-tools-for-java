@@ -26,13 +26,24 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.gradle.api.GradleException;
 import org.gradle.api.logging.Logger;
+import org.gradle.internal.impldep.com.google.common.annotations.VisibleForTesting;
 
 /** Executes a shell command. */
 public class CommandExecutor {
   private static final int TIMEOUT_SECONDS = 5;
+
+  @VisibleForTesting
+  public ProcessBuilder processBuilder = new ProcessBuilder();
+
   private Logger logger;
 
   public CommandExecutor() {}
+
+  @VisibleForTesting
+  public CommandExecutor setProcessBuilder(ProcessBuilder processBuilder) {
+    this.processBuilder = processBuilder;
+    return this;
+  }
 
   public CommandExecutor setLogger(Logger logger) {
     this.logger = logger;
@@ -78,10 +89,9 @@ public class CommandExecutor {
   }
 
   private Process buildProcess(List<String> command) throws IOException {
-    ProcessBuilder pb = new ProcessBuilder();
-    pb.command(command);
-    pb.redirectErrorStream(true);
-    return pb.start();
+    processBuilder.command(command);
+    processBuilder.redirectErrorStream(true);
+    return processBuilder.start();
   }
 
   /**
@@ -95,13 +105,12 @@ public class CommandExecutor {
       try (BufferedReader br =
           new BufferedReader(new InputStreamReader(process.getInputStream()))) {
         String line = br.readLine();
-        output.add(line);
         while (line != null) {
           if (logger != null) {
             logger.lifecycle(line);
           }
-          line = br.readLine();
           output.add(line);
+          line = br.readLine();
         }
       } catch (IOException e) {
         if (logger != null) {
