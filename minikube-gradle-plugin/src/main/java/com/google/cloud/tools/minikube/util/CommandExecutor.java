@@ -29,7 +29,7 @@ import org.gradle.api.logging.Logger;
 
 /** Executes a shell command. */
 public class CommandExecutor {
-  public CommandExecutor() {}
+  private static final int TIMEOUT_SECONDS = 5;
 
   public CommandExecutor setLogger(Logger logger) {
     this.logger = logger;
