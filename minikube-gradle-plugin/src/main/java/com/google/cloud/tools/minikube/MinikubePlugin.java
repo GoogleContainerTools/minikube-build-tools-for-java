@@ -23,7 +23,8 @@ import org.gradle.api.Project;
 public class MinikubePlugin implements Plugin<Project> {
   private static String MINIKUBE_GROUP = "Minikube";
   private Project project;
-  private MinikubeExtension extension;
+  private MinikubeExtension minikubeExtension;
+  private DockerExtension dockerExtension;
 
   @Override
   public void apply(Project project) {
@@ -31,40 +32,64 @@ public class MinikubePlugin implements Plugin<Project> {
 
     createMinikubeExtension();
     configureMinikubeTaskAdditionCallback();
-    createStartTask();
-    createStopTask();
-    createDeleteTask();
+    createMinikubeStartTask();
+    createMinikubeStopTask();
+    createMinikubeDeleteTask();
+
+    createDockerExtension();
+    configureDockerBuildTaskAdditionalCallback();
+    createDockerBuildTask();
   }
 
-  // Configure tasks as they are added. This allows us to configure our own AND any user configured
-  // tasks.
+  // Configure tasks as they are added. This allows us to configure our own AND any user configured tasks.
   private void configureMinikubeTaskAdditionCallback() {
     project
         .getTasks()
         .withType(MinikubeTask.class)
         .whenTaskAdded(
             task -> {
-              task.setMinikube(extension.getMinikubeProvider());
+              task.setMinikube(minikubeExtension.getMinikubeProvider());
+              task.setGroup(MINIKUBE_GROUP);
+            });
+  }
+
+  // Configure tasks as they are added. This allows us to configure our own AND any user configured tasks.
+  private void configureDockerBuildTaskAdditionalCallback() {
+    project
+        .getTasks()
+        .withType(DockerBuildTask.class)
+        .whenTaskAdded(
+            task -> {
+              task.setDocker(dockerExtension.getDockerProvider());
               task.setGroup(MINIKUBE_GROUP);
             });
   }
 
   private void createMinikubeExtension() {
-    extension = project.getExtensions().create("minikube", MinikubeExtension.class, project);
+    minikubeExtension =
+        project.getExtensions().create("minikube", MinikubeExtension.class, project);
   }
 
-  private void createStartTask() {
+  private void createDockerExtension() {
+    dockerExtension = project.getExtensions().create("docker", DockerExtension.class, project);
+  }
+
+  private void createMinikubeStartTask() {
     MinikubeTask task = project.getTasks().create("minikubeStart", MinikubeTask.class);
     task.setCommand("start");
   }
 
-  private void createStopTask() {
+  private void createMinikubeStopTask() {
     MinikubeTask task = project.getTasks().create("minikubeStop", MinikubeTask.class);
     task.setCommand("stop");
   }
 
-  private void createDeleteTask() {
+  private void createMinikubeDeleteTask() {
     MinikubeTask task = project.getTasks().create("minikubeDelete", MinikubeTask.class);
     task.setCommand("delete");
+  }
+
+  private void createDockerBuildTask() {
+    DockerBuildTask task = project.getTasks().create("minikubeDockerBuild", DockerBuildTask.class);
   }
 }

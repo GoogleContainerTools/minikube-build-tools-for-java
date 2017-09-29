@@ -10,16 +10,23 @@ It exposes the following tasks
 - `minikubeStart`
 - `minikubeStop`
 - `minikubeDelete`
+- `minikubeDockerBuild` - runs `docker build` in the minikube Docker environment
 
-It exposes the `minikube` configuration extension.
+It exposes the `minikube` and `docker` configuration extension.
 
 ```groovy
 minikube {
   minikube = // path to minikube, default is "minikube"
 }
+
+docker {
+  docker = // path to Docker, default is "docker"
+}
 ```
 
-Task specific flags are configured on the tasks themselves, all minikube tasks are of the type `MinikubeTask` and all share the same kind of configuration.
+Task specific flags are configured on the tasks themselves.
+ 
+All `minikube` tasks are of the type `MinikubeTask` and all share the same kind of configuration.
 - `flags` (`String[]`) : any minikube flags **this is the only one users should edit for the provided tasks**
 - `minikube` (`String`) : path to minikube executable which should be set by using the `minikube` extension
 - `command` (`String`) : start/stop/whatever (users probably shouldn't be editing this for default commands)
@@ -30,11 +37,29 @@ minikubeStart {
 }
 ```
 
-This plugin also allows users to add in any custom minikube task.
+`minikubeDockerBuild` task can be configured with:
+- `context` (`String`) : PATH | URL | - (See 'Extended description' under the [`docker build` Reference](https://docs.docker.com/engine/reference/commandline/build/))
+- `flags` (`String[]`) : any flags to pass to `docker build` (See 'Options' under the [`docker build` Reference](https://docs.docker.com/engine/reference/commandline/build/))
+- `minikube` (`String`) : path to minikube executable which should be set by using the `minikube` extension **users should not edit this for this provided task**
+- `docker` (`String`) : path to Docker executable which should be set by using the `docker` extension **users should not edit this for this provided task**
+
+```groovy
+minikubeDockerBuild {
+  context = "."
+  flags = ["--build-arg ARTIFACT_NAME=my_kubernetes_app"]
+}
+```
+
+This plugin also allows users to add in any custom `minikube` and `docker build` task.
 
 ```groovy
 task minikubeCustom(type: com.google.cloud.tools.minikube.MinikubeTask) {
   command = "custom"
+  flags = ["--some-flag"]
+}
+
+task minikubeDockerBuildCustom(type: com.google.cloud.tools.minikube.DockerBuildTask) {
+  context = "custom"
   flags = ["--some-flag"]
 }
 ```

@@ -19,24 +19,24 @@ package com.google.cloud.tools.minikube;
 import org.gradle.api.Project;
 import org.gradle.api.provider.PropertyState;
 
-/** Minikube configuration extension. */
-public class MinikubeExtension {
-  private final PropertyState<String> minikube;
+/** Docker configuration extension. */
+public class DockerExtension {
+  private final PropertyState<String> docker;
 
-  public MinikubeExtension(Project project) {
-    minikube = project.property(String.class);
-    setMinikube("minikube");
+  public DockerExtension(Project project) {
+    docker = project.property(String.class);
+    setDocker("docker");
   }
 
-  public String getMinikube() {
-    return minikube.get();
+  public String getDocker() {
+    return docker.get();
   }
 
-  public void setMinikube(String minikube) {
-    this.minikube.set(minikube);
+  public void setDocker(String docker) {
+    this.docker.set(docker);
   }
 
-  public PropertyState<String> getMinikubeProvider() {
-    return minikube;
+  public PropertyState<String> getDockerProvider() {
+    return docker;
   }
 }
