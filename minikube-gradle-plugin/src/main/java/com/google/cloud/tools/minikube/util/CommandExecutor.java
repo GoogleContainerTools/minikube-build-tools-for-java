@@ -30,25 +30,44 @@ import org.gradle.internal.impldep.com.google.common.annotations.VisibleForTesti
 
 /** Executes a shell command. */
 public class CommandExecutor {
-  private static final int TIMEOUT_SECONDS = 5;
-
-  @VisibleForTesting
-  public ProcessBuilder processBuilder = new ProcessBuilder();
-
-  private Logger logger;
-
   public CommandExecutor() {}
-
-  @VisibleForTesting
-  public CommandExecutor setProcessBuilder(ProcessBuilder processBuilder) {
-    this.processBuilder = processBuilder;
-    return this;
-  }
 
   public CommandExecutor setLogger(Logger logger) {
     this.logger = logger;
     return this;
   }
+
+  @VisibleForTesting static final int TIMEOUT_SECONDS = 5;
+
+  @VisibleForTesting
+  static class ProcessBuilderFactory {
+    ProcessBuilder createProcessBuilder() {
+      return new ProcessBuilder();
+    }
+  }
+
+  @VisibleForTesting
+  CommandExecutor setProcessBuilderFactory(ProcessBuilderFactory processBuilderFactory) {
+    this.processBuilderFactory = processBuilderFactory;
+    return this;
+  }
+
+  @VisibleForTesting
+  static class ExecutorServiceFactory {
+    ExecutorService createExecutorService() {
+      return Executors.newSingleThreadExecutor();
+    }
+  }
+
+  @VisibleForTesting
+  CommandExecutor setExecutorServiceFactory(ExecutorServiceFactory executorServiceFactory) {
+    this.executorServiceFactory = executorServiceFactory;
+    return this;
+  }
+
+  private ProcessBuilderFactory processBuilderFactory = new ProcessBuilderFactory();
+  private ExecutorServiceFactory executorServiceFactory = new ExecutorServiceFactory();
+  private Logger logger;
 
   /**
    * Runs the command.
@@ -61,7 +80,7 @@ public class CommandExecutor {
       logger.debug("Running command : " + String.join(" ", command));
     }
 
-    ExecutorService executor = Executors.newSingleThreadExecutor();
+    ExecutorService executor = executorServiceFactory.createExecutorService();
 
     // Builds the command to execute with possible environment variables.
     final Process process = buildProcess(command);
@@ -74,7 +93,7 @@ public class CommandExecutor {
     executor.shutdown();
     try {
       executor.awaitTermination(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
+    } catch (InterruptedException ex) {
       if (logger != null) {
         logger.debug("Task Executor interrupted waiting for output consumer thread");
       }
@@ -89,6 +108,7 @@ public class CommandExecutor {
   }
 
   private Process buildProcess(List<String> command) throws IOException {
+    ProcessBuilder processBuilder = processBuilderFactory.createProcessBuilder();
     processBuilder.command(command);
     processBuilder.redirectErrorStream(true);
     return processBuilder.start();
@@ -112,7 +132,7 @@ public class CommandExecutor {
           output.add(line);
           line = br.readLine();
         }
-      } catch (IOException e) {
+      } catch (IOException ex) {
         if (logger != null) {
           logger.warn("IO Exception reading process output");
         }
