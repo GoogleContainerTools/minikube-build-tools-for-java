@@ -7,6 +7,7 @@ It exposes the following tasks
 - `minikubeStart`
 - `minikubeStop`
 - `minikubeDelete`
+- `minikubeDockerBuild`
 
 It exposes the `minikube` configuration extension.
 
