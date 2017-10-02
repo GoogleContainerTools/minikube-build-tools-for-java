@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.apache.tools.ant.filters.StringInputStream;
@@ -33,6 +34,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.omg.CORBA.Environment;
 
 /** Tests for CommandExecutor */
 public class CommandExecutorTest {
@@ -69,6 +71,37 @@ public class CommandExecutorTest {
 
     // Verifies the process building and output reading is correct.
     verifyProcessBuilding(command);
+    Assert.assertEquals(expectedOutput, output);
+
+    verifyZeroInteractions(loggerMock);
+  }
+
+  @Test
+  public void testRunCommandWithEnvironmentVariables() throws IOException, InterruptedException {
+    List<String> environmentStrings =
+        Arrays.asList("SOME_VARIABLE_1=SOME_VALUE_1", "SOME_VARIABLE_2=SOME_VALUE_2");
+    List<String> command = Arrays.asList("someCommand", "someOption");
+    List<String> expectedOutput = Arrays.asList("some output line 1", "some output line 2");
+
+    // Converts the environment into key-value pairs.
+    EnvironmentVariableMap environment =
+        EnvironmentVariableMap.createFromKeyValueStrings(environmentStrings);
+
+    // Mocks the environment for the processBuilderMock to put the environment map in.
+    Map<String, String> environmentMock = mock(EnvironmentVariableMap.class);
+    when(processBuilderMock.environment()).thenReturn(environmentMock);
+
+    setProcessMockOutput(expectedOutput);
+
+    List<String> output =
+        new CommandExecutor()
+            .setEnvironment(environment)
+            .setProcessBuilderFactory(processBuilderFactoryMock)
+            .run(command);
+
+    verifyProcessBuilding(command);
+    verify(processBuilderMock).environment();
+    verify(environmentMock).putAll(environment);
     Assert.assertEquals(expectedOutput, output);
 
     verifyZeroInteractions(loggerMock);
