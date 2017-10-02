@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.omg.CORBA.Environment;
 
 /** Tests for CommandExecutor */
 public class CommandExecutorTest {

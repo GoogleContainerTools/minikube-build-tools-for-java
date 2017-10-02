@@ -66,7 +66,8 @@ public class EnvironmentVariableMapTest {
     try {
       EnvironmentVariableMap environment = new EnvironmentVariableMap();
       environment.putKeyValueString("SOME_VARIABLE_WITHOUT_EQUALS");
-      Assert.fail("Expected a EnvironmentVariableMap.KeyValueStringInvalidFormatException to be thrown");
+      Assert.fail(
+          "Expected a EnvironmentVariableMap.KeyValueStringInvalidFormatException to be thrown");
     } catch (RuntimeException ex) {
       Assert.assertEquals(
           "Environment variable string must be in KEY=VALUE format", ex.getMessage());
