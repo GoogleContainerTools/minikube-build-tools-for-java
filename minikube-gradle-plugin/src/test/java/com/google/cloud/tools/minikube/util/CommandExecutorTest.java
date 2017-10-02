@@ -141,9 +141,8 @@ public class CommandExecutorTest {
         mock(CommandExecutor.ExecutorServiceFactory.class);
     ExecutorService executorServiceMock = mock(ExecutorService.class);
     when(executorServiceFactoryMock.createExecutorService()).thenReturn(executorServiceMock);
-    doThrow(new InterruptedException())
-        .when(executorServiceMock)
-        .awaitTermination(anyInt(), any(TimeUnit.class));
+    when(executorServiceMock.awaitTermination(CommandExecutor.TIMEOUT_SECONDS, TimeUnit.SECONDS))
+        .thenThrow(new InterruptedException());
 
     new CommandExecutor()
         .setLogger(loggerMock)
