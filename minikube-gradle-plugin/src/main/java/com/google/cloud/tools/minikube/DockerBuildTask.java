@@ -28,7 +28,6 @@ import org.gradle.api.GradleException;
 import org.gradle.api.provider.PropertyState;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.internal.impldep.com.google.common.annotations.VisibleForTesting;
 
 /** Task to build Docker images. */
 public class DockerBuildTask extends DefaultTask {
@@ -47,14 +46,14 @@ public class DockerBuildTask extends DefaultTask {
     docker = getProject().property(String.class);
   }
 
-  @VisibleForTesting
+  // @VisibleForTesting
   class CommandExecutorFactory {
     CommandExecutor createCommandExecutor() {
       return new CommandExecutor().setLogger(getLogger());
     }
   }
 
-  @VisibleForTesting
+  // @VisibleForTesting
   DockerBuildTask setCommandExecutorFactory(CommandExecutorFactory commandExecutorFactory) {
     this.commandExecutorFactory = commandExecutorFactory;
     return this;
