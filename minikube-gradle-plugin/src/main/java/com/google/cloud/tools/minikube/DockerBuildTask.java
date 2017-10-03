@@ -17,13 +17,12 @@
 package com.google.cloud.tools.minikube;
 
 import com.google.cloud.tools.minikube.util.CommandExecutor;
+import com.google.cloud.tools.minikube.util.MinikubeDockerEnvParser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import com.google.cloud.tools.minikube.util.MinikubeDockerEnvParser;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.provider.PropertyState;
