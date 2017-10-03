@@ -49,8 +49,8 @@ public class EnvironmentVariableMap extends HashMap<String, String> {
   /**
    * Creates a new {@code EnvironmentVariableMap} from a list of KEY=VALUE strings.
    *
-   * @param keyValueStrings a list of "KEY=VALUE" strings, where KEY is the environment variable name
-   *     and VALUE is the value to set it to
+   * @param keyValueStrings a list of "KEY=VALUE" strings, where KEY is the environment variable
+   *     name and VALUE is the value to set it to
    */
   public static EnvironmentVariableMap createFromKeyValueStrings(List<String> keyValueStrings)
       throws KeyValueStringInvalidFormatException, KeyValueStringNoKeyException {
@@ -66,8 +66,8 @@ public class EnvironmentVariableMap extends HashMap<String, String> {
   /**
    * Puts a KEY=VALUE string as an environment variable entry into the map.
    *
-   * @param keyEqualsValue "KEY=VALUE" string, where KEY is the environment variable name and VALUE is
-   *     the value to set it to
+   * @param keyEqualsValue "KEY=VALUE" string, where KEY is the environment variable name and VALUE
+   *     is the value to set it to
    * @throws KeyValueStringInvalidFormatException if the "KEY=VALUE" string is not in the correct
    *     format
    * @throws KeyValueStringNoKeyException if the "KEY=VALUE" string is missing the KEY

@@ -132,7 +132,7 @@ public class CommandExecutor {
   private Runnable outputConsumerRunnable(Process process, List<String> output) {
     return () -> {
       try (BufferedReader br =
-               new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+          new BufferedReader(new InputStreamReader(process.getInputStream()))) {
         String line = br.readLine();
         while (line != null) {
           if (logger != null) {
