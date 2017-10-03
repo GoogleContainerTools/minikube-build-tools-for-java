@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -40,8 +41,8 @@ public class CommandExecutor {
   }
 
   /** Sets the environment variables to run the command with. */
-  public CommandExecutor setEnvironment(EnvironmentVariableMap environmentVariableMap) {
-    this.environment = environmentVariableMap;
+  public CommandExecutor setEnvironment(Map<String, String> environmentMap) {
+    this.environment = environmentMap;
     return this;
   }
 
@@ -74,7 +75,7 @@ public class CommandExecutor {
   private ProcessBuilderFactory processBuilderFactory = new ProcessBuilderFactory();
   private ExecutorServiceFactory executorServiceFactory = new ExecutorServiceFactory();
   private Logger logger;
-  private EnvironmentVariableMap environment;
+  private Map<String, String> environment;
 
   /**
    * Runs the command.
