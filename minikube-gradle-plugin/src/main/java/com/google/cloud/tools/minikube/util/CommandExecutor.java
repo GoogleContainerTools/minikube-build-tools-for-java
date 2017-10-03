@@ -26,7 +26,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.gradle.api.GradleException;
 import org.gradle.api.logging.Logger;
-import org.gradle.internal.impldep.com.google.common.annotations.VisibleForTesting;
 
 /** Executes a shell command. */
 public class CommandExecutor {
@@ -37,29 +36,30 @@ public class CommandExecutor {
     return this;
   }
 
-  @VisibleForTesting static final int TIMEOUT_SECONDS = 5;
+  // @VisibleForTesting
+  static final int TIMEOUT_SECONDS = 5;
 
-  @VisibleForTesting
+  // @VisibleForTesting
   static class ProcessBuilderFactory {
     ProcessBuilder createProcessBuilder() {
       return new ProcessBuilder();
     }
   }
 
-  @VisibleForTesting
+  // @VisibleForTesting
   CommandExecutor setProcessBuilderFactory(ProcessBuilderFactory processBuilderFactory) {
     this.processBuilderFactory = processBuilderFactory;
     return this;
   }
 
-  @VisibleForTesting
+  // @VisibleForTesting
   static class ExecutorServiceFactory {
     ExecutorService createExecutorService() {
       return Executors.newSingleThreadExecutor();
     }
   }
 
-  @VisibleForTesting
+  // @VisibleForTesting
   CommandExecutor setExecutorServiceFactory(ExecutorServiceFactory executorServiceFactory) {
     this.executorServiceFactory = executorServiceFactory;
     return this;
@@ -84,12 +84,26 @@ public class CommandExecutor {
     ExecutorService executor = executorServiceFactory.createExecutorService();
 
     // Builds the command to execute.
-    final Process process = buildProcess(command);
+    ProcessBuilder processBuilder = processBuilderFactory.createProcessBuilder();
+    processBuilder.command(command);
+    processBuilder.redirectErrorStream(true);
+    final Process process = processBuilder.start();
 
     // Runs the command and streams the output.
     List<String> output = new ArrayList<>();
-    int exitCode = runProcessWithExecutor(process, executor, output);
-    shutdownExecutor(executor);
+    executor.execute(outputConsumerRunnable(process, output));
+    int exitCode = process.waitFor();
+
+    // Shuts down the executor.
+    executor.shutdown();
+
+    try {
+      executor.awaitTermination(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    } catch (InterruptedException ex) {
+      if (logger != null) {
+        logger.debug("Task Executor interrupted waiting for output consumer thread");
+      }
+    }
 
     // Stops the build if the command fails to do something, we may want to make this configurable.
     if (exitCode != 0) {
@@ -97,42 +111,6 @@ public class CommandExecutor {
     }
 
     return output;
-  }
-
-  private Process buildProcess(List<String> command) throws IOException {
-    ProcessBuilder processBuilder = processBuilderFactory.createProcessBuilder();
-    processBuilder.command(command);
-    processBuilder.redirectErrorStream(true);
-    return processBuilder.start();
-  }
-
-  /**
-   * Helper function that runs a process on an {@code ExecutorService} and stores the output as a
-   * list of lines
-   *
-   * @param process the process to run
-   * @param executor the {@code ExecutorService} that executes the process
-   * @param output the {@code List} to store the output in
-   * @return the exit code of the process
-   */
-  private int runProcessWithExecutor(Process process, ExecutorService executor, List<String> output)
-      throws InterruptedException {
-    executor.execute(outputConsumerRunnable(process, output));
-
-    return process.waitFor();
-  }
-
-  private void shutdownExecutor(ExecutorService executor) {
-    executor.shutdown();
-
-    try {
-      boolean hmm = executor.awaitTermination(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-      System.out.println("HMM: " + hmm);
-    } catch (InterruptedException ex) {
-      if (logger != null) {
-        logger.debug("Task Executor interrupted waiting for output consumer thread");
-      }
-    }
   }
 
   /**
