@@ -17,7 +17,6 @@
 package com.google.cloud.tools.minikube.util;
 
 import java.util.HashMap;
-import java.util.IllegalFormatException;
 import java.util.List;
 
 /** Represents an environment variable. */
@@ -73,7 +72,8 @@ public class EnvironmentVariableMap extends HashMap<String, String> {
    *     format
    * @throws KeyValueStringNoKeyException if the key-value string is missing a key
    */
-  public String putKeyValueString(String keyEqualsValue) throws IllegalFormatException {
+  public String putKeyValueString(String keyEqualsValue)
+      throws KeyValueStringInvalidFormatException, KeyValueStringNoKeyException {
     String[] keyValuePair = keyEqualsValue.split("=", 2);
     if (keyValuePair.length < 2) {
       throw new KeyValueStringInvalidFormatException();

@@ -56,7 +56,11 @@ public class EnvironmentVariableMapTest {
       EnvironmentVariableMap environment = new EnvironmentVariableMap();
       environment.putKeyValueString("=SOME_VALUE");
       Assert.fail("Expected a EnvironmentVariableMap.KeyValueStringNoKeyException to be thrown");
-    } catch (RuntimeException ex) {
+    } catch (EnvironmentVariableMap.KeyValueStringInvalidFormatException ex) {
+      Assert.fail(
+          "Expected a EnvironmentVariableMap.KeyValueStringNoKeyException to be thrown but got a "
+              + "EnvironmentVariableMap.KeyValueStringInvalidFormatException");
+    } catch (EnvironmentVariableMap.KeyValueStringNoKeyException ex) {
       Assert.assertEquals("Environment variable name cannot be empty", ex.getMessage());
     }
   }
@@ -68,7 +72,11 @@ public class EnvironmentVariableMapTest {
       environment.putKeyValueString("SOME_VARIABLE_WITHOUT_EQUALS");
       Assert.fail(
           "Expected a EnvironmentVariableMap.KeyValueStringInvalidFormatException to be thrown");
-    } catch (RuntimeException ex) {
+    } catch (EnvironmentVariableMap.KeyValueStringNoKeyException ex) {
+      Assert.fail(
+          "Expected a EnvironmentVariableMap.KeyValueStringInvalidFormatException to be thrown but got a "
+              + "EnvironmentVariableMap.KeyValueStringNoKeyException");
+    } catch (EnvironmentVariableMap.KeyValueStringInvalidFormatException ex) {
       Assert.assertEquals(
           "Environment variable string must be in KEY=VALUE format", ex.getMessage());
     }
