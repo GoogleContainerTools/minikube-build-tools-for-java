@@ -19,11 +19,11 @@ package com.google.cloud.tools.minikube.util;
 import java.util.HashMap;
 import java.util.List;
 
-/** Represents an environment variable. */
+/** Represents a environment map from environment variable keys to values. */
 public class EnvironmentVariableMap extends HashMap<String, String> {
 
   /**
-   * Exception indicating a KEY=VALUE string to represent an environment variable is not in the
+   * Exception indicating a "KEY=VALUE" string to represent an environment variable is not in the
    * correct format.
    */
   public static class KeyValueStringInvalidFormatException extends RuntimeException {
@@ -35,7 +35,7 @@ public class EnvironmentVariableMap extends HashMap<String, String> {
   }
 
   /**
-   * Exception indicating a KEY=VALUE string to represent an environment variable does not have a
+   * Exception indicating a "KEY=VALUE" string to represent an environment variable does not have a
    * KEY.
    */
   public static class KeyValueStringNoKeyException extends RuntimeException {
@@ -49,7 +49,7 @@ public class EnvironmentVariableMap extends HashMap<String, String> {
   /**
    * Creates a new {@code EnvironmentVariableMap} from a list of KEY=VALUE strings.
    *
-   * @param keyValueStrings a list of KEY=VALUE string, where KEY is the environment variable name
+   * @param keyValueStrings a list of "KEY=VALUE" strings, where KEY is the environment variable name
    *     and VALUE is the value to set it to
    */
   public static EnvironmentVariableMap createFromKeyValueStrings(List<String> keyValueStrings)
@@ -66,11 +66,11 @@ public class EnvironmentVariableMap extends HashMap<String, String> {
   /**
    * Puts a KEY=VALUE string as an environment variable entry into the map.
    *
-   * @param keyEqualsValue KEY=VALUE string, where KEY is the environment variable name and VALUE is
+   * @param keyEqualsValue "KEY=VALUE" string, where KEY is the environment variable name and VALUE is
    *     the value to set it to
-   * @throws KeyValueStringInvalidFormatException if the key-value string is not in the correct
+   * @throws KeyValueStringInvalidFormatException if the "KEY=VALUE" string is not in the correct
    *     format
-   * @throws KeyValueStringNoKeyException if the key-value string is missing a key
+   * @throws KeyValueStringNoKeyException if the "KEY=VALUE" string is missing the KEY
    */
   public String putKeyValueString(String keyEqualsValue)
       throws KeyValueStringInvalidFormatException, KeyValueStringNoKeyException {

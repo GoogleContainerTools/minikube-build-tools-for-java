@@ -33,6 +33,7 @@ public class CommandExecutor {
   // @VisibleForTesting
   static final int TIMEOUT_SECONDS = 5;
 
+  /** Sets the {@code Logger} to use to log messages during the command execution. */
   public CommandExecutor setLogger(Logger logger) {
     this.logger = logger;
     return this;
