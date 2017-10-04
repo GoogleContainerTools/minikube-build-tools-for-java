@@ -24,20 +24,19 @@ public class MinikubePlugin implements Plugin<Project> {
   private static String MINIKUBE_GROUP = "Minikube";
   private Project project;
   private MinikubeExtension minikubeExtension;
-  private DockerExtension dockerExtension;
 
   @Override
   public void apply(Project project) {
     this.project = project;
 
     createMinikubeExtension();
+
     configureMinikubeTaskAdditionCallback();
     createMinikubeStartTask();
     createMinikubeStopTask();
     createMinikubeDeleteTask();
 
-    createDockerExtension();
-    configureDockerBuildTaskAdditionalCallback();
+    configureDockerBuildTaskAdditionCallback();
     createDockerBuildTask();
   }
 
@@ -54,13 +53,14 @@ public class MinikubePlugin implements Plugin<Project> {
   }
 
   // Configure tasks as they are added. This allows us to configure our own AND any user configured tasks.
-  private void configureDockerBuildTaskAdditionalCallback() {
+  private void configureDockerBuildTaskAdditionCallback() {
     project
         .getTasks()
         .withType(DockerBuildTask.class)
         .whenTaskAdded(
             task -> {
-              task.setDocker(dockerExtension.getDockerProvider());
+              task.setMinikube(minikubeExtension.getMinikubeProvider());
+              task.setDocker(minikubeExtension.getDockerProvider());
               task.setGroup(MINIKUBE_GROUP);
             });
   }
@@ -68,10 +68,6 @@ public class MinikubePlugin implements Plugin<Project> {
   private void createMinikubeExtension() {
     minikubeExtension =
         project.getExtensions().create("minikube", MinikubeExtension.class, project);
-  }
-
-  private void createDockerExtension() {
-    dockerExtension = project.getExtensions().create("docker", DockerExtension.class, project);
   }
 
   private void createMinikubeStartTask() {

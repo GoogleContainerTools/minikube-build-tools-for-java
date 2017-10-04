@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.provider.PropertyState;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
@@ -114,11 +113,7 @@ public class DockerBuildTask extends DefaultTask {
         commandExecutorFactory.createCommandExecutor().run(minikubeDockerEnvCommand);
 
     Map<String, String> environment;
-    try {
-      environment = MinikubeDockerEnvParser.parse(dockerEnv);
-    } catch (IllegalArgumentException ex) {
-      throw new GradleException("Exception while processing minikube's Docker environment");
-    }
+    environment = MinikubeDockerEnvParser.parse(dockerEnv);
 
     // Runs the docker build command with the minikube docker environment.
     List<String> dockerBuildCommand = buildDockerBuildCommand();

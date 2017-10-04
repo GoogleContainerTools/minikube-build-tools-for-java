@@ -12,21 +12,18 @@ It exposes the following tasks
 - `minikubeDelete`
 - `minikubeDockerBuild` - runs `docker build` in the minikube Docker environment
 
-It exposes the `minikube` and `docker` configuration extension.
+It exposes the `minikube` configuration extension.
 
 ```groovy
 minikube {
   minikube = // path to minikube, default is "minikube"
-}
-
-docker {
   docker = // path to Docker, default is "docker"
 }
 ```
 
 Task specific flags are configured on the tasks themselves.
  
-All `minikube` tasks are of the type `MinikubeTask` and all share the same kind of configuration.
+All `minikube` tasks, except `minikubeDockerBuild`, are of the type `MinikubeTask` and all share the same kind of configuration.
 - `flags` (`String[]`) : any minikube flags **this is the only one users should edit for the provided tasks**
 - `minikube` (`String`) : path to minikube executable which should be set by using the `minikube` extension
 - `command` (`String`) : start/stop/whatever (users probably shouldn't be editing this for default commands)
@@ -37,7 +34,7 @@ minikubeStart {
 }
 ```
 
-`minikubeDockerBuild` task can be configured with:
+`minikubeDockerBuild` task is of the type `DockerBuildTask` and can be configured with:
 - `context` (`String`) : PATH | URL | - (See 'Extended description' under the [`docker build` Reference](https://docs.docker.com/engine/reference/commandline/build/))
 - `flags` (`String[]`) : any flags to pass to `docker build` (See 'Options' under the [`docker build` Reference](https://docs.docker.com/engine/reference/commandline/build/))
 - `minikube` (`String`) : path to minikube executable which should be set by using the `minikube` extension **users should not edit this for this provided task**
@@ -50,16 +47,11 @@ minikubeDockerBuild {
 }
 ```
 
-This plugin also allows users to add in any custom `minikube` and `docker build` task.
+This plugin also allows users to add in any custom `minikube` task.
 
 ```groovy
 task minikubeCustom(type: com.google.cloud.tools.minikube.MinikubeTask) {
   command = "custom"
-  flags = ["--some-flag"]
-}
-
-task minikubeDockerBuildCustom(type: com.google.cloud.tools.minikube.DockerBuildTask) {
-  context = "custom"
   flags = ["--some-flag"]
 }
 ```
