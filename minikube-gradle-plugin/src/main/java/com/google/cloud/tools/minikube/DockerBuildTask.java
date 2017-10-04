@@ -43,6 +43,7 @@ public class DockerBuildTask extends DefaultTask {
   public DockerBuildTask() {
     minikube = getProject().property(String.class);
     docker = getProject().property(String.class);
+    context = getProject().getBuildDir().toPath().resolve("libs").toString();
   }
 
   // @VisibleForTesting

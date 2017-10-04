@@ -42,7 +42,7 @@ minikubeStart {
 
 ```groovy
 minikubeDockerBuild {
-  context = "."
+  context = "build/libs/"
   flags = ["--build-arg ARTIFACT_NAME=my_kubernetes_app"]
 }
 ```
