@@ -38,7 +38,7 @@ public class DockerBuildTask extends DefaultTask {
   private PropertyState<String> docker;
   /** The set of files to build (PATH | URL | -) */
   private String context;
-  /** Flag passthrough */
+  /** Flags passthrough */
   private String[] flags = {};
 
   public DockerBuildTask() {
