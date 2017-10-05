@@ -24,13 +24,32 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
+import org.gradle.api.logging.Logger;
 import org.gradle.api.provider.PropertyState;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
 /** Task to build Docker images. */
 public class DockerBuildTask extends DefaultTask {
+  /**
+   * Name components may contain lowercase letters, digits and separators. A separator is defined as
+   * a period, one or two underscores, or one or more dashes. A name component may not start or end
+   * with a separator.
+   *
+   * @see <a href="https://docs.docker.com/engine/reference/commandline/tag/#description">docker
+   *     tag</a>
+   */
+  private static final String NAME_COMPONENT_REGEX = "^[a-z0-9]+((_|__|\\.|-+)[a-z0-9]+)*$";
+
+  /**
+   * A tag name may contain lowercase and uppercase letters, digits, underscores, periods and
+   * dashes. A tag name may not start with a period or a dash and may contain a maximum of 128
+   * characters.
+   *
+   * @see <a href="https://docs.docker.com/engine/reference/commandline/tag/#description">docker
+   *     tag</a>
+   */
+  private static final String TAG_NAME_REGEX = "^[\\w_]+[\\w_\\.-]*$";
 
   /** minikube executable : lazily evaluated from extension input */
   private PropertyState<String> minikube;
@@ -42,6 +61,8 @@ public class DockerBuildTask extends DefaultTask {
   private String[] flags = {};
   /** The tag for the built image */
   private String tag;
+
+  private Logger logger = getLogger();
 
   public DockerBuildTask() {
     minikube = getProject().property(String.class);
@@ -64,6 +85,11 @@ public class DockerBuildTask extends DefaultTask {
   }
 
   private CommandExecutorFactory commandExecutorFactory = new CommandExecutorFactory();
+
+  // @VisibleForTesting
+  void setLogger(Logger logger) {
+    this.logger = logger;
+  }
 
   @Input
   public String getMinikube() {
@@ -158,29 +184,47 @@ public class DockerBuildTask extends DefaultTask {
    * Builds the default tag for the built image in the form: {@code
    * ${project.group}/${project.name}:${project.version}}.
    *
-   * <p>If {@code ${project.name}}
-   *
    * <p>If {@code ${project.group}} is empty, {@code ${project.group}/} will not be included.
    *
    * <p>If {@code ${project.version}} is empty, {@code :${project.version}} will not be included.
    *
-   * <p>Replaces all instances of ':' in group, name, or version with '.'.
-   *
-   * @return the built tag
-   * @throws GradleException
+   * @return the built tag, or an empty string if any part does not satisfy Docker tag rules
+   * @see <a href="https://docs.docker.com/engine/reference/commandline/tag/#description">docker
+   *     tag</a>
    */
   // @VisibleForTesting
   String buildDefaultTag() {
-    String group = getProject().getGroup().toString().replace(':', '.');
-    String projectName = getProject().getName().toString().replace(':', '.');
-    String projectVersion = getProject().getVersion().toString().replace(':', '.');
+    String group = getProject().getGroup().toString();
+    String projectName = getProject().getName().toString();
+    String projectVersion = getProject().getVersion().toString();
 
     StringBuilder tagBuilder = new StringBuilder();
+
     if (!group.isEmpty()) {
+      // Checks if project.group can be used as part of the image name.
+      if (!group.matches(NAME_COMPONENT_REGEX)) {
+        logger.warn(
+                "Default image tag could not be generated because project.group is not a valid name component");
+        return "";
+      }
       tagBuilder.append(group).append("/");
     }
+
+    // Checks if project.name can be used as part of the image name.
+    if (!projectName.matches(NAME_COMPONENT_REGEX)) {
+      logger.warn(
+              "Default image tag could not be generated because project.name is not a valid name component");
+      return "";
+    }
     tagBuilder.append(projectName);
+
     if (!"unspecified".equals(projectVersion)) {
+      // Checks if project.version can be used as the image tag name.
+      if (!projectVersion.matches(TAG_NAME_REGEX)) {
+        logger.warn(
+                "Default image tag could not be generated because project.version is not a valid tag name");
+        return "";
+      }
       tagBuilder.append(":").append(projectVersion);
     }
 

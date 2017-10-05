@@ -18,11 +18,15 @@ package com.google.cloud.tools.minikube;
 
 import java.util.Arrays;
 import org.gradle.api.Project;
+import org.gradle.api.logging.Logger;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /** Tests for DockerBuildTask */
 public class DockerBuildTaskTest {
@@ -53,25 +57,52 @@ public class DockerBuildTaskTest {
 
   @Test
   public void testBuildDefaultTag() {
-    Project project = ProjectBuilder.builder().withName("some:Project").build();
+    Project project = ProjectBuilder.builder().withName("some.project---123").build();
 
     DockerBuildTask testTask =
         project.getTasks().create("dockerBuildTestTask", DockerBuildTask.class);
 
     // Just project name
-    Assert.assertEquals("some.Project", testTask.buildDefaultTag());
+    Assert.assertEquals("some.project---123", testTask.buildDefaultTag());
 
     // Project group and name
-    project.setGroup("someGroup");
-    Assert.assertEquals("someGroup/some.Project", testTask.buildDefaultTag());
+    project.setGroup("some__group");
+    Assert.assertEquals("some__group/some.project---123", testTask.buildDefaultTag());
 
     // Project name and version
     project.setGroup(null);
-    project.setVersion(":someVersion:");
-    Assert.assertEquals("some.Project:.someVersion.", testTask.buildDefaultTag());
+    project.setVersion("_someVersion_99.99.99---");
+    Assert.assertEquals("some.project---123:_someVersion_99.99.99---", testTask.buildDefaultTag());
 
     // Everything
-    project.setGroup("some:Group");
-    Assert.assertEquals("some.Group/some.Project:.someVersion.", testTask.buildDefaultTag());
+    project.setGroup("some_group");
+    Assert.assertEquals("some_group/some.project---123:_someVersion_99.99.99---", testTask.buildDefaultTag());
+  }
+
+  @Test
+  public void testBuildDefaultTag_invalidNameComponent() {
+    Project project = ProjectBuilder.builder().withName("someProjectWithSeparatorAtEnd__").build();
+
+    DockerBuildTask testTask =
+        project.getTasks().create("dockerBuildTestTask", DockerBuildTask.class);
+    Logger loggerMock = mock(Logger.class);
+    testTask.setLogger(loggerMock);
+
+    Assert.assertEquals("", testTask.buildDefaultTag());
+    verify(loggerMock).warn("Default image tag could not be generated because project.name is not a valid name component");
+  }
+
+  @Test
+  public void testBuildDefaultTag_invalidTagName() {
+    Project project = ProjectBuilder.builder().withName("someproject").build();
+
+    DockerBuildTask testTask =
+        project.getTasks().create("dockerBuildTestTask", DockerBuildTask.class);
+    Logger loggerMock = mock(Logger.class);
+    testTask.setLogger(loggerMock);
+
+    project.setVersion("someVersionWithIllegalCharacter:");
+    Assert.assertEquals("", testTask.buildDefaultTag());
+    verify(loggerMock).warn("Default image tag could not be generated because project.version is not a valid tag name");
   }
 }
