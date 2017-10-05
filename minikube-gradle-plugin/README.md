@@ -39,6 +39,7 @@ minikubeStart {
     - Defaults to `build/libs/`
 - `tag` (`String`) : tag to apply to the built Docker image
     - Defaults to `${project.group}/${project.name}:${project.version}`
+    - Does not apply the default tag if it is not a proper Docker tag (See [`docker tag` Reference](https://docs.docker.com/engine/reference/commandline/tag/#description))
 - `flags` (`String[]`) : any flags to pass to `docker build` (See 'Options' under the [`docker build` Reference](https://docs.docker.com/engine/reference/commandline/build/))
 - `minikube` (`String`) : path to minikube executable which should be set by using the `minikube` extension **users should not edit this for this provided task**
 - `docker` (`String`) : path to Docker executable which should be set by using the `docker` extension **users should not edit this for this provided task**
