@@ -18,7 +18,6 @@ package com.google.cloud.tools.minikube;
 
 import java.util.Arrays;
 import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskInstantiationException;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -48,11 +47,7 @@ public class DockerBuildTaskTest {
 
     Assert.assertEquals(
         Arrays.asList(
-            "/test/path/to/docker",
-            "build",
-            "testFlag1",
-            "testFlag2",
-            "some_build_context"),
+            "/test/path/to/docker", "build", "testFlag1", "testFlag2", "some_build_context"),
         testTask.buildDockerBuildCommand());
   }
 
