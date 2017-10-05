@@ -18,6 +18,7 @@ package com.google.cloud.tools.minikube;
 
 import java.util.Arrays;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.TaskInstantiationException;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -31,7 +32,7 @@ public class DockerBuildTaskTest {
 
   @Test
   public void testBuildCommand() {
-    Project project = ProjectBuilder.builder().withProjectDir(tmp.getRoot()).build();
+    Project project = ProjectBuilder.builder().withProjectDir(tmp.getRoot()).withName("").build();
     DockerBuildTask testTask =
         project
             .getTasks()
@@ -47,7 +48,35 @@ public class DockerBuildTaskTest {
 
     Assert.assertEquals(
         Arrays.asList(
-            "/test/path/to/docker", "build", "testFlag1", "testFlag2", "some_build_context"),
+            "/test/path/to/docker",
+            "build",
+            "testFlag1",
+            "testFlag2",
+            "some_build_context"),
         testTask.buildDockerBuildCommand());
+  }
+
+  @Test
+  public void testBuildDefaultTag() {
+    Project project = ProjectBuilder.builder().withName("some:Project").build();
+
+    DockerBuildTask testTask =
+        project.getTasks().create("dockerBuildTestTask", DockerBuildTask.class);
+
+    // Just project name
+    Assert.assertEquals("some.Project", testTask.buildDefaultTag());
+
+    // Project group and name
+    project.setGroup("someGroup");
+    Assert.assertEquals("someGroup/some.Project", testTask.buildDefaultTag());
+
+    // Project name and version
+    project.setGroup(null);
+    project.setVersion(":someVersion:");
+    Assert.assertEquals("some.Project:.someVersion.", testTask.buildDefaultTag());
+
+    // Everything
+    project.setGroup("some:Group");
+    Assert.assertEquals("some.Group/some.Project:.someVersion.", testTask.buildDefaultTag());
   }
 }

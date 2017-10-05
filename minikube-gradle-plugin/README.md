@@ -37,6 +37,8 @@ minikubeStart {
 `minikubeDockerBuild` task is of the type `DockerBuildTask` and can be configured with:
 - `context` (`String`) : PATH | URL | - (See 'Extended description' under the [`docker build` Reference](https://docs.docker.com/engine/reference/commandline/build/))
     - Defaults to `build/libs/`
+- `tag` (`String`) : tag to apply to the built Docker image
+    - Defaults to `${project.group}/${project.name}:${project.version}`
 - `flags` (`String[]`) : any flags to pass to `docker build` (See 'Options' under the [`docker build` Reference](https://docs.docker.com/engine/reference/commandline/build/))
 - `minikube` (`String`) : path to minikube executable which should be set by using the `minikube` extension **users should not edit this for this provided task**
 - `docker` (`String`) : path to Docker executable which should be set by using the `docker` extension **users should not edit this for this provided task**
@@ -44,6 +46,7 @@ minikubeStart {
 ```groovy
 minikubeDockerBuild {
   context = "build/libs/"
+  tag = "${project.group}/${project.name}:${project.version}"
   flags = ["--build-arg ARTIFACT_NAME=my_kubernetes_app"]
 }
 ```

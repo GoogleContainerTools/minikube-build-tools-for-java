@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.provider.PropertyState;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
@@ -39,11 +40,14 @@ public class DockerBuildTask extends DefaultTask {
   private String context;
   /** Flags passthrough */
   private String[] flags = {};
+  /** The tag for the built image */
+  private String tag;
 
   public DockerBuildTask() {
     minikube = getProject().property(String.class);
     docker = getProject().property(String.class);
     context = getProject().getBuildDir().toPath().resolve("libs").toString();
+    tag = buildDefaultTag();
   }
 
   // @VisibleForTesting
@@ -105,6 +109,15 @@ public class DockerBuildTask extends DefaultTask {
     this.flags = flags;
   }
 
+  @Input
+  public String getTag() {
+    return tag;
+  }
+
+  public void setTag(String tag) {
+    this.tag = tag;
+  }
+
   @TaskAction
   public void execDockerBuild() throws IOException, InterruptedException {
     // Gets the minikube docker environment variables by running the command 'minikube docker-env'.
@@ -129,9 +142,48 @@ public class DockerBuildTask extends DefaultTask {
     List<String> execString = new ArrayList<>();
     execString.add(docker.get());
     execString.add("build");
+
+    if (!tag.isEmpty()) {
+      execString.add("-t");
+      execString.add(tag);
+    }
+
     execString.addAll(Arrays.asList(flags));
     execString.add(context);
 
     return execString;
+  }
+
+  /**
+   * Builds the default tag for the built image in the form: {@code
+   * ${project.group}/${project.name}:${project.version}}.
+   *
+   * <p>If {@code ${project.name}}
+   *
+   * <p>If {@code ${project.group}} is empty, {@code ${project.group}/} will not be included.
+   *
+   * <p>If {@code ${project.version}} is empty, {@code :${project.version}} will not be included.
+   *
+   * <p>Replaces all instances of ':' in group, name, or version with '.'.
+   *
+   * @return the built tag
+   * @throws GradleException
+   */
+  // @VisibleForTesting
+  String buildDefaultTag() {
+    String group = getProject().getGroup().toString().replace(':', '.');
+    String projectName = getProject().getName().toString().replace(':', '.');
+    String projectVersion = getProject().getVersion().toString().replace(':', '.');
+
+    StringBuilder tagBuilder = new StringBuilder();
+    if (!group.isEmpty()) {
+      tagBuilder.append(group).append("/");
+    }
+    tagBuilder.append(projectName);
+    if (!"unspecified".equals(projectVersion)) {
+      tagBuilder.append(":").append(projectVersion);
+    }
+
+    return tagBuilder.toString();
   }
 }
