@@ -28,7 +28,6 @@ import org.gradle.api.logging.Logger;
 import org.gradle.api.provider.PropertyState;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.internal.impldep.com.google.common.base.Strings;
 
 /** Task to build Docker images. */
 public class DockerBuildTask extends DefaultTask {
@@ -174,7 +173,7 @@ public class DockerBuildTask extends DefaultTask {
     execString.add(docker.get());
     execString.add("build");
 
-    if (!Strings.isNullOrEmpty(tag)) {
+    if (!tag.isEmpty()) {
       execString.add("-t");
       execString.add(tag);
     }

@@ -20,9 +20,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
+import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
+import org.gradle.api.tasks.TaskValidationException;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,10 +52,23 @@ public class DockerBuildTaskTest {
                   dockerBuildTask.setContext("some_build_context");
                 });
 
+    Assert.assertNull(testTask.getTag());
+    testTask.setTag("");
+
     Assert.assertEquals(
         Arrays.asList(
             "/test/path/to/docker", "build", "testFlag1", "testFlag2", "some_build_context"),
         testTask.buildDockerBuildCommand());
+
+    testTask.setTag(testTask.buildDefaultTag());
+
+    try {
+      testTask.execute();
+      Assert.fail(
+          "Expected TaskValidationException with cause of InvalidUserDataException to be thrown");
+    } catch (TaskValidationException ex) {
+      Assert.assertThat(ex.getCause(), CoreMatchers.instanceOf(InvalidUserDataException.class));
+    }
   }
 
   @Test
