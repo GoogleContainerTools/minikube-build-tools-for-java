@@ -46,7 +46,11 @@ public class DockerBuildTaskTest {
 
     Assert.assertEquals(
         Arrays.asList(
-            "/test/path/to/docker", "build", "testFlag1", "testFlag2", project.getBuildDir().toPath().resolve("docker")),
+            "/test/path/to/docker",
+            "build",
+            "testFlag1",
+            "testFlag2",
+            project.getBuildDir().toPath().resolve("docker").toString()),
         testTask.buildDockerBuildCommand());
   }
 }
