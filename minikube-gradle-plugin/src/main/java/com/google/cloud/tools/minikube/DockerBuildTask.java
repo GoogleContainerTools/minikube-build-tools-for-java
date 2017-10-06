@@ -31,19 +31,24 @@ import org.gradle.api.tasks.TaskAction;
 /** Task to build Docker images. */
 public class DockerBuildTask extends DefaultTask {
 
+  /**
+   * The build context to use - initializes to `build/docker`. The directory is prepared by {@code
+   * PrepareDockerBuildTask}
+   */
+  private final String context;
+
   /** minikube executable : lazily evaluated from extension input */
   private PropertyState<String> minikube;
   /** docker executable : lazily evaluated from extension input */
   private PropertyState<String> docker;
-  /** The set of files to build (PATH | URL | -) */
-  private String context;
   /** Flags passthrough */
   private String[] flags = {};
 
   public DockerBuildTask() {
+    context = getProject().getBuildDir().toPath().resolve("docker").toString();
+
     minikube = getProject().property(String.class);
     docker = getProject().property(String.class);
-    context = getProject().getBuildDir().toPath().resolve("libs").toString();
   }
 
   // @VisibleForTesting
@@ -85,15 +90,6 @@ public class DockerBuildTask extends DefaultTask {
 
   public void setDocker(PropertyState<String> docker) {
     this.docker = docker;
-  }
-
-  @Input
-  public String getContext() {
-    return context;
-  }
-
-  public void setContext(String context) {
-    this.context = context;
   }
 
   @Input
