@@ -16,9 +16,16 @@
 
 package com.google.cloud.tools.minikube;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import java.util.Arrays;
+import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.tasks.TaskValidationException;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,7 +38,7 @@ public class DockerBuildTaskTest {
 
   @Test
   public void testBuildCommand() {
-    Project project = ProjectBuilder.builder().withProjectDir(tmp.getRoot()).build();
+    Project project = ProjectBuilder.builder().withProjectDir(tmp.getRoot()).withName("").build();
     DockerBuildTask testTask =
         project
             .getTasks()
@@ -45,9 +52,84 @@ public class DockerBuildTaskTest {
                   dockerBuildTask.setContext("some_build_context");
                 });
 
+    Assert.assertNull(testTask.getTag());
+    testTask.setTag("");
+
     Assert.assertEquals(
         Arrays.asList(
             "/test/path/to/docker", "build", "testFlag1", "testFlag2", "some_build_context"),
         testTask.buildDockerBuildCommand());
+
+    testTask.setTag(testTask.buildDefaultTag());
+
+    try {
+      testTask.execute();
+      Assert.fail(
+          "Expected TaskValidationException with cause of InvalidUserDataException to be thrown");
+    } catch (TaskValidationException ex) {
+      Assert.assertThat(ex.getCause(), CoreMatchers.instanceOf(InvalidUserDataException.class));
+    }
+  }
+
+  @Test
+  public void testBuildDefaultTag() {
+    Project project = ProjectBuilder.builder().withName("some.project---123").build();
+
+    DockerBuildTask testTask =
+        project.getTasks().create("dockerBuildTestTask", DockerBuildTask.class);
+
+    // Just project name
+    Assert.assertEquals("some.project---123", testTask.buildDefaultTag());
+
+    // Project group and name
+    project.setGroup("some__group");
+    Assert.assertEquals("some__group/some.project---123", testTask.buildDefaultTag());
+
+    // Project name and version
+    project.setGroup(null);
+    project.setVersion("_someVersion_99.99.99---");
+    Assert.assertEquals("some.project---123:_someVersion_99.99.99---", testTask.buildDefaultTag());
+
+    // Everything
+    project.setGroup("some_group");
+    Assert.assertEquals(
+        "some_group/some.project---123:_someVersion_99.99.99---", testTask.buildDefaultTag());
+  }
+
+  @Test
+  public void testBuildDefaultTag_invalidNameComponent() {
+    Project project = ProjectBuilder.builder().withName("someProjectWithSeparatorAtEnd__").build();
+
+    DockerBuildTask testTask =
+        project.getTasks().create("dockerBuildTestTask", DockerBuildTask.class);
+    Logger loggerMock = mock(Logger.class);
+    testTask.setLogger(loggerMock);
+
+    Assert.assertNull(testTask.buildDefaultTag());
+    verify(loggerMock)
+        .warn(
+            "Default image tag could not be generated because project.name is not a valid name component");
+
+    project.setGroup("---someGroupWithSeparatorAtBeginning");
+    Assert.assertNull(testTask.buildDefaultTag());
+    verify(loggerMock)
+        .warn(
+            "Default image tag could not be generated because project.group is not a valid name component");
+  }
+
+  @Test
+  public void testBuildDefaultTag_invalidTagName() {
+    Project project = ProjectBuilder.builder().withName("someproject").build();
+
+    DockerBuildTask testTask =
+        project.getTasks().create("dockerBuildTestTask", DockerBuildTask.class);
+    Logger loggerMock = mock(Logger.class);
+    testTask.setLogger(loggerMock);
+
+    project.setVersion("someVersionWithIllegalCharacter:");
+    Assert.assertNull(testTask.buildDefaultTag());
+    verify(loggerMock)
+        .warn(
+            "Default image tag could not be generated because project.version is not a valid tag name");
   }
 }
