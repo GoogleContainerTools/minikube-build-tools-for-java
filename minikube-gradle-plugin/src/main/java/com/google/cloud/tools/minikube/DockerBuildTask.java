@@ -28,13 +28,16 @@ import org.gradle.api.logging.Logger;
 import org.gradle.api.provider.PropertyState;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.internal.impldep.com.google.common.base.Strings;
 
 /** Task to build Docker images. */
 public class DockerBuildTask extends DefaultTask {
   /**
-   * Name components may contain lowercase letters, digits and separators. A separator is defined as
-   * a period, one or two underscores, or one or more dashes. A name component may not start or end
-   * with a separator.
+   * Matches a name component of a Docker image tag.
+   *
+   * <p>Name components may contain lowercase letters, digits and separators. A separator is defined
+   * as a period, one or two underscores, or one or more dashes. A name component may not start or
+   * end with a separator.
    *
    * @see <a href="https://docs.docker.com/engine/reference/commandline/tag/#description">docker
    *     tag</a>
@@ -42,7 +45,9 @@ public class DockerBuildTask extends DefaultTask {
   private static final String NAME_COMPONENT_REGEX = "^[a-z0-9]+((_|__|\\.|-+)[a-z0-9]+)*$";
 
   /**
-   * A tag name may contain lowercase and uppercase letters, digits, underscores, periods and
+   * Matches a tag name portion of a Docker image tag.
+   *
+   * <p>A tag name may contain lowercase and uppercase letters, digits, underscores, periods and
    * dashes. A tag name may not start with a period or a dash and may contain a maximum of 128
    * characters.
    *
@@ -169,7 +174,7 @@ public class DockerBuildTask extends DefaultTask {
     execString.add(docker.get());
     execString.add("build");
 
-    if (!tag.isEmpty()) {
+    if (!Strings.isNullOrEmpty(tag)) {
       execString.add("-t");
       execString.add(tag);
     }
@@ -188,7 +193,7 @@ public class DockerBuildTask extends DefaultTask {
    *
    * <p>If {@code ${project.version}} is empty, {@code :${project.version}} will not be included.
    *
-   * @return the built tag, or an empty string if any part does not satisfy Docker tag rules
+   * @return the built tag, or null if any part does not satisfy Docker tag rules
    * @see <a href="https://docs.docker.com/engine/reference/commandline/tag/#description">docker
    *     tag</a>
    */
@@ -204,8 +209,8 @@ public class DockerBuildTask extends DefaultTask {
       // Checks if project.group can be used as part of the image name.
       if (!group.matches(NAME_COMPONENT_REGEX)) {
         logger.warn(
-                "Default image tag could not be generated because project.group is not a valid name component");
-        return "";
+            "Default image tag could not be generated because project.group is not a valid name component");
+        return null;
       }
       tagBuilder.append(group).append("/");
     }
@@ -213,8 +218,8 @@ public class DockerBuildTask extends DefaultTask {
     // Checks if project.name can be used as part of the image name.
     if (!projectName.matches(NAME_COMPONENT_REGEX)) {
       logger.warn(
-              "Default image tag could not be generated because project.name is not a valid name component");
-      return "";
+          "Default image tag could not be generated because project.name is not a valid name component");
+      return null;
     }
     tagBuilder.append(projectName);
 
@@ -222,8 +227,8 @@ public class DockerBuildTask extends DefaultTask {
       // Checks if project.version can be used as the image tag name.
       if (!projectVersion.matches(TAG_NAME_REGEX)) {
         logger.warn(
-                "Default image tag could not be generated because project.version is not a valid tag name");
-        return "";
+            "Default image tag could not be generated because project.version is not a valid tag name");
+        return null;
       }
       tagBuilder.append(":").append(projectVersion);
     }

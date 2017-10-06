@@ -16,6 +16,9 @@
 
 package com.google.cloud.tools.minikube;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import java.util.Arrays;
 import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
@@ -24,9 +27,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /** Tests for DockerBuildTask */
 public class DockerBuildTaskTest {
@@ -76,7 +76,8 @@ public class DockerBuildTaskTest {
 
     // Everything
     project.setGroup("some_group");
-    Assert.assertEquals("some_group/some.project---123:_someVersion_99.99.99---", testTask.buildDefaultTag());
+    Assert.assertEquals(
+        "some_group/some.project---123:_someVersion_99.99.99---", testTask.buildDefaultTag());
   }
 
   @Test
@@ -88,8 +89,16 @@ public class DockerBuildTaskTest {
     Logger loggerMock = mock(Logger.class);
     testTask.setLogger(loggerMock);
 
-    Assert.assertEquals("", testTask.buildDefaultTag());
-    verify(loggerMock).warn("Default image tag could not be generated because project.name is not a valid name component");
+    Assert.assertNull(testTask.buildDefaultTag());
+    verify(loggerMock)
+        .warn(
+            "Default image tag could not be generated because project.name is not a valid name component");
+
+    project.setGroup("---someGroupWithSeparatorAtBeginning");
+    Assert.assertNull(testTask.buildDefaultTag());
+    verify(loggerMock)
+        .warn(
+            "Default image tag could not be generated because project.group is not a valid name component");
   }
 
   @Test
@@ -102,7 +111,9 @@ public class DockerBuildTaskTest {
     testTask.setLogger(loggerMock);
 
     project.setVersion("someVersionWithIllegalCharacter:");
-    Assert.assertEquals("", testTask.buildDefaultTag());
-    verify(loggerMock).warn("Default image tag could not be generated because project.version is not a valid tag name");
+    Assert.assertNull(testTask.buildDefaultTag());
+    verify(loggerMock)
+        .warn(
+            "Default image tag could not be generated because project.version is not a valid tag name");
   }
 }
