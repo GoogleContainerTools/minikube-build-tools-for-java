@@ -42,12 +42,15 @@ public class DockerBuildTaskTest {
                   dockerBuildTask.setMinikube("/test/path/to/minikube");
                   dockerBuildTask.setDocker("/test/path/to/docker");
                   dockerBuildTask.setFlags(new String[] {"testFlag1", "testFlag2"});
-                  dockerBuildTask.setContext("some_build_context");
                 });
 
     Assert.assertEquals(
         Arrays.asList(
-            "/test/path/to/docker", "build", "testFlag1", "testFlag2", "some_build_context"),
+            "/test/path/to/docker",
+            "build",
+            "testFlag1",
+            "testFlag2",
+            project.getBuildDir().toPath().resolve("docker").toString()),
         testTask.buildDockerBuildCommand());
   }
 }

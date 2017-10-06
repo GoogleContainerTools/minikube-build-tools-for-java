@@ -36,8 +36,7 @@ public class MinikubePlugin implements Plugin<Project> {
     createMinikubeStopTask();
     createMinikubeDeleteTask();
 
-    configureDockerBuildTaskAdditionCallback();
-    createDockerBuildTask();
+    createDockerBuildTask(createPrepareDockerBuildTask());
   }
 
   // Configure tasks as they are added. This allows us to configure our own AND any user configured tasks.
@@ -48,19 +47,6 @@ public class MinikubePlugin implements Plugin<Project> {
         .whenTaskAdded(
             task -> {
               task.setMinikube(minikubeExtension.getMinikubeProvider());
-              task.setGroup(MINIKUBE_GROUP);
-            });
-  }
-
-  // Configure tasks as they are added. This allows us to configure our own AND any user configured tasks.
-  private void configureDockerBuildTaskAdditionCallback() {
-    project
-        .getTasks()
-        .withType(DockerBuildTask.class)
-        .whenTaskAdded(
-            task -> {
-              task.setMinikube(minikubeExtension.getMinikubeProvider());
-              task.setDocker(minikubeExtension.getDockerProvider());
               task.setGroup(MINIKUBE_GROUP);
             });
   }
@@ -85,7 +71,13 @@ public class MinikubePlugin implements Plugin<Project> {
     task.setCommand("delete");
   }
 
-  private void createDockerBuildTask() {
-    DockerBuildTask task = project.getTasks().create("minikubeDockerBuild", DockerBuildTask.class);
+  private PrepareDockerBuildTask createPrepareDockerBuildTask() {
+    return project.getTasks().create("prepareMinikubeDockerBuild", PrepareDockerBuildTask.class);
+  }
+
+  private void createDockerBuildTask(PrepareDockerBuildTask prepareDockerBuildTask) {
+    DockerBuildTask dockerBuildTask =
+        project.getTasks().create("minikubeDockerBuild", DockerBuildTask.class);
+    dockerBuildTask.dependsOn(prepareDockerBuildTask);
   }
 }
