@@ -16,24 +16,22 @@
 
 package com.google.cloud.tools.minikube;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.google.cloud.tools.minikube.util.CommandExecutor;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.cloud.tools.minikube.util.CommandExecutor;
-import org.codehaus.groovy.tools.shell.Command;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /** Tests for MinikubeExtension */
 public class MinikubeExtensionTest {
@@ -46,15 +44,18 @@ public class MinikubeExtensionTest {
 
     // Mocks the CommandExecutor.
     CommandExecutor commandExecutorMock = mock(CommandExecutor.class);
-    MinikubeExtension.CommandExecutorFactory commandExecutorFactoryMock = mock(MinikubeExtension.CommandExecutorFactory.class);
+    MinikubeExtension.CommandExecutorFactory commandExecutorFactoryMock =
+        mock(MinikubeExtension.CommandExecutorFactory.class);
     when(commandExecutorFactoryMock.createCommandExecutor()).thenReturn(commandExecutorMock);
 
     // Creates an extension to test on.
-    MinikubeExtension minikube = new MinikubeExtension(project).setCommandExecutorFactory(commandExecutorFactoryMock);
+    MinikubeExtension minikube =
+        new MinikubeExtension(project).setCommandExecutorFactory(commandExecutorFactoryMock);
     minikube.setMinikube("/test/path/to/minikube");
 
     // Defined the expected command to run, its output, and the resulting docker-env map.
-    List<String> expectedCommand = Arrays.asList("/test/path/to/minikube", "docker-env", "--shell=none");
+    List<String> expectedCommand =
+        Arrays.asList("/test/path/to/minikube", "docker-env", "--shell=none");
     List<String> dockerEnvOutput = Arrays.asList("ENV_VAR1=VAL1", "ENV_VAR2=VAL2");
     Map<String, String> expectedMap = new HashMap<>(2);
     expectedMap.put("ENV_VAR1", "VAL1");

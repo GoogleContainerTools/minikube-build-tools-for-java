@@ -20,7 +20,6 @@ import com.google.cloud.tools.minikube.util.CommandExecutor;
 import com.google.cloud.tools.minikube.util.MinikubeDockerEnvParser;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.gradle.api.Project;
@@ -67,13 +66,17 @@ public class MinikubeExtension {
     return minikube;
   }
 
-  /** Gets the minikube docker environment variables by running the command 'minikube docker-env --shell=none'. */
+  /**
+   * Gets the minikube docker environment variables by running the command 'minikube docker-env
+   * --shell=none'.
+   */
   public Map<String, String> getDockerEnv() throws IOException, InterruptedException {
     List<String> minikubeDockerEnvCommand = new ArrayList<>(3);
     minikubeDockerEnvCommand.add(minikube.get());
     minikubeDockerEnvCommand.add("docker-env");
     minikubeDockerEnvCommand.add("--shell=none");
-    List<String> dockerEnv = commandExecutorFactory.createCommandExecutor().run(minikubeDockerEnvCommand);
+    List<String> dockerEnv =
+        commandExecutorFactory.createCommandExecutor().run(minikubeDockerEnvCommand);
 
     return MinikubeDockerEnvParser.parse(dockerEnv);
   }
