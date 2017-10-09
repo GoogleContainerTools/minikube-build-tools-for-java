@@ -36,11 +36,9 @@ import org.junit.rules.TemporaryFolder;
 /** Tests for MinikubeExtension */
 public class MinikubeExtensionTest {
 
-  @Rule public TemporaryFolder tmp = new TemporaryFolder();
-
   @Test
   public void testGetDockerEnv() throws IOException, InterruptedException {
-    Project project = ProjectBuilder.builder().withProjectDir(tmp.getRoot()).build();
+    Project project = ProjectBuilder.builder().build();
 
     // Mocks the CommandExecutor.
     CommandExecutor commandExecutorMock = mock(CommandExecutor.class);
