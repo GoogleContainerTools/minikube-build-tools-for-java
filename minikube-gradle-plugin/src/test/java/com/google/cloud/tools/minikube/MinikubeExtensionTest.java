@@ -29,9 +29,7 @@ import java.util.Map;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 /** Tests for MinikubeExtension */
 public class MinikubeExtensionTest {
