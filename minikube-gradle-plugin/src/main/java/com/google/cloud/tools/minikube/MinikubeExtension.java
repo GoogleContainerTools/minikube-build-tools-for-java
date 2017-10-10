@@ -71,12 +71,10 @@ public class MinikubeExtension {
    * --shell=none'.
    */
   public Map<String, String> getDockerEnv() throws IOException, InterruptedException {
-    CommandExecutor commandExecutor = commandExecutorFactory.createCommandExecutor();
-
-    // Runs 'minikube docker-env --shell=none'.
     List<String> minikubeDockerEnvCommand =
         Arrays.asList(minikube.get(), "docker-env", "--shell=none");
-    List<String> dockerEnv = commandExecutor.run(minikubeDockerEnvCommand);
+    List<String> dockerEnv =
+        commandExecutorFactory.createCommandExecutor().run(minikubeDockerEnvCommand);
 
     return MinikubeDockerEnvParser.parse(dockerEnv);
   }
