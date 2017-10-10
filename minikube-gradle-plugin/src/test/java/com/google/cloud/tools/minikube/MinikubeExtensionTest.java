@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.cloud.tools.minikube.util.CommandExecutor;
+import com.google.cloud.tools.minikube.util.CommandExecutorFactory;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,9 +41,8 @@ public class MinikubeExtensionTest {
 
     // Mocks the CommandExecutor.
     CommandExecutor commandExecutorMock = mock(CommandExecutor.class);
-    MinikubeExtension.CommandExecutorFactory commandExecutorFactoryMock =
-        mock(MinikubeExtension.CommandExecutorFactory.class);
-    when(commandExecutorFactoryMock.createCommandExecutor()).thenReturn(commandExecutorMock);
+    CommandExecutorFactory commandExecutorFactoryMock = mock(CommandExecutorFactory.class);
+    when(commandExecutorFactoryMock.newCommandExecutor()).thenReturn(commandExecutorMock);
 
     // Creates an extension to test on.
     MinikubeExtension minikube =

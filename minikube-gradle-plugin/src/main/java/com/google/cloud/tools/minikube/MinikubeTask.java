@@ -16,7 +16,7 @@
 
 package com.google.cloud.tools.minikube;
 
-import com.google.cloud.tools.minikube.util.CommandExecutor;
+import com.google.cloud.tools.minikube.util.CommandExecutorFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +35,8 @@ public class MinikubeTask extends DefaultTask {
   private String command;
   /** Flag passthrough */
   private String[] flags = {};
+
+  private CommandExecutorFactory commandExecutorFactory = new CommandExecutorFactory(getLogger());
 
   public MinikubeTask() {
     minikube = getProject().property(String.class);
@@ -74,7 +76,7 @@ public class MinikubeTask extends DefaultTask {
   @TaskAction
   public void execMinikube() throws IOException, InterruptedException {
     List<String> minikubeCommand = buildMinikubeCommand();
-    new CommandExecutor().setLogger(getLogger()).run(minikubeCommand);
+    commandExecutorFactory.newCommandExecutor().run(minikubeCommand);
   }
 
   // @VisibleForTesting
