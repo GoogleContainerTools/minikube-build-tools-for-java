@@ -48,7 +48,7 @@ The `minikube` extension also provides a method to obtain the environment variab
 def minikubeDockerEnv = minikube.getDockerEnv()
 ```
 
-`minikubeDockerEnv` would be a map containing these fields:
+`minikubeDockerEnv` is a map containing these fields:
  
 ```
 minikubeDockerEnv.DOCKER_TLS_VERIFY
