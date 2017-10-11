@@ -20,7 +20,7 @@ import org.gradle.api.logging.Logger;
 
 /** {@link CommandExecutor} Factory. */
 public class CommandExecutorFactory {
-  private Logger logger;
+  private final Logger logger;
 
   /**
    * Creates a new factory.

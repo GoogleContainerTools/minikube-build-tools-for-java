@@ -29,19 +29,17 @@ import org.gradle.api.provider.PropertyState;
 public class MinikubeExtension {
   private final PropertyState<String> minikube;
 
-  // @VisibleForTesting
-  MinikubeExtension setCommandExecutorFactory(CommandExecutorFactory commandExecutorFactory) {
-    this.commandExecutorFactory = commandExecutorFactory;
-    return this;
-  }
+  private final CommandExecutorFactory commandExecutorFactory;
 
-  private CommandExecutorFactory commandExecutorFactory;
-
-  public MinikubeExtension(Project project) {
+  public MinikubeExtension(Project project, CommandExecutorFactory commandExecutorFactory) {
     minikube = project.property(String.class);
     setMinikube("minikube");
 
-    commandExecutorFactory = new CommandExecutorFactory(project.getLogger());
+    this.commandExecutorFactory = commandExecutorFactory;
+  }
+
+  public CommandExecutorFactory getCommandExecutorFactory() {
+    return commandExecutorFactory;
   }
 
   public String getMinikube() {

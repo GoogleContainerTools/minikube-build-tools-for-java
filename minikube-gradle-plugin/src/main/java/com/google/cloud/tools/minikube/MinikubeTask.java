@@ -36,10 +36,15 @@ public class MinikubeTask extends DefaultTask {
   /** Flag passthrough */
   private String[] flags = {};
 
-  private CommandExecutorFactory commandExecutorFactory = new CommandExecutorFactory(getLogger());
+  private CommandExecutorFactory commandExecutorFactory;
 
   public MinikubeTask() {
     minikube = getProject().property(String.class);
+  }
+
+  public MinikubeTask setCommandExecutorFactory(CommandExecutorFactory commandExecutorFactory) {
+    this.commandExecutorFactory = commandExecutorFactory;
+    return this;
   }
 
   @Input

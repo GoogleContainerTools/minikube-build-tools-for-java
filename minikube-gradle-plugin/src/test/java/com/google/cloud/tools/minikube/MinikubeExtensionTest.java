@@ -45,8 +45,7 @@ public class MinikubeExtensionTest {
     when(commandExecutorFactoryMock.newCommandExecutor()).thenReturn(commandExecutorMock);
 
     // Creates an extension to test on.
-    MinikubeExtension minikube =
-        new MinikubeExtension(project).setCommandExecutorFactory(commandExecutorFactoryMock);
+    MinikubeExtension minikube = new MinikubeExtension(project, commandExecutorFactoryMock);
     minikube.setMinikube("/test/path/to/minikube");
 
     // Defined the expected command to run, its output, and the resulting docker-env map.

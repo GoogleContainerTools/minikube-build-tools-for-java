@@ -16,6 +16,7 @@
 
 package com.google.cloud.tools.minikube;
 
+import com.google.cloud.tools.minikube.util.CommandExecutorFactory;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
@@ -28,13 +29,14 @@ public class MinikubePlugin implements Plugin<Project> {
   @Override
   public void apply(Project project) {
     this.project = project;
+    CommandExecutorFactory commandExecutorFactory = new CommandExecutorFactory(project.getLogger());
 
-    createMinikubeExtension();
+    createMinikubeExtension(commandExecutorFactory);
 
     configureMinikubeTaskAdditionCallback();
-    createMinikubeStartTask();
-    createMinikubeStopTask();
-    createMinikubeDeleteTask();
+    createMinikubeStartTask(commandExecutorFactory);
+    createMinikubeStopTask(commandExecutorFactory);
+    createMinikubeDeleteTask(commandExecutorFactory);
   }
 
   // Configure tasks as they are added. This allows us to configure our own AND any user configured tasks.
@@ -49,23 +51,28 @@ public class MinikubePlugin implements Plugin<Project> {
             });
   }
 
-  private void createMinikubeExtension() {
+  private void createMinikubeExtension(CommandExecutorFactory commandExecutorFactory) {
     minikubeExtension =
-        project.getExtensions().create("minikube", MinikubeExtension.class, project);
+        project
+            .getExtensions()
+            .create("minikube", MinikubeExtension.class, project, commandExecutorFactory);
   }
 
-  private void createMinikubeStartTask() {
+  private void createMinikubeStartTask(CommandExecutorFactory commandExecutorFactory) {
     MinikubeTask task = project.getTasks().create("minikubeStart", MinikubeTask.class);
+    task.setCommandExecutorFactory(commandExecutorFactory);
     task.setCommand("start");
   }
 
-  private void createMinikubeStopTask() {
+  private void createMinikubeStopTask(CommandExecutorFactory commandExecutorFactory) {
     MinikubeTask task = project.getTasks().create("minikubeStop", MinikubeTask.class);
+    task.setCommandExecutorFactory(commandExecutorFactory);
     task.setCommand("stop");
   }
 
-  private void createMinikubeDeleteTask() {
+  private void createMinikubeDeleteTask(CommandExecutorFactory commandExecutorFactory) {
     MinikubeTask task = project.getTasks().create("minikubeDelete", MinikubeTask.class);
+    task.setCommandExecutorFactory(commandExecutorFactory);
     task.setCommand("delete");
   }
 }
