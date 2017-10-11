@@ -33,14 +33,15 @@ public class MinikubePlugin implements Plugin<Project> {
 
     createMinikubeExtension(commandExecutorFactory);
 
-    configureMinikubeTaskAdditionCallback();
-    createMinikubeStartTask(commandExecutorFactory);
-    createMinikubeStopTask(commandExecutorFactory);
-    createMinikubeDeleteTask(commandExecutorFactory);
+    configureMinikubeTaskAdditionCallback(commandExecutorFactory);
+    createMinikubeStartTask();
+    createMinikubeStopTask();
+    createMinikubeDeleteTask();
   }
 
   // Configure tasks as they are added. This allows us to configure our own AND any user configured tasks.
-  private void configureMinikubeTaskAdditionCallback() {
+  private void configureMinikubeTaskAdditionCallback(
+      CommandExecutorFactory commandExecutorFactory) {
     project
         .getTasks()
         .withType(MinikubeTask.class)
@@ -48,6 +49,7 @@ public class MinikubePlugin implements Plugin<Project> {
             task -> {
               task.setMinikube(minikubeExtension.getMinikubeProvider());
               task.setGroup(MINIKUBE_GROUP);
+              task.setCommandExecutorFactory(commandExecutorFactory);
             });
   }
 
@@ -58,21 +60,18 @@ public class MinikubePlugin implements Plugin<Project> {
             .create("minikube", MinikubeExtension.class, project, commandExecutorFactory);
   }
 
-  private void createMinikubeStartTask(CommandExecutorFactory commandExecutorFactory) {
+  private void createMinikubeStartTask() {
     MinikubeTask task = project.getTasks().create("minikubeStart", MinikubeTask.class);
-    task.setCommandExecutorFactory(commandExecutorFactory);
     task.setCommand("start");
   }
 
-  private void createMinikubeStopTask(CommandExecutorFactory commandExecutorFactory) {
+  private void createMinikubeStopTask() {
     MinikubeTask task = project.getTasks().create("minikubeStop", MinikubeTask.class);
-    task.setCommandExecutorFactory(commandExecutorFactory);
     task.setCommand("stop");
   }
 
-  private void createMinikubeDeleteTask(CommandExecutorFactory commandExecutorFactory) {
+  private void createMinikubeDeleteTask() {
     MinikubeTask task = project.getTasks().create("minikubeDelete", MinikubeTask.class);
-    task.setCommandExecutorFactory(commandExecutorFactory);
     task.setCommand("delete");
   }
 }
