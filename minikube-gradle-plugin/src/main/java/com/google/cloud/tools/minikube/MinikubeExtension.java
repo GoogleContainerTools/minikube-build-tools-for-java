@@ -38,10 +38,6 @@ public class MinikubeExtension {
     this.commandExecutorFactory = commandExecutorFactory;
   }
 
-  public CommandExecutorFactory getCommandExecutorFactory() {
-    return commandExecutorFactory;
-  }
-
   public String getMinikube() {
     return minikube.get();
   }
