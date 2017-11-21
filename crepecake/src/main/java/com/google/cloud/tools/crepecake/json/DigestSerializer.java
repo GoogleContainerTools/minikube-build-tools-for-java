@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 
 /** Type adapter for serializing a {@link Digest} into JSON element. */
 class DigestSerializer implements JsonSerializer<Digest> {
+
   @Override
   public JsonElement serialize(Digest src, Type typeOfSrc, JsonSerializationContext context) {
     return new JsonPrimitive(src.toString());

@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 
 /** Type adapter for deserializing a JSON element into a {@link Digest}. */
 public class DigestDeserializer implements JsonDeserializer<Digest> {
+
   @Override
   public Digest deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {

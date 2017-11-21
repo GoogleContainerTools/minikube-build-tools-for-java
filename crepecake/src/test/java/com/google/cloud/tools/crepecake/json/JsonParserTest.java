@@ -26,6 +26,7 @@ import org.junit.Test;
 
 /** Tests for {@link JsonParser}. */
 public class JsonParserTest {
+  
   private static class TestJson {
     private int number;
     private String text;

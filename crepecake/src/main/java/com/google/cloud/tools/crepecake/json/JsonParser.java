@@ -22,6 +22,7 @@ import com.google.gson.GsonBuilder;
 
 /** Interface to a custom {@link Gson} JSON parser. */
 public class JsonParser {
+
   private static final Gson GSON;
 
   static {
