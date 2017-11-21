@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.util;
+package com.google.cloud.tools.crepecake.hash;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
