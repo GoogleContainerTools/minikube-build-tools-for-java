@@ -44,6 +44,11 @@ public class BlobStream {
     byteArrayOutputStream.write(contentBytes);
   }
 
+  /** Wraps around an existing {@link ByteArrayOutputStream}. */
+  public BlobStream(ByteArrayOutputStream byteArrayOutputStream) {
+    this.byteArrayOutputStream = byteArrayOutputStream;
+  }
+
   public void writeTo(OutputStream outputStream) throws IOException {
     byteArrayOutputStream.writeTo(outputStream);
   }
