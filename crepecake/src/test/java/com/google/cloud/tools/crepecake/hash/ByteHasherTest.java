@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ByteHasherTest {
-  
+
   private Map<String, String> knownSha256Hashes;
 
   @Before
