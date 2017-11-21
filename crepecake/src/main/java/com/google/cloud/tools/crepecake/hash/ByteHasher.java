@@ -21,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
 
 /** Static utility class for generating SHA-256 hashes in hexadecimal. */
 public class ByteHasher {
+
   private static final String SHA_256_ALGORITHM = "SHA-256";
 
   public static String hash(byte[] data) throws NoSuchAlgorithmException {
