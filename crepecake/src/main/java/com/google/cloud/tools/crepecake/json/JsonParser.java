@@ -16,15 +16,18 @@
 
 package com.google.cloud.tools.crepecake.json;
 
+import com.google.cloud.tools.crepecake.image.Digest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/** Interface to a custom {@link Gson} JSON parser. */
 public class JsonParser {
   private static final Gson GSON;
 
   static {
     GsonBuilder gsonBuilder = new GsonBuilder();
-    // TODO: Add serializer for digests.
+    gsonBuilder.registerTypeAdapter(Digest.class, new DigestSerializer());
+    gsonBuilder.registerTypeAdapter(Digest.class, new DigestDeserializer());
     GSON = gsonBuilder.create();
   }
 
