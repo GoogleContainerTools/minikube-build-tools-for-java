@@ -24,6 +24,7 @@ public class JsonParser {
 
   static {
     GsonBuilder gsonBuilder = new GsonBuilder();
+    // TODO: Add serializer for digests.
     GSON = gsonBuilder.create();
   }
 
