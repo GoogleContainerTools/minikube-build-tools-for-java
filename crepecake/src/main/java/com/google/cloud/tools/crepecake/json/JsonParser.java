@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.util;
+package com.google.cloud.tools.crepecake.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
