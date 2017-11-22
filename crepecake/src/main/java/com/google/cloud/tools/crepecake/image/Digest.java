@@ -16,6 +16,10 @@
 
 package com.google.cloud.tools.crepecake.image;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.cloud.tools.crepecake.json.DigestDeserializer;
+import com.google.cloud.tools.crepecake.json.DigestSerializer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +29,8 @@ import java.util.regex.Pattern;
  * @see <a
  *     href="https://docs.docker.com/registry/spec/api/#content-digests">https://docs.docker.com/registry/spec/api/#content-digests</a>
  */
+@JsonSerialize(using = DigestSerializer.class)
+@JsonDeserialize(using = DigestDeserializer.class)
 public class Digest {
 
   /** Pattern matches a SHA-256 hash - 32 bytes in lowercase hexadecimal. */

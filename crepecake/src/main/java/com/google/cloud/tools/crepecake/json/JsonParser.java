@@ -16,27 +16,21 @@
 
 package com.google.cloud.tools.crepecake.json;
 
-import com.google.cloud.tools.crepecake.image.Digest;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.OutputStream;
 
-/** Interface to a custom {@link Gson} JSON parser. */
+// TODO: Add JsonFactory for HTTP response parsing.
+/** Interface to a JSON parser. */
 public class JsonParser {
 
-  private static final Gson GSON;
+  private static final ObjectMapper objectMapper;
 
   static {
-    GsonBuilder gsonBuilder = new GsonBuilder();
-    gsonBuilder.registerTypeAdapter(Digest.class, new DigestSerializer());
-    gsonBuilder.registerTypeAdapter(Digest.class, new DigestDeserializer());
-    GSON = gsonBuilder.create();
+    objectMapper = new ObjectMapper();
   }
 
-  public static String toJson(Object src) {
-    return GSON.toJson(src);
-  }
-
-  public static <T> T fromJson(String json, Class<T> classOfT) {
-    return GSON.fromJson(json, classOfT);
+  public static void writeJson(OutputStream outputStream, Object src) throws IOException {
+    objectMapper.writeValue(outputStream, src);
   }
 }

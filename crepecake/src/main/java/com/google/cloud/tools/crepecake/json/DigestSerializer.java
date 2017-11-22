@@ -16,15 +16,18 @@
 
 package com.google.cloud.tools.crepecake.json;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.google.cloud.tools.crepecake.image.Digest;
-import com.google.gson.*;
-import java.lang.reflect.Type;
+import java.io.IOException;
 
 /** Type adapter for serializing a {@link Digest} into JSON element. */
-class DigestSerializer implements JsonSerializer<Digest> {
+public class DigestSerializer extends JsonSerializer<Digest> {
 
   @Override
-  public JsonElement serialize(Digest src, Type typeOfSrc, JsonSerializationContext context) {
-    return new JsonPrimitive(src.toString());
+  public void serialize(Digest value, JsonGenerator gen, SerializerProvider serializers)
+      throws IOException {
+    gen.writeString(value.toString());
   }
 }

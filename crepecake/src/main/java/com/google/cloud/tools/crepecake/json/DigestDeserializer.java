@@ -16,24 +16,22 @@
 
 package com.google.cloud.tools.crepecake.json;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.google.cloud.tools.crepecake.image.Digest;
 import com.google.cloud.tools.crepecake.image.DigestException;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import java.lang.reflect.Type;
+import java.io.IOException;
 
 /** Type adapter for deserializing a JSON element into a {@link Digest}. */
-public class DigestDeserializer implements JsonDeserializer<Digest> {
+public class DigestDeserializer extends JsonDeserializer<Digest> {
 
   @Override
-  public Digest deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-      throws JsonParseException {
+  public Digest deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
     try {
-      return Digest.fromDigest(json.getAsJsonPrimitive().getAsString());
+      return Digest.fromDigest(jsonParser.getValueAsString());
     } catch (DigestException ex) {
-      throw new JsonParseException(ex);
+      throw new IOException(ex);
     }
   }
 }
