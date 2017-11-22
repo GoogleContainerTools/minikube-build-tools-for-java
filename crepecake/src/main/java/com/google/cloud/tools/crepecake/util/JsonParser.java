@@ -14,11 +14,25 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.image;
+package com.google.cloud.tools.crepecake.util;
 
-public class DigestException extends Exception {
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-  public DigestException(String message) {
-    super(message);
+public class JsonParser {
+  private static final Gson GSON;
+
+  static {
+    GsonBuilder gsonBuilder = new GsonBuilder();
+    // TODO: Add serializer for digests.
+    GSON = gsonBuilder.create();
+  }
+
+  public static String toJson(Object src) {
+    return GSON.toJson(src);
+  }
+
+  public static <T> T fromJson(String json, Class<T> classOfT) {
+    return GSON.fromJson(json, classOfT);
   }
 }
