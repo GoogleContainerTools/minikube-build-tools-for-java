@@ -18,6 +18,7 @@ package com.google.cloud.tools.crepecake.json.templates;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.google.cloud.tools.crepecake.image.Digest;
+import com.google.cloud.tools.crepecake.json.Deserializable;
 import com.google.common.annotations.VisibleForTesting;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ import java.util.List;
  *     Schema 2</a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class ContainerConfigurationTemplate implements Serializable {
+public class ContainerConfigurationTemplate implements Serializable, Deserializable {
 
   /** The CPU architecture to run the binaries in this container. */
   private String architecture = "amd64";

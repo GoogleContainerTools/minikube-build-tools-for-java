@@ -52,7 +52,7 @@ public class JsonParser {
    * @return the template filled with the values parsed from {@param jsonFile}
    * @throws IOException if an error occurred during reading the file or parsing the JSON
    */
-  public static <T extends Serializable> T readJsonFromFile(File jsonFile, Class<T> templateClass)
+  public static <T extends Deserializable> T readJsonFromFile(File jsonFile, Class<T> templateClass)
       throws IOException {
     return objectMapper.readValue(jsonFile, templateClass);
   }
