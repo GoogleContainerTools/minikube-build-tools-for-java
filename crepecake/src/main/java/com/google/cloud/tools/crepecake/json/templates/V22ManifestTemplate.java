@@ -57,6 +57,7 @@ import java.util.List;
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class V22ManifestTemplate implements Serializable {
+
   public static final String MEDIA_TYPE = "application/vnd.docker.distribution.manifest.v2+json";
 
   private final int schemaVersion = 2;
@@ -72,6 +73,7 @@ public class V22ManifestTemplate implements Serializable {
   /** Template for inner JSON object representing the container configuration reference. */
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   private static class ContainerConfigurationObjectTemplate {
+
     private final String mediaType = "application/vnd.docker.container.image.v1+json";
 
     private Digest digest;
@@ -83,6 +85,7 @@ public class V22ManifestTemplate implements Serializable {
    */
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   private static class LayerObjectTemplate {
+
     private final String mediaType = "application/vnd.docker.image.rootfs.diff.tar.gzip";
 
     private Digest digest;

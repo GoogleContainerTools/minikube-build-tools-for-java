@@ -29,6 +29,7 @@ import org.gradle.internal.impldep.com.google.common.io.CharStreams;
 import org.junit.Assert;
 import org.junit.Test;
 
+/** Tests for {@link V22ManifestTemplate}. */
 public class V22ManifestTemplateTest {
 
   @Test
