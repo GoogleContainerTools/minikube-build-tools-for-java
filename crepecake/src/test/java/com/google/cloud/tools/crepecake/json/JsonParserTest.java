@@ -34,7 +34,7 @@ public class JsonParserTest {
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  private static class TestJson {
+  private static class TestJson implements Serializable {
     private int number;
     private String text;
     private Digest digest;

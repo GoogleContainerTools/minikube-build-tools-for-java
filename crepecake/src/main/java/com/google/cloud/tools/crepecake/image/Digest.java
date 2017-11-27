@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.cloud.tools.crepecake.json.DigestDeserializer;
 import com.google.cloud.tools.crepecake.json.DigestSerializer;
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +32,7 @@ import java.util.regex.Pattern;
  */
 @JsonSerialize(using = DigestSerializer.class)
 @JsonDeserialize(using = DigestDeserializer.class)
-public class Digest {
+public class Digest implements Serializable {
 
   /** Pattern matches a SHA-256 hash - 32 bytes in lowercase hexadecimal. */
   private static final String HASH_PATTERN = "[a-f0-9]{64}";

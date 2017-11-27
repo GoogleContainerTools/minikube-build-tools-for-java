@@ -16,6 +16,7 @@ repositories {
 dependencies {
     compile gradleApi()
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.2'
+    compile 'com.google.guava:guava:23.4-jre'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.12.0'
 }
