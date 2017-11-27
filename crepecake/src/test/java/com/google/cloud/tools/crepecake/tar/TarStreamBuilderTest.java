@@ -23,12 +23,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.util.function.Function;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,7 +38,48 @@ import org.junit.Test;
 public class TarStreamBuilderTest {
 
   @Test
-  public void testAddFile() throws IOException, CompressorException, URISyntaxException {
+  public void testBuild_compressed() throws IOException, URISyntaxException, CompressorException {
+    testBuild(
+        tarStreamBuilder -> {
+          try {
+            return tarStreamBuilder.toBlobStreamCompressed();
+          } catch (IOException ex) {
+            throw new RuntimeException(ex);
+          }
+        },
+        inputStream -> {
+          try {
+            return new CompressorStreamFactory().createCompressorInputStream(inputStream);
+          } catch (CompressorException ex) {
+            throw new RuntimeException(ex);
+          }
+        });
+  }
+
+  @Test
+  public void testBuild_uncompressed() throws IOException, URISyntaxException {
+    testBuild(
+        tarStreamBuilder -> {
+          try {
+            return tarStreamBuilder.toBlobStreamUncompressed();
+          } catch (IOException ex) {
+            throw new RuntimeException(ex);
+          }
+        },
+        Function.identity());
+  }
+
+  /**
+   * Helper function to perform the archive build testing.
+   *
+   * @param buildFunction {@link TarStreamBuilder} function to test
+   * @param wrapInputStreamFunction function to wrap an {@link InputStream} in another {@link
+   *     InputStream}. This wrap can be a decompressor.
+   */
+  private void testBuild(
+      Function<TarStreamBuilder, BlobStream> buildFunction,
+      Function<InputStream, InputStream> wrapInputStreamFunction)
+      throws URISyntaxException, IOException {
     File fileA = new File(getClass().getClassLoader().getResource("fileA").toURI());
     File fileB = new File(getClass().getClassLoader().getResource("fileB").toURI());
 
@@ -50,16 +92,15 @@ public class TarStreamBuilderTest {
     tarStreamBuilder.addFile(fileA, "some/path/to/fileA");
     tarStreamBuilder.addFile(fileB, "crepecake");
 
-    BlobStream blobStream = tarStreamBuilder.toBlobStream();
+    BlobStream blobStreamCompressed = buildFunction.apply(tarStreamBuilder);
 
-    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    blobStream.writeTo(byteArrayOutputStream);
+    ByteArrayOutputStream compressedTarByteStream = new ByteArrayOutputStream();
+    blobStreamCompressed.writeTo(compressedTarByteStream);
 
     ByteArrayInputStream byteArrayInputStream =
-        new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-    CompressorInputStream compressorInputStream =
-        new CompressorStreamFactory().createCompressorInputStream(byteArrayInputStream);
-    TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(compressorInputStream);
+        new ByteArrayInputStream(compressedTarByteStream.toByteArray());
+    InputStream wrappedInputStream = wrapInputStreamFunction.apply(byteArrayInputStream);
+    TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(wrappedInputStream);
 
     TarArchiveEntry headerA = tarArchiveInputStream.getNextTarEntry();
     Assert.assertEquals("some/path/to/fileA", headerA.getName());

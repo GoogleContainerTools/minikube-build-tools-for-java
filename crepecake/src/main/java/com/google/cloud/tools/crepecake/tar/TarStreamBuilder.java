@@ -21,10 +21,10 @@ import com.google.common.io.ByteStreams;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 
 /** Builds a tarball archive. */
@@ -57,13 +57,37 @@ public class TarStreamBuilder {
   }
 
   /** Writes the compressed archive to a {@link BlobStream}. */
-  public BlobStream toBlobStream() throws CompressorException, IOException {
-    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    CompressorOutputStream compressorOutputStream =
-        new CompressorStreamFactory()
-            .createCompressorOutputStream(CompressorStreamFactory.GZIP, byteArrayOutputStream);
-    TarArchiveOutputStream tarArchiveOutputStream =
-        new TarArchiveOutputStream(compressorOutputStream);
+  public BlobStream toBlobStreamCompressed() throws IOException {
+    return toBlobStream(this::applyCompressor);
+  }
+
+  /** Writes the uncompressed archive to a {@link BlobStream}. */
+  public BlobStream toBlobStreamUncompressed() throws IOException {
+    return toBlobStream(Function.identity());
+  }
+
+  /**
+   * Helper function to build the archive.
+   *
+   * @param wrapOutputStreamFunction A function that possibly wraps an {@link OutputStream} in
+   *     another {@link OutputStream}. This wrap can be a compressor.
+   * @return a {@link BlobStream} containing the built archive BLOB.
+   */
+  private BlobStream toBlobStream(Function<OutputStream, OutputStream> wrapOutputStreamFunction)
+      throws IOException {
+    // Creates an underlying byte stream.
+    ByteArrayOutputStream tarByteStream = new ByteArrayOutputStream();
+
+    // Wraps the underlying byte stream with the provided function.
+    OutputStream wrappedOutputStream;
+    try {
+      wrappedOutputStream = wrapOutputStreamFunction.apply(tarByteStream);
+    } catch (RuntimeException ex) {
+      throw new IOException(ex);
+    }
+
+    // Writes each entry in the filesystem to the tarball archive stream.
+    TarArchiveOutputStream tarArchiveOutputStream = new TarArchiveOutputStream(wrappedOutputStream);
 
     for (Entry entry : entries) {
       tarArchiveOutputStream.putArchiveEntry(entry.header);
@@ -73,6 +97,15 @@ public class TarStreamBuilder {
 
     tarArchiveOutputStream.close();
 
-    return new BlobStream(byteArrayOutputStream);
+    return new BlobStream(tarByteStream);
+  }
+
+  private OutputStream applyCompressor(OutputStream outputStream) {
+    try {
+      return new CompressorStreamFactory()
+          .createCompressorOutputStream(CompressorStreamFactory.GZIP, outputStream);
+    } catch (CompressorException ex) {
+      throw new RuntimeException(ex);
+    }
   }
 }
