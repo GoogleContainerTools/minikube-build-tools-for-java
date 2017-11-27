@@ -52,4 +52,8 @@ public class BlobStream {
   public void writeTo(OutputStream outputStream) throws IOException {
     byteArrayOutputStream.writeTo(outputStream);
   }
+
+  public byte[] toByteArray() {
+    return byteArrayOutputStream.toByteArray();
+  }
 }
