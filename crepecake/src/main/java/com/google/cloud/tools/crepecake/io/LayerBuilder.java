@@ -22,18 +22,24 @@ import com.google.cloud.tools.crepecake.image.Digest;
 import com.google.cloud.tools.crepecake.image.DigestException;
 import com.google.cloud.tools.crepecake.image.Layer;
 import com.google.cloud.tools.crepecake.tar.TarStreamBuilder;
+import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 import org.apache.commons.compress.compressors.CompressorException;
 
 /** Builds a {@link Layer} from files. */
 public class LayerBuilder {
 
   /** The partial filesystem changeset to build the layer with. */
-  private final Map<File, String> filesystemMap = new HashMap<>();
+  private final List<LayerFileEntry> filesystemEntries = new ArrayList<>();
+
+  private Supplier<TarStreamBuilder> tarStreamBuilderSupplier = TarStreamBuilder::new;
+
+  public LayerBuilder() {}
 
   /**
    * Prepares a file to be built into the layer.
@@ -42,32 +48,41 @@ public class LayerBuilder {
    * @param path the path of the file in the partial filesystem changeset
    */
   public void addFile(File file, String path) {
-    filesystemMap.put(file, path);
+    filesystemEntries.add(new LayerFileEntry(file, path));
   }
 
   /** Builds and returns the layer. */
   public Layer build()
       throws IOException, CompressorException, NoSuchAlgorithmException, DigestException {
-    TarStreamBuilder tarStreamBuilder = new TarStreamBuilder();
+    TarStreamBuilder tarStreamBuilder = tarStreamBuilderSupplier.get();
 
     // Adds all the files to a tar.gzip stream.
-    for (Map.Entry<File, String> entry : filesystemMap.entrySet()) {
-      final File file = entry.getKey();
-      final String path = entry.getValue();
+    for (LayerFileEntry entry : filesystemEntries) {
+      final File file = entry.getFile();
+      final String path = entry.getArchivePath();
 
       tarStreamBuilder.addFile(file, path);
     }
 
     BlobStream layerBlob = tarStreamBuilder.toBlobStreamCompressed();
-    byte[] blobBytes = layerBlob.toByteArray();
+    byte[] layerBlobBytes = layerBlob.toByteArray();
 
-    // Hash the layer blob to obtain the layer's digest.
-    String hash = ByteHasher.hash(blobBytes);
-    Digest layerDigest = Digest.fromHash(hash);
+    // Hashes the layer blob to obtain the layer's digest.
+    Digest layerDigest = Digest.fromHash(ByteHasher.hash(layerBlobBytes));
 
-    int layerSize = blobBytes.length;
+    // Hashes the uncompressed layer blob to obtain the layer's diff ID.
+    BlobStream layerDiffBlob = tarStreamBuilder.toBlobStreamUncompressed();
+    byte[] layerDiffBlobBytes = layerDiffBlob.toByteArray();
+    Digest layerDiffId = Digest.fromHash(ByteHasher.hash(layerDiffBlobBytes));
 
-    //    Layer layer = new Layer(layerDigest, layerSize, layerDiffId, layerBlob);
-    return null;
+    // The layer size is the size of the compressed blob.
+    int layerSize = layerBlobBytes.length;
+
+    return new Layer(layerDigest, layerSize, layerDiffId, layerBlob);
+  }
+
+  @VisibleForTesting
+  LayerBuilder(Supplier<TarStreamBuilder> tarStreamBuilderSupplier) {
+    this.tarStreamBuilderSupplier = tarStreamBuilderSupplier;
   }
 }

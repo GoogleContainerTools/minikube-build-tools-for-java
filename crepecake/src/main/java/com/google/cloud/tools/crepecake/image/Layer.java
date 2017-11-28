@@ -56,4 +56,8 @@ public class Layer {
   public BlobStream getContent() {
     return content;
   }
+
+  public Digest getDiffId() {
+    return diffId;
+  }
 }

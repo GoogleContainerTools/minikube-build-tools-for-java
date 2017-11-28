@@ -33,11 +33,17 @@ public class TarStreamBuilder {
   /** An entry in the archive. */
   private static class Entry {
     private final TarArchiveEntry header;
-    private final InputStream content;
+    private final ByteArrayOutputStream content = new ByteArrayOutputStream();
 
-    private Entry(TarArchiveEntry header, InputStream content) {
+    private Entry(TarArchiveEntry header, InputStream content) throws IOException {
+      this(header);
+
+      // Stores the content for multiple re-reads.
+      ByteStreams.copy(content, this.content);
+    }
+
+    private Entry(TarArchiveEntry header) {
       this.header = header;
-      this.content = content;
     }
   }
 
@@ -51,9 +57,12 @@ public class TarStreamBuilder {
    */
   public void addFile(File file, String path) throws IOException {
     TarArchiveEntry header = new TarArchiveEntry(file, path);
-    InputStream content = new BufferedInputStream(new FileInputStream(file));
-
-    entries.add(new Entry(header, content));
+    if (file.isDirectory()) {
+      entries.add(new Entry(header));
+    } else {
+      InputStream content = new BufferedInputStream(new FileInputStream(file));
+      entries.add(new Entry(header, content));
+    }
   }
 
   /** Writes the compressed archive to a {@link BlobStream}. */
@@ -91,7 +100,7 @@ public class TarStreamBuilder {
 
     for (Entry entry : entries) {
       tarArchiveOutputStream.putArchiveEntry(entry.header);
-      ByteStreams.copy(entry.content, tarArchiveOutputStream);
+      entry.content.writeTo(tarArchiveOutputStream);
       tarArchiveOutputStream.closeArchiveEntry();
     }
 
