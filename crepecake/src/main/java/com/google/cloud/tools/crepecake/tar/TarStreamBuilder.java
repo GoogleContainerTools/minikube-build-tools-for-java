@@ -18,7 +18,6 @@ package com.google.cloud.tools.crepecake.tar;
 
 import com.google.cloud.tools.crepecake.blob.BlobStream;
 import com.google.common.io.ByteStreams;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
