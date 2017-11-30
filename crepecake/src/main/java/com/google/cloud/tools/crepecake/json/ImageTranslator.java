@@ -91,6 +91,7 @@ public class ImageTranslator {
     // Set up the JSON template.
     V22ManifestTemplate template = new V22ManifestTemplate();
 
+    // Adds the container configuration reference.
     Digest containerConfigurationDigest = containerConfigurationBlobStream.getDigest();
     int containerConfigurationSize = containerConfigurationBlobStream.getSize();
     template.setContainerConfiguration(containerConfigurationDigest, containerConfigurationSize);
