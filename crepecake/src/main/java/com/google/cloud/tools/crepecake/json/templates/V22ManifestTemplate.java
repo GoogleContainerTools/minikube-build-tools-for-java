@@ -16,11 +16,9 @@
 
 package com.google.cloud.tools.crepecake.json.templates;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.google.cloud.tools.crepecake.image.Digest;
-import com.google.cloud.tools.crepecake.json.Deserializable;
+import com.google.cloud.tools.crepecake.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,8 +54,7 @@ import java.util.List;
  * @see <a href="https://docs.docker.com/registry/spec/manifest-v2-2/">Image Manifest Version 2,
  *     Schema 2</a>
  */
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class V22ManifestTemplate implements Serializable, Deserializable {
+public class V22ManifestTemplate extends JsonTemplate {
 
   public static final String MEDIA_TYPE = "application/vnd.docker.distribution.manifest.v2+json";
 
@@ -72,8 +69,7 @@ public class V22ManifestTemplate implements Serializable, Deserializable {
   private final List<LayerObjectTemplate> layers = new ArrayList<>();
 
   /** Template for inner JSON object representing the container configuration reference. */
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  private static class ContainerConfigurationObjectTemplate {
+  private static class ContainerConfigurationObjectTemplate extends JsonTemplate {
 
     private final String mediaType = "application/vnd.docker.container.image.v1+json";
 
@@ -84,8 +80,7 @@ public class V22ManifestTemplate implements Serializable, Deserializable {
   /**
    * Template for inner JSON object representing a layer as part of the list of layer references.
    */
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  private static class LayerObjectTemplate {
+  private static class LayerObjectTemplate extends JsonTemplate {
 
     private final String mediaType = "application/vnd.docker.image.rootfs.diff.tar.gzip";
 

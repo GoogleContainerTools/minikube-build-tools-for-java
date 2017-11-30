@@ -16,11 +16,9 @@
 
 package com.google.cloud.tools.crepecake.json.templates;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.google.cloud.tools.crepecake.image.Digest;
-import com.google.cloud.tools.crepecake.json.Deserializable;
+import com.google.cloud.tools.crepecake.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,8 +48,7 @@ import java.util.List;
  * @see <a href="https://docs.docker.com/registry/spec/manifest-v2-2/">Image Manifest Version 2,
  *     Schema 2</a>
  */
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class ContainerConfigurationTemplate implements Serializable, Deserializable {
+public class ContainerConfigurationTemplate extends JsonTemplate {
 
   /** The CPU architecture to run the binaries in this container. */
   private String architecture = "amd64";
@@ -66,8 +63,7 @@ public class ContainerConfigurationTemplate implements Serializable, Deserializa
   private final RootFilesystemObjectTemplate rootfs = new RootFilesystemObjectTemplate();
 
   /** Template for inner JSON object representing the configuration for running the container. */
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  private static class ConfigurationObjectTemplate implements Serializable {
+  private static class ConfigurationObjectTemplate extends JsonTemplate {
 
     /** Environment variables in the format {@code VARNAME=VARVALUE}. */
     private List<String> Env;
@@ -80,8 +76,7 @@ public class ContainerConfigurationTemplate implements Serializable, Deserializa
    * Template for inner JSON object representing the filesystem changesets used to build the
    * container filesystem.
    */
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  private static class RootFilesystemObjectTemplate implements Serializable {
+  private static class RootFilesystemObjectTemplate extends JsonTemplate {
 
     /** The type must always be {@code "layers"}. */
     private final String type = "layers";

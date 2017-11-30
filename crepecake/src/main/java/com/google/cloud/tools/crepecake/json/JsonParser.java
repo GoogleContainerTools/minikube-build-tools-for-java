@@ -20,28 +20,34 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Serializable;
 
 // TODO: Add JsonFactory for HTTP response parsing.
-/** Interface to a JSON parser. */
+/**
+ * Interface to a JSON parser.
+ *
+ * <p>The interface uses Jackson as the JSON parser. Some useful annotations to include on classes
+ * used as templates for JSON are:
+ *
+ * <p>{@code @JsonInclude(JsonInclude.Include.NON_NULL)}
+ *
+ * <ul>
+ *   <li> Does not serialize fields that are {@code null}.
+ * </ul>
+ *
+ * {@code @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)}
+ *
+ * <ul>
+ *   <li> Fields that are private are also accessible for serialization/deserialization.
+ * </ul>
+ *
+ * @see <a href="https://github.com/FasterXML/jackson">https://github.com/FasterXML/jackson</a>
+ */
 public class JsonParser {
 
   private static final ObjectMapper objectMapper;
 
   static {
     objectMapper = new ObjectMapper();
-  }
-
-  /**
-   * Writes a JSON object to an {@link OutputStream}.
-   *
-   * @param outputStream the {@link OutputStream} to write to
-   * @param jsonObject the
-   * @throws IOException
-   */
-  public static void writeJson(OutputStream outputStream, Serializable jsonObject)
-      throws IOException {
-    objectMapper.writeValue(outputStream, jsonObject);
   }
 
   /**
@@ -52,8 +58,18 @@ public class JsonParser {
    * @return the template filled with the values parsed from {@param jsonFile}
    * @throws IOException if an error occurred during reading the file or parsing the JSON
    */
-  public static <T extends Deserializable> T readJsonFromFile(File jsonFile, Class<T> templateClass)
+  public static <T extends JsonTemplate> T readJsonFromFile(File jsonFile, Class<T> templateClass)
       throws IOException {
     return objectMapper.readValue(jsonFile, templateClass);
+  }
+
+  /**
+   * Serializes a JSON object into a JSON string.
+   *
+   * @param outputStream the {@link OutputStream} to write to
+   * @param source the JSON object to serialize
+   */
+  public static void writeJson(OutputStream outputStream, JsonTemplate source) throws IOException {
+    objectMapper.writeValue(outputStream, source);
   }
 }

@@ -23,11 +23,12 @@ import com.google.cloud.tools.crepecake.image.Digest;
 import com.google.cloud.tools.crepecake.image.DigestException;
 import java.io.IOException;
 
-/** Type adapter for deserializing a JSON element into a {@link Digest}. */
+/** Deserializes a JSON element into a {@link Digest} object. */
 public class DigestDeserializer extends JsonDeserializer<Digest> {
 
   @Override
-  public Digest deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
+  public Digest deserialize(JsonParser jsonParser, DeserializationContext ignored)
+      throws IOException {
     try {
       return Digest.fromDigest(jsonParser.getValueAsString());
     } catch (DigestException ex) {

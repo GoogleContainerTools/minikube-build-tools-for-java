@@ -1,8 +1,7 @@
 package com.google.cloud.tools.crepecake.json.templates;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.google.cloud.tools.crepecake.image.Digest;
-import com.google.cloud.tools.crepecake.json.Deserializable;
+import com.google.cloud.tools.crepecake.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +36,7 @@ import java.util.List;
  *     Schema 1</a>
  * }</pre>
  */
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class V21ManifestTemplate implements Deserializable {
+public class V21ManifestTemplate extends JsonTemplate {
 
   /** The list of layer references. */
   private final List<LayerObjectTemplate> fsLayers = new ArrayList<>();
@@ -48,15 +46,13 @@ public class V21ManifestTemplate implements Deserializable {
   /**
    * Template for inner JSON object representing a layer as part of the list of layer references.
    */
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  private static class LayerObjectTemplate {
+  private static class LayerObjectTemplate extends JsonTemplate {
 
     private Digest blobSum;
   }
 
   /** Template for inner JSON object representing the V1-compatible format for a layer. */
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  private static class V1CompatibilityTemplate {
+  private static class V1CompatibilityTemplate extends JsonTemplate {
 
     // TODO: Change to its own JSON template that can extract the layer diff ID.
     private String v1Compatibility;
