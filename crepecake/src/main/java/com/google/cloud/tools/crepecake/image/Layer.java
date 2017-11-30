@@ -19,7 +19,39 @@ package com.google.cloud.tools.crepecake.image;
 import com.google.cloud.tools.crepecake.blob.BlobStream;
 import javax.annotation.Nullable;
 
-/** Represents a layer in an image. */
+/**
+ * Represents a layer in an image.
+ *
+ * <p>A layer consists of:
+ *
+ * <ul>
+ *   <li>Content BLOB
+ *   <li>
+ *       <ul>
+ *         <li>The compressed archive (tarball gzip) of the partial filesystem changeset.
+ *       </ul>
+ *
+ *   <li>Content Digest
+ *   <li>
+ *       <ul>
+ *         <li>The SHA-256 hash of the content BLOB.
+ *       </ul>
+ *
+ *   <li>Content Size
+ *   <li>
+ *       <ul>
+ *         <li>The size (in bytes) of the content BLOB.
+ *       </ul>
+ *
+ *   <li>Diff ID
+ *   <li>
+ *       <ul>
+ *         <li>The SHA-256 hash of the uncompressed archive (tarball) of the partial filesystem
+ *             changeset.
+ *       </ul>
+ *
+ * </ul>
+ */
 public class Layer {
 
   @Nullable private final BlobStream content;
@@ -30,10 +62,18 @@ public class Layer {
   /** The digest of the uncompressed layer content. */
   private final Digest diffId;
 
+  /**
+   * Instantiate a layer without the content BLOB. This is to work with layer references that don't
+   * require the actual layer itself.
+   */
   public Layer(Digest digest, int size, Digest diffId) {
     this(digest, size, diffId, null);
   }
 
+  /**
+   * Instantiate a layer with the content BLOB. This is for representing a full layer where use of
+   * its content BLOB is expected.
+   */
   public Layer(Digest digest, int size, Digest diffId, BlobStream content) {
     this.digest = digest;
     this.size = size;
