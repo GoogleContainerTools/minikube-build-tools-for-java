@@ -72,12 +72,12 @@ public class TarStreamBuilderTest {
   /**
    * Helper function to perform the archive build testing.
    *
-   * @param buildFunction {@link TarStreamBuilder} function to test
+   * @param methodToTest {@link TarStreamBuilder} method to test
    * @param wrapInputStreamFunction function to wrap an {@link InputStream} in another {@link
    *     InputStream}. This wrap can be a decompressor.
    */
   private void testBuild(
-      Function<TarStreamBuilder, BlobStream> buildFunction,
+      Function<TarStreamBuilder, BlobStream> methodToTest,
       Function<InputStream, InputStream> wrapInputStreamFunction)
       throws URISyntaxException, IOException {
     File fileA = new File(getClass().getClassLoader().getResource("fileA").toURI());
@@ -92,7 +92,7 @@ public class TarStreamBuilderTest {
     tarStreamBuilder.addFile(fileA, "some/path/to/fileA");
     tarStreamBuilder.addFile(fileB, "crepecake");
 
-    BlobStream blobStreamCompressed = buildFunction.apply(tarStreamBuilder);
+    BlobStream blobStreamCompressed = methodToTest.apply(tarStreamBuilder);
 
     ByteArrayOutputStream compressedTarByteStream = new ByteArrayOutputStream();
     blobStreamCompressed.writeTo(compressedTarByteStream);
