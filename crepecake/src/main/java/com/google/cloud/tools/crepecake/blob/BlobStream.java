@@ -16,11 +16,15 @@
 
 package com.google.cloud.tools.crepecake.blob;
 
+import com.google.cloud.tools.crepecake.hash.ByteHasher;
+import com.google.cloud.tools.crepecake.image.Digest;
+import com.google.cloud.tools.crepecake.image.DigestException;
 import com.google.common.io.ByteStreams;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
 
 /** A read-only {@link OutputStream} for BLOBs. */
 public class BlobStream {
@@ -44,7 +48,21 @@ public class BlobStream {
     byteArrayOutputStream.write(contentBytes);
   }
 
+  /** Wraps around an existing {@link ByteArrayOutputStream}. */
+  public BlobStream(ByteArrayOutputStream byteArrayOutputStream) {
+    this.byteArrayOutputStream = byteArrayOutputStream;
+  }
+
   public void writeTo(OutputStream outputStream) throws IOException {
     byteArrayOutputStream.writeTo(outputStream);
+  }
+
+  /** Generates the {@link Digest} from the BLOB content. */
+  public Digest getDigest() throws DigestException, NoSuchAlgorithmException {
+    return Digest.fromHash(ByteHasher.hash(byteArrayOutputStream.toByteArray()));
+  }
+
+  public int getSize() {
+    return byteArrayOutputStream.size();
   }
 }

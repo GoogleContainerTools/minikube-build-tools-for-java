@@ -17,6 +17,9 @@
 package com.google.cloud.tools.crepecake.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.cloud.tools.crepecake.blob.BlobStream;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -71,5 +74,11 @@ public class JsonParser {
    */
   public static void writeJson(OutputStream outputStream, JsonTemplate source) throws IOException {
     objectMapper.writeValue(outputStream, source);
+  }
+
+  public static BlobStream toBlobStream(JsonTemplate template) throws IOException {
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    writeJson(byteArrayOutputStream, template);
+    return new BlobStream(byteArrayOutputStream);
   }
 }

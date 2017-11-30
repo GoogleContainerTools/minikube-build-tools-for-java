@@ -82,4 +82,9 @@ public class JsonParserTest {
 
     Assert.assertEquals(expectedJson, jsonStream.toString());
   }
+
+  @Test
+  public void testToBlobStream() {
+    Assert.fail("implement");
+  }
 }
