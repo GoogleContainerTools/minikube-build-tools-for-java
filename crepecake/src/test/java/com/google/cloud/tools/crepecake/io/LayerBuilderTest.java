@@ -56,6 +56,7 @@ public class LayerBuilderTest {
     Mockito.when(tarStreamBuilderMock.toBlobStreamCompressed()).thenReturn(expectedBlobStream);
     Mockito.when(tarStreamBuilderMock.toBlobStreamUncompressed()).thenReturn(expectedBlobStream);
 
+    // Fake files to build into the layer.
     List<LayerFileEntry> fileEntries =
         Arrays.asList(
             new LayerFileEntry(new File("fileA"), "/path/to/fileA"),
@@ -72,6 +73,7 @@ public class LayerBuilderTest {
 
     Layer layer = layerBuilder.build();
 
+    // Verifies that all the files have been added to the tarball stream.
     for (LayerFileEntry fileEntry : fileEntries) {
       File file = fileEntry.getFile();
       String archivePath = fileEntry.getArchivePath();
