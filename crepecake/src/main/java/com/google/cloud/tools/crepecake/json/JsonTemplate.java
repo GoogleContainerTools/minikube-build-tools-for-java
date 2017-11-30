@@ -16,18 +16,14 @@
 
 package com.google.cloud.tools.crepecake.json;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.google.cloud.tools.crepecake.image.Digest;
-import java.io.IOException;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-/** Serializes a {@link Digest} into JSON element. */
-public class DigestSerializer extends JsonSerializer<Digest> {
-
-  @Override
-  public void serialize(Digest value, JsonGenerator jsonGenerator, SerializerProvider ignored)
-      throws IOException {
-    jsonGenerator.writeString(value.toString());
-  }
-}
+/**
+ * All JSON templates to be used with {@link JsonParser} must extends this class.
+ *
+ * <p>Json fields should be private fields and fields that are {@code null} will not be serialized.
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+public abstract class JsonTemplate {}

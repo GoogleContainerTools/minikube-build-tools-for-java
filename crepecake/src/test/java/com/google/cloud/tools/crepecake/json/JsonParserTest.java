@@ -16,8 +16,6 @@
 
 package com.google.cloud.tools.crepecake.json;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.cloud.tools.crepecake.image.Digest;
 import com.google.cloud.tools.crepecake.image.DigestException;
 import java.io.*;
@@ -32,18 +30,14 @@ import org.junit.Test;
 /** Tests for {@link JsonParser}. */
 public class JsonParserTest {
 
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  private static class TestJson {
+  private static class TestJson extends JsonTemplate {
     private int number;
     private String text;
     private Digest digest;
     private InnerObject innerObject;
     private List<InnerObject> list;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-    private static class InnerObject {
+    private static class InnerObject extends JsonTemplate {
       private int number;
       private List<String> texts;
       private List<Digest> digests;
