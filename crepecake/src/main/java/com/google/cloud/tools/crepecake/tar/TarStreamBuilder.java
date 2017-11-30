@@ -18,7 +18,14 @@ package com.google.cloud.tools.crepecake.tar;
 
 import com.google.cloud.tools.crepecake.blob.BlobStream;
 import com.google.common.io.ByteStreams;
-import java.io.*;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -32,6 +39,7 @@ public class TarStreamBuilder {
 
   /** An entry in the archive. */
   private static class Entry {
+
     private final TarArchiveEntry header;
     private final InputStream content;
 
