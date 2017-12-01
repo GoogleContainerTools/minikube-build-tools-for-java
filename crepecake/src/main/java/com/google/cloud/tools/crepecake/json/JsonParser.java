@@ -18,7 +18,6 @@ package com.google.cloud.tools.crepecake.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.tools.crepecake.blob.BlobStream;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;

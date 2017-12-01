@@ -23,25 +23,21 @@ import com.google.cloud.tools.crepecake.image.Image;
 import com.google.cloud.tools.crepecake.image.Layer;
 import com.google.cloud.tools.crepecake.json.templates.ContainerConfigurationTemplate;
 import com.google.cloud.tools.crepecake.json.templates.V22ManifestTemplate;
-
-import javax.annotation.Nullable;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /** Translates an {@link Image} into a manifest or container configuration JSON BLOB. */
 public class ImageTranslator {
 
   private final Image image;
 
-  @Nullable
-  private BlobStream containerConfigurationBlobStream;
+  @Nullable private BlobStream containerConfigurationBlobStream;
 
-  @Nullable
-  private BlobStream manifestBlobStream;
+  @Nullable private BlobStream manifestBlobStream;
 
   /** Instantiate with an {@link Image} that should not be modified afterwards. */
   public ImageTranslator(Image image) {
