@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.util.function.Function;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.CompressorException;
@@ -39,47 +38,21 @@ public class TarStreamBuilderTest {
 
   @Test
   public void testBuild_compressed() throws IOException, URISyntaxException, CompressorException {
-    testBuild(
-        tarStreamBuilder -> {
-          try {
-            return tarStreamBuilder.toBlobStreamCompressed();
-          } catch (IOException ex) {
-            throw new RuntimeException(ex);
-          }
-        },
-        inputStream -> {
-          try {
-            return new CompressorStreamFactory().createCompressorInputStream(inputStream);
-          } catch (CompressorException ex) {
-            throw new RuntimeException(ex);
-          }
-        });
+    testBuild(true);
   }
 
   @Test
-  public void testBuild_uncompressed() throws IOException, URISyntaxException {
-    testBuild(
-        tarStreamBuilder -> {
-          try {
-            return tarStreamBuilder.toBlobStreamUncompressed();
-          } catch (IOException ex) {
-            throw new RuntimeException(ex);
-          }
-        },
-        Function.identity());
+  public void testBuild_uncompressed() throws IOException, URISyntaxException, CompressorException {
+    testBuild(false);
   }
 
   /**
    * Helper function to perform the archive build testing.
    *
-   * @param methodToTest {@link TarStreamBuilder} method to test
-   * @param wrapInputStreamFunction function to wrap an {@link InputStream} in another {@link
-   *     InputStream}. This wrap can be a decompressor.
+   * @param compress true if to test {@link TarStreamBuilder} with compression; false otherwise
    */
-  private void testBuild(
-      Function<TarStreamBuilder, BlobStream> methodToTest,
-      Function<InputStream, InputStream> wrapInputStreamFunction)
-      throws URISyntaxException, IOException {
+  private void testBuild(boolean compress)
+      throws URISyntaxException, IOException, CompressorException {
     File fileA = new File(getClass().getClassLoader().getResource("fileA").toURI());
     File fileB = new File(getClass().getClassLoader().getResource("fileB").toURI());
 
@@ -89,21 +62,29 @@ public class TarStreamBuilderTest {
         CharStreams.toString(new InputStreamReader(new FileInputStream(fileB)));
 
     TarStreamBuilder tarStreamBuilder = new TarStreamBuilder();
-    tarStreamBuilder.addFile(fileA, "some/path/to/fileA");
+
+    tarStreamBuilder.addFile(fileA, "some/path/to/resourceFileA");
     tarStreamBuilder.addFile(fileB, "crepecake");
 
-    BlobStream blobStreamCompressed = methodToTest.apply(tarStreamBuilder);
+    BlobStream blobStream;
+    blobStream =
+        compress
+            ? tarStreamBuilder.toBlobStreamCompressed()
+            : tarStreamBuilder.toBlobStreamUncompressed();
 
     ByteArrayOutputStream compressedTarByteStream = new ByteArrayOutputStream();
-    blobStreamCompressed.writeTo(compressedTarByteStream);
+    blobStream.writeTo(compressedTarByteStream);
 
     ByteArrayInputStream byteArrayInputStream =
         new ByteArrayInputStream(compressedTarByteStream.toByteArray());
-    InputStream wrappedInputStream = wrapInputStreamFunction.apply(byteArrayInputStream);
-    TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(wrappedInputStream);
+    InputStream tarByteStream =
+        compress
+            ? new CompressorStreamFactory().createCompressorInputStream(byteArrayInputStream)
+            : byteArrayInputStream;
+    TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(tarByteStream);
 
     TarArchiveEntry headerA = tarArchiveInputStream.getNextTarEntry();
-    Assert.assertEquals("some/path/to/fileA", headerA.getName());
+    Assert.assertEquals("some/path/to/resourceFileA", headerA.getName());
     String fileAString = CharStreams.toString(new InputStreamReader(tarArchiveInputStream));
     Assert.assertEquals(expectedFileAString, fileAString);
 
