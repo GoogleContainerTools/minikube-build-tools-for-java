@@ -14,22 +14,11 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.blob;
+package com.google.cloud.tools.crepecake.image;
 
-import com.google.cloud.tools.crepecake.image.DigestException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.security.NoSuchAlgorithmException;
+public class DigestException extends Exception {
 
-/** A stream for BLOBs. */
-public interface BlobStream {
-
-  /**
-   * Writes the BLOB to an {@link OutputStream}.
-   *
-   * @param outputStream the {@link OutputStream} to write to
-   * @return a {@link BlobDescriptor} describing the written BLOB
-   */
-  BlobDescriptor writeTo(OutputStream outputStream)
-      throws IOException, NoSuchAlgorithmException, DigestException;
+  public DigestException(String message) {
+    super(message);
+  }
 }
