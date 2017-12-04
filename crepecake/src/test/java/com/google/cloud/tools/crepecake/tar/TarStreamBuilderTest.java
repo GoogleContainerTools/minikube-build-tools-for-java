@@ -17,6 +17,7 @@
 package com.google.cloud.tools.crepecake.tar;
 
 import com.google.cloud.tools.crepecake.blob.BlobStream;
+import com.google.cloud.tools.crepecake.image.DigestException;
 import com.google.common.io.CharStreams;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.CompressorException;
@@ -37,12 +39,16 @@ import org.junit.Test;
 public class TarStreamBuilderTest {
 
   @Test
-  public void testBuild_compressed() throws IOException, URISyntaxException, CompressorException {
+  public void testBuild_compressed()
+      throws IOException, URISyntaxException, CompressorException, NoSuchAlgorithmException,
+          DigestException {
     testBuild(true);
   }
 
   @Test
-  public void testBuild_uncompressed() throws IOException, URISyntaxException, CompressorException {
+  public void testBuild_uncompressed()
+      throws IOException, URISyntaxException, CompressorException, NoSuchAlgorithmException,
+          DigestException {
     testBuild(false);
   }
 
@@ -52,7 +58,8 @@ public class TarStreamBuilderTest {
    * @param compress true if to test {@link TarStreamBuilder} with compression; false otherwise
    */
   private void testBuild(boolean compress)
-      throws URISyntaxException, IOException, CompressorException {
+      throws URISyntaxException, IOException, CompressorException, DigestException,
+          NoSuchAlgorithmException {
     File fileA = new File(getClass().getClassLoader().getResource("fileA").toURI());
     File fileB = new File(getClass().getClassLoader().getResource("fileB").toURI());
 
