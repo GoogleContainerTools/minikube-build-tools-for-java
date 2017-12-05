@@ -42,7 +42,19 @@ public class DescriptorDigestTest {
       DescriptorDigest.fromHash(badHash);
       Assert.fail("Invalid hash should have caused digest creation failure.");
     } catch (DigestException ex) {
-      // pass
+      Assert.assertEquals("Invalid hash: " + badHash, ex.getMessage());
+    }
+  }
+
+  @Test
+  public void testCreateFromHash_failIncorrectLength() {
+    String badHash = createGoodHash('a') + 'a';
+
+    try {
+      DescriptorDigest.fromHash(badHash);
+      Assert.fail("Invalid hash should have caused digest creation failure.");
+    } catch (DigestException ex) {
+      Assert.assertEquals("Invalid hash: " + badHash, ex.getMessage());
     }
   }
 
