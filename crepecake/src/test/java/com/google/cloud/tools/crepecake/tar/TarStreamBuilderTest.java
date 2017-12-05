@@ -18,15 +18,18 @@ package com.google.cloud.tools.crepecake.tar;
 
 import com.google.cloud.tools.crepecake.blob.BlobStream;
 import com.google.cloud.tools.crepecake.image.DigestException;
+import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
+import com.google.common.io.Resources;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -60,41 +63,44 @@ public class TarStreamBuilderTest {
   private void testBuild(boolean compress)
       throws URISyntaxException, IOException, CompressorException, DigestException,
           NoSuchAlgorithmException {
-    File fileA = new File(getClass().getClassLoader().getResource("fileA").toURI());
-    File fileB = new File(getClass().getClassLoader().getResource("fileB").toURI());
+    // Gets the test resource files.
+    Path fileA = Paths.get(Resources.getResource("fileA").toURI());
+    Path fileB = Paths.get(Resources.getResource("fileB").toURI());
 
-    String expectedFileAString =
-        CharStreams.toString(new InputStreamReader(new FileInputStream(fileA)));
-    String expectedFileBString =
-        CharStreams.toString(new InputStreamReader(new FileInputStream(fileB)));
+    String expectedFileAString = new String(Files.readAllBytes(fileA), Charsets.UTF_8);
+    String expectedFileBString = new String(Files.readAllBytes(fileB), Charsets.UTF_8);
 
+    // Prepares a test TarStreamBuilder.
     TarStreamBuilder tarStreamBuilder = new TarStreamBuilder();
+    tarStreamBuilder.addFile(fileA.toFile(), "some/path/to/resourceFileA");
+    tarStreamBuilder.addFile(fileB.toFile(), "crepecake");
 
-    tarStreamBuilder.addFile(fileA, "some/path/to/resourceFileA");
-    tarStreamBuilder.addFile(fileB, "crepecake");
-
-    BlobStream blobStream;
-    blobStream =
+    // Constructs the corresponding BlobStream (compressed vs. uncompressed).
+    BlobStream blobStream =
         compress
             ? tarStreamBuilder.toBlobStreamCompressed()
             : tarStreamBuilder.toBlobStreamUncompressed();
 
-    ByteArrayOutputStream compressedTarByteStream = new ByteArrayOutputStream();
-    blobStream.writeTo(compressedTarByteStream);
+    // Writes the BLOB and captures the output.
+    ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
+    blobStream.writeTo(tarByteOutputStream);
 
+    // Rearrange the output into input for verification.
     ByteArrayInputStream byteArrayInputStream =
-        new ByteArrayInputStream(compressedTarByteStream.toByteArray());
-    InputStream tarByteStream =
+        new ByteArrayInputStream(tarByteOutputStream.toByteArray());
+    InputStream tarByteInputStream =
         compress
             ? new CompressorStreamFactory().createCompressorInputStream(byteArrayInputStream)
             : byteArrayInputStream;
-    TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(tarByteStream);
+    TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(tarByteInputStream);
 
+    // Verifies fileA was archived correctly.
     TarArchiveEntry headerA = tarArchiveInputStream.getNextTarEntry();
     Assert.assertEquals("some/path/to/resourceFileA", headerA.getName());
     String fileAString = CharStreams.toString(new InputStreamReader(tarArchiveInputStream));
     Assert.assertEquals(expectedFileAString, fileAString);
 
+    // Verifies fileB was archived correctly.
     TarArchiveEntry headerB = tarArchiveInputStream.getNextTarEntry();
     Assert.assertEquals("crepecake", headerB.getName());
     String fileBString = CharStreams.toString(new InputStreamReader(tarArchiveInputStream));
