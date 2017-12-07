@@ -17,7 +17,11 @@
 package com.google.cloud.tools.crepecake.json;
 
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.security.DigestException;
 import java.util.Arrays;
@@ -27,8 +31,8 @@ import org.gradle.internal.impldep.com.google.common.io.CharStreams;
 import org.junit.Assert;
 import org.junit.Test;
 
-/** Tests for {@link JsonParser}. */
-public class JsonParserTest {
+/** Tests for {@link JsonHelper}. */
+public class JsonHelperTest {
 
   private static class TestJson extends JsonTemplate {
     private int number;
@@ -79,7 +83,7 @@ public class JsonParserTest {
     testJson.list = Arrays.asList(innerObject1, innerObject2);
 
     ByteArrayOutputStream jsonStream = new ByteArrayOutputStream();
-    JsonParser.writeJson(jsonStream, testJson);
+    JsonHelper.writeJson(jsonStream, testJson);
 
     Assert.assertEquals(expectedJson, jsonStream.toString());
   }
