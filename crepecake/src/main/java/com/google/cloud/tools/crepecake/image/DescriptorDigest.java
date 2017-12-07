@@ -16,6 +16,8 @@
 
 package com.google.cloud.tools.crepecake.image;
 
+import java.security.DigestException;
+
 /**
  * Represents a SHA-256 content descriptor digest as defined by the Registry HTTP API v2 reference.
  *

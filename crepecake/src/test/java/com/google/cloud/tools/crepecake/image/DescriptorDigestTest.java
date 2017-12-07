@@ -16,6 +16,7 @@
 
 package com.google.cloud.tools.crepecake.image;
 
+import java.security.DigestException;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assert;
