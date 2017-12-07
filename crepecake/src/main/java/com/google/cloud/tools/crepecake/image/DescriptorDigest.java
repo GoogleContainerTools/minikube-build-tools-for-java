@@ -20,8 +20,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.cloud.tools.crepecake.json.DescriptorDigestDeserializer;
 import com.google.cloud.tools.crepecake.json.DescriptorDigestSerializer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.security.DigestException;
 
 /**

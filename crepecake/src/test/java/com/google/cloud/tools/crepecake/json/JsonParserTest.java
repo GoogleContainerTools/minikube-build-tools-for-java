@@ -17,9 +17,9 @@
 package com.google.cloud.tools.crepecake.json;
 
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
-
 import java.io.*;
 import java.net.URISyntaxException;
+import java.security.DigestException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +45,7 @@ public class JsonParserTest {
   }
 
   @Test
-  public void testWriteJson() throws DescriptorDigestException, IOException, URISyntaxException {
+  public void testWriteJson() throws DigestException, IOException, URISyntaxException {
     File jsonFile = new File(getClass().getClassLoader().getResource("json/basic.json").toURI());
     final String expectedJson =
         CharStreams.toString(new InputStreamReader(new FileInputStream(jsonFile)));

@@ -20,8 +20,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
-
 import java.io.IOException;
+import java.security.DigestException;
 
 /** Deserializes a JSON element into a {@link DescriptorDigest} object. */
 public class DescriptorDigestDeserializer extends JsonDeserializer<DescriptorDigest> {
@@ -31,7 +31,7 @@ public class DescriptorDigestDeserializer extends JsonDeserializer<DescriptorDig
       throws IOException {
     try {
       return DescriptorDigest.fromDigest(jsonParser.getValueAsString());
-    } catch (DescriptorDigestException ex) {
+    } catch (DigestException ex) {
       throw new IOException(ex);
     }
   }
