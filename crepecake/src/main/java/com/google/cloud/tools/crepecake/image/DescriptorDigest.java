@@ -22,6 +22,7 @@ import com.google.cloud.tools.crepecake.json.DescriptorDigestDeserializer;
 import com.google.cloud.tools.crepecake.json.DescriptorDigestSerializer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.security.DigestException;
 
 /**
  * Represents a SHA-256 content descriptor digest as defined by the Registry HTTP API v2 reference.
@@ -38,32 +39,31 @@ public class DescriptorDigest {
   /** Pattern matches a SHA-256 hash - 32 bytes in lowercase hexadecimal. */
   private static final String HASH_REGEX = "[a-f0-9]{64}";
 
-  /** Pattern matches a SHA-256 digest - a SHA-256 hash prefixed with "sha256:". */
-  private static final String DIGEST_REGEX = "sha256:" + HASH_REGEX;
+  /** The algorithm prefix for the digest string. */
+  private static final String DIGEST_PREFIX = "sha256:";
 
-  private static final Pattern HASH_PATTERN = Pattern.compile(HASH_REGEX);
+  /** Pattern matches a SHA-256 digest - a SHA-256 hash prefixed with "sha256:". */
+  private static final String DIGEST_REGEX = DIGEST_PREFIX + HASH_REGEX;
 
   private final String hash;
 
   /** Creates a new instance from a valid hash string. */
-  public static DescriptorDigest fromHash(String hash) throws DescriptorDigestException {
+  public static DescriptorDigest fromHash(String hash) throws DigestException {
     if (!hash.matches(HASH_REGEX)) {
-      throw new DescriptorDigestException("Invalid hash: " + hash);
+      throw new DigestException("Invalid hash: " + hash);
     }
 
     return new DescriptorDigest(hash);
   }
 
   /** Creates a new instance from a valid digest string. */
-  public static DescriptorDigest fromDigest(String digest) throws DescriptorDigestException {
+  public static DescriptorDigest fromDigest(String digest) throws DigestException {
     if (!digest.matches(DIGEST_REGEX)) {
-      throw new DescriptorDigestException("Invalid digest: " + digest);
+      throw new DigestException("Invalid digest: " + digest);
     }
 
     // Extracts the hash portion of the digest.
-    Matcher matcher = HASH_PATTERN.matcher(digest);
-    matcher.find();
-    String hash = matcher.group(0);
+    String hash = digest.substring(DIGEST_PREFIX.length());
     return new DescriptorDigest(hash);
   }
 

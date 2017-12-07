@@ -16,6 +16,7 @@
 
 package com.google.cloud.tools.crepecake.image;
 
+import java.security.DigestException;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assert;
@@ -25,7 +26,7 @@ import org.junit.Test;
 public class DescriptorDigestTest {
 
   @Test
-  public void testCreateFromHash_pass() throws DescriptorDigestException {
+  public void testCreateFromHash_pass() throws DigestException {
     String goodHash = createGoodHash('a');
 
     DescriptorDigest descriptorDigest = DescriptorDigest.fromHash(goodHash);
@@ -41,13 +42,25 @@ public class DescriptorDigestTest {
     try {
       DescriptorDigest.fromHash(badHash);
       Assert.fail("Invalid hash should have caused digest creation failure.");
-    } catch (DescriptorDigestException ex) {
-      // pass
+    } catch (DigestException ex) {
+      Assert.assertEquals("Invalid hash: " + badHash, ex.getMessage());
     }
   }
 
   @Test
-  public void testCreateFromDigest_pass() throws DescriptorDigestException {
+  public void testCreateFromHash_failIncorrectLength() {
+    String badHash = createGoodHash('a') + 'a';
+
+    try {
+      DescriptorDigest.fromHash(badHash);
+      Assert.fail("Invalid hash should have caused digest creation failure.");
+    } catch (DigestException ex) {
+      Assert.assertEquals("Invalid hash: " + badHash, ex.getMessage());
+    }
+  }
+
+  @Test
+  public void testCreateFromDigest_pass() throws DigestException {
     String goodHash = createGoodHash('a');
     String goodDigest = "sha256:" + createGoodHash('a');
 
@@ -64,13 +77,13 @@ public class DescriptorDigestTest {
     try {
       DescriptorDigest.fromDigest(badDigest);
       Assert.fail("Invalid digest should have caused digest creation failure.");
-    } catch (DescriptorDigestException ex) {
+    } catch (DigestException ex) {
       Assert.assertEquals("Invalid digest: " + badDigest, ex.getMessage());
     }
   }
 
   @Test
-  public void testUseAsMapKey() throws DescriptorDigestException {
+  public void testUseAsMapKey() throws DigestException {
     DescriptorDigest descriptorDigestA1 = DescriptorDigest.fromHash(createGoodHash('a'));
     DescriptorDigest descriptorDigestA2 = DescriptorDigest.fromHash(createGoodHash('a'));
     DescriptorDigest descriptorDigestA3 =

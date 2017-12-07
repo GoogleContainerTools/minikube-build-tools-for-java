@@ -17,7 +17,7 @@
 package com.google.cloud.tools.crepecake.json;
 
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
-import com.google.cloud.tools.crepecake.image.DescriptorDigestException;
+
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.Arrays;

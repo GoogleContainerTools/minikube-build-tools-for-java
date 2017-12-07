@@ -20,7 +20,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
-import com.google.cloud.tools.crepecake.image.DescriptorDigestException;
+
 import java.io.IOException;
 
 /** Deserializes a JSON element into a {@link DescriptorDigest} object. */
