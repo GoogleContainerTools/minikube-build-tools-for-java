@@ -16,11 +16,14 @@
 
 package com.google.cloud.tools.crepecake.json;
 
-import com.google.cloud.tools.crepecake.image.Digest;
-import com.google.cloud.tools.crepecake.image.DigestException;
+import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
+import com.google.cloud.tools.crepecake.image.DescriptorDigest;
 import com.google.cloud.tools.crepecake.image.Image;
 import com.google.cloud.tools.crepecake.image.ImageException;
 import com.google.cloud.tools.crepecake.image.Layer;
+import com.google.cloud.tools.crepecake.image.LayerException;
+import com.google.cloud.tools.crepecake.image.ReferenceLayer;
+import java.security.DigestException;
 import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,17 +36,17 @@ public class ImageTranslatorTest {
   private Layer fakeLayer;
 
   @Before
-  public void setUp() throws ImageException, DigestException {
+  public void setUp() throws ImageException, DigestException, LayerException {
     testImage = new Image();
 
     testImage.setEnvironmentVariable("crepecake", "is good");
 
     testImage.setEntrypoint(Arrays.asList("some", "entrypoint", "command"));
 
-    Digest fakeDigest =
-        Digest.fromDigest(
+    DescriptorDigest fakeDigest =
+        DescriptorDigest.fromDigest(
             "sha256:8c662931926fa990b41da3c9f42663a537ccd498130030f9149173a0493832ad");
-    fakeLayer = new Layer(fakeDigest, 1000, fakeDigest);
+    fakeLayer = new ReferenceLayer(new BlobDescriptor(1000, fakeDigest), fakeDigest);
     testImage.addLayer(fakeLayer);
   }
 

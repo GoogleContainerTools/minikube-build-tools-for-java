@@ -16,6 +16,8 @@
 
 package com.google.cloud.tools.crepecake.image;
 
+import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
+import java.security.DigestException;
 import java.util.Arrays;
 import java.util.List;
 import org.hamcrest.CoreMatchers;
@@ -26,19 +28,19 @@ import org.junit.Test;
 /** Tests for {@link ImageLayers}. */
 public class ImageLayersTest {
 
-  private Digest fakeDigest;
+  private DescriptorDigest fakeDigest;
   private Layer fakeLayer;
 
   @Before
   public void setUpFakes() throws DigestException {
     fakeDigest =
-        Digest.fromDigest(
+        DescriptorDigest.fromDigest(
             "sha256:8c662931926fa990b41da3c9f42663a537ccd498130030f9149173a0493832ad");
-    fakeLayer = new Layer(fakeDigest, 1000, fakeDigest);
+    fakeLayer = new ReferenceLayer(new BlobDescriptor(1000, fakeDigest), fakeDigest);
   }
 
   @Test
-  public void testAddLayer_success() throws DigestException, ImageException {
+  public void testAddLayer_success() throws DigestException, ImageException, LayerException {
     List<Layer> expectedLayers = Arrays.asList(fakeLayer);
 
     ImageLayers imageLayers = new ImageLayers();
@@ -48,7 +50,7 @@ public class ImageLayersTest {
   }
 
   @Test
-  public void testAddLayer_duplicate() throws ImageException {
+  public void testAddLayer_duplicate() throws ImageException, LayerException {
     ImageLayers imageLayers = new ImageLayers();
     imageLayers.add(fakeLayer);
 
