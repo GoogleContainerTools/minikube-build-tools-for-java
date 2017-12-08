@@ -17,9 +17,9 @@
 package com.google.cloud.tools.crepecake.tar;
 
 import com.google.cloud.tools.crepecake.blob.BlobStream;
+import com.google.cloud.tools.crepecake.blob.BlobStreams;
 import com.google.common.io.ByteStreams;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,28 +27,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 
 /** Builds a tarball archive. */
 public class TarStreamBuilder {
 
-  /** An entry in the archive. */
-  private static class Entry {
-
-    private final TarArchiveEntry header;
-    private final InputStream content;
-
-    private Entry(TarArchiveEntry header, InputStream content) {
-      this.header = header;
-      this.content = content;
-    }
-  }
-
-  private final List<Entry> entries = new ArrayList<>();
+  /** Holds the entries added to the archive. */
+  private final List<TarArchiveEntry> entries = new ArrayList<>();
 
   /**
    * Adds a file to the archive.
@@ -57,62 +46,55 @@ public class TarStreamBuilder {
    * @param path the relative archive extraction path
    */
   public void addFile(File file, String path) throws IOException {
-    TarArchiveEntry header = new TarArchiveEntry(file, path);
-    InputStream content = new BufferedInputStream(new FileInputStream(file));
+    TarArchiveEntry entry = new TarArchiveEntry(file, path);
 
-    entries.add(new Entry(header, content));
+    entries.add(entry);
   }
 
   /** Writes the compressed archive to a {@link BlobStream}. */
-  public BlobStream toBlobStreamCompressed() throws IOException {
-    return toBlobStream(this::applyCompressor);
+  public BlobStream toBlobStreamCompressed() throws IOException, CompressorException {
+    return toBlobStream(true);
   }
 
   /** Writes the uncompressed archive to a {@link BlobStream}. */
-  public BlobStream toBlobStreamUncompressed() throws IOException {
-    return toBlobStream(Function.identity());
+  public BlobStream toBlobStreamUncompressed() throws IOException, CompressorException {
+    return toBlobStream(false);
   }
 
   /**
    * Helper function to build the archive.
    *
-   * @param wrapOutputStreamFunction A function that possibly wraps an {@link OutputStream} in
-   *     another {@link OutputStream}. This wrap can be a compressor.
+   * @param compress compresses the archive if true
    * @return a {@link BlobStream} containing the built archive BLOB.
    */
-  private BlobStream toBlobStream(Function<OutputStream, OutputStream> wrapOutputStreamFunction)
-      throws IOException {
-    // Creates an underlying byte stream.
-    ByteArrayOutputStream tarByteStream = new ByteArrayOutputStream();
-
-    // Wraps the underlying byte stream with the provided function.
-    OutputStream wrappedOutputStream;
-    try {
-      wrappedOutputStream = wrapOutputStreamFunction.apply(tarByteStream);
-    } catch (RuntimeException ex) {
-      throw new IOException(ex);
+  private BlobStream toBlobStream(boolean compress) throws IOException, CompressorException {
+    if (compress) {
+      return BlobStreams.from(
+          outputStream -> {
+            try {
+              CompressorOutputStream compressorStream =
+                  new CompressorStreamFactory()
+                      .createCompressorOutputStream(CompressorStreamFactory.GZIP, outputStream);
+              writeEntriesAsTarArchive(compressorStream);
+            } catch (CompressorException ex) {
+              throw new IOException(ex);
+            }
+          });
     }
 
-    // Writes each entry in the filesystem to the tarball archive stream.
-    TarArchiveOutputStream tarArchiveOutputStream = new TarArchiveOutputStream(wrappedOutputStream);
-
-    for (Entry entry : entries) {
-      tarArchiveOutputStream.putArchiveEntry(entry.header);
-      ByteStreams.copy(entry.content, tarArchiveOutputStream);
-      tarArchiveOutputStream.closeArchiveEntry();
-    }
-
-    tarArchiveOutputStream.close();
-
-    return new BlobStream(tarByteStream);
+    return BlobStreams.from(this::writeEntriesAsTarArchive);
   }
 
-  private OutputStream applyCompressor(OutputStream outputStream) {
-    try {
-      return new CompressorStreamFactory()
-          .createCompressorOutputStream(CompressorStreamFactory.GZIP, outputStream);
-    } catch (CompressorException ex) {
-      throw new RuntimeException(ex);
+  /** Writes each entry in the filesystem to the tarball archive stream. */
+  private void writeEntriesAsTarArchive(OutputStream tarByteStream) throws IOException {
+    try (TarArchiveOutputStream tarArchiveOutputStream =
+        new TarArchiveOutputStream(tarByteStream)) {
+      for (TarArchiveEntry entry : entries) {
+        tarArchiveOutputStream.putArchiveEntry(entry);
+        InputStream contentStream = new BufferedInputStream(new FileInputStream(entry.getFile()));
+        ByteStreams.copy(contentStream, tarArchiveOutputStream);
+        tarArchiveOutputStream.closeArchiveEntry();
+      }
     }
   }
 }
