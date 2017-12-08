@@ -17,13 +17,14 @@
 package com.google.cloud.tools.crepecake.json;
 
 import com.google.cloud.tools.crepecake.blob.BlobStream;
-import com.google.cloud.tools.crepecake.image.Digest;
-import com.google.cloud.tools.crepecake.image.DigestException;
+import com.google.cloud.tools.crepecake.image.DescriptorDigest;
 import com.google.cloud.tools.crepecake.image.Image;
 import com.google.cloud.tools.crepecake.image.Layer;
+import com.google.cloud.tools.crepecake.image.LayerException;
 import com.google.cloud.tools.crepecake.json.templates.ContainerConfigurationTemplate;
 import com.google.cloud.tools.crepecake.json.templates.V22ManifestTemplate;
 import java.io.IOException;
+import java.security.DigestException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,7 @@ public class ImageTranslator {
     this.image = image;
   }
 
-  public BlobStream getContainerConfiguration() throws IOException {
+  public BlobStream getContainerConfiguration() throws IOException, LayerException {
     if (containerConfigurationBlobStream != null) {
       return containerConfigurationBlobStream;
     }
@@ -74,12 +75,13 @@ public class ImageTranslator {
     template.setContainerEntrypoint(image.getEntrypoint());
 
     // Serialize into JSON.
-    containerConfigurationBlobStream = JsonParser.toBlobStream(template);
+    containerConfigurationBlobStream = JsonHelper.toBlobStream(template);
 
     return containerConfigurationBlobStream;
   }
 
-  public BlobStream getManifest() throws IOException, NoSuchAlgorithmException, DigestException {
+  public BlobStream getManifest()
+      throws IOException, NoSuchAlgorithmException, DigestException, LayerException {
     if (manifestBlobStream != null) {
       return manifestBlobStream;
     }
@@ -88,17 +90,19 @@ public class ImageTranslator {
     V22ManifestTemplate template = new V22ManifestTemplate();
 
     // Adds the container configuration reference.
-    Digest containerConfigurationDigest = containerConfigurationBlobStream.getDigest();
-    int containerConfigurationSize = containerConfigurationBlobStream.getSize();
+    DescriptorDigest containerConfigurationDigest =
+        containerConfigurationBlobStream.getWrittenBlobDescriptor().getDigest();
+    long containerConfigurationSize =
+        containerConfigurationBlobStream.getWrittenBlobDescriptor().getSize();
     template.setContainerConfiguration(containerConfigurationDigest, containerConfigurationSize);
 
     // Adds the layers.
     for (Layer layer : image.getLayers()) {
-      template.addLayer(layer.getDigest(), layer.getSize());
+      template.addLayer(layer.getBlobDescriptor().getDigest(), layer.getBlobDescriptor().getSize());
     }
 
     // Serializes into JSON.
-    manifestBlobStream = JsonParser.toBlobStream(template);
+    manifestBlobStream = JsonHelper.toBlobStream(template);
 
     return manifestBlobStream;
   }

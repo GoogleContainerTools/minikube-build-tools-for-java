@@ -16,13 +16,12 @@
 
 package com.google.cloud.tools.crepecake.image;
 
-import com.google.cloud.tools.crepecake.blob.BlobStream;
-import javax.annotation.Nullable;
+import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 
 /**
- * Represents a layer in an image.
+ * Represents a layer in an image. Implementations represent the various {@link LayerType}s.
  *
- * <p>A layer consists of:
+ * <p>An image layer consists of:
  *
  * <ul>
  *   <li>Content BLOB
@@ -52,52 +51,22 @@ import javax.annotation.Nullable;
  *
  * </ul>
  */
-public class Layer {
+public abstract class Layer {
 
-  @Nullable private final BlobStream content;
+  protected Layer() {}
 
-  private final Digest digest;
-  private final int size;
-
-  /** The digest of the uncompressed layer content. */
-  private final Digest diffId;
+  /** @return the layer's {@link LayerType} */
+  public abstract LayerType getType();
 
   /**
-   * Instantiate a layer without the content BLOB. This is to work with layer references that don't
-   * require the actual layer itself.
+   * @return the layer's content {@link BlobDescriptor}
+   * @throws LayerException if not available
    */
-  public Layer(Digest digest, int size, Digest diffId) {
-    this(digest, size, diffId, null);
-  }
+  public abstract BlobDescriptor getBlobDescriptor() throws LayerException;
 
   /**
-   * Instantiate a layer with the content BLOB. This is for representing a full layer where use of
-   * its content BLOB is expected.
+   * @return the layer's diff ID
+   * @throws LayerException if not available
    */
-  public Layer(Digest digest, int size, Digest diffId, BlobStream content) {
-    this.digest = digest;
-    this.size = size;
-    this.diffId = diffId;
-    this.content = content;
-  }
-
-  public boolean hasContent() {
-    return content != null;
-  }
-
-  public Digest getDigest() {
-    return digest;
-  }
-
-  public int getSize() {
-    return size;
-  }
-
-  public BlobStream getContent() {
-    return content;
-  }
-
-  public Digest getDiffId() {
-    return diffId;
-  }
+  public abstract DescriptorDigest getDiffId() throws LayerException;
 }

@@ -54,7 +54,7 @@ public class Image {
     return layers.asList();
   }
 
-  public void addLayer(Layer layer) throws ImageException {
+  public void addLayer(Layer layer) throws ImageException, LayerException {
     layers.add(layer);
   }
 }

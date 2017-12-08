@@ -16,7 +16,7 @@
 
 package com.google.cloud.tools.crepecake.json.templates;
 
-import com.google.cloud.tools.crepecake.image.Digest;
+import com.google.cloud.tools.crepecake.image.DescriptorDigest;
 import com.google.cloud.tools.crepecake.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
@@ -73,8 +73,8 @@ public class V22ManifestTemplate extends JsonTemplate {
 
     private final String mediaType = "application/vnd.docker.container.image.v1+json";
 
-    private Digest digest;
-    private int size;
+    private DescriptorDigest digest;
+    private long size;
   }
 
   /**
@@ -84,16 +84,16 @@ public class V22ManifestTemplate extends JsonTemplate {
 
     private final String mediaType = "application/vnd.docker.image.rootfs.diff.tar.gzip";
 
-    private Digest digest;
-    private int size;
+    private DescriptorDigest digest;
+    private long size;
   }
 
-  public void setContainerConfiguration(Digest digest, int size) {
+  public void setContainerConfiguration(DescriptorDigest digest, long size) {
     config.digest = digest;
     config.size = size;
   }
 
-  public void addLayer(Digest digest, int size) {
+  public void addLayer(DescriptorDigest digest, long size) {
     LayerObjectTemplate layerObjectTemplate = new LayerObjectTemplate();
     layerObjectTemplate.digest = digest;
     layerObjectTemplate.size = size;
@@ -101,22 +101,22 @@ public class V22ManifestTemplate extends JsonTemplate {
   }
 
   @VisibleForTesting
-  Digest getContainerConfigurationDigest() {
+  DescriptorDigest getContainerConfigurationDigest() {
     return config.digest;
   }
 
   @VisibleForTesting
-  int getContainerConfigurationSize() {
+  long getContainerConfigurationSize() {
     return config.size;
   }
 
   @VisibleForTesting
-  Digest getLayerDigest(int index) {
+  DescriptorDigest getLayerDigest(int index) {
     return layers.get(index).digest;
   }
 
   @VisibleForTesting
-  int getLayerSize(int index) {
+  long getLayerSize(int index) {
     return layers.get(index).size;
   }
 }
