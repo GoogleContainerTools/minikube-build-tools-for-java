@@ -42,6 +42,7 @@ public class JsonHelperTest {
     private List<InnerObject> list;
 
     private static class InnerObject extends JsonTemplate {
+      // This field has the same name as a field in the outer class, but either NOT interfere with the other.
       private int number;
       private List<String> texts;
       private List<DescriptorDigest> digests;
