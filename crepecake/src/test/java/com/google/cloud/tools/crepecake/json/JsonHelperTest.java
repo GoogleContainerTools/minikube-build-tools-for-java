@@ -27,6 +27,7 @@ import java.security.DigestException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import com.google.common.io.CharStreams;
 import org.junit.Assert;
 import org.junit.Test;
