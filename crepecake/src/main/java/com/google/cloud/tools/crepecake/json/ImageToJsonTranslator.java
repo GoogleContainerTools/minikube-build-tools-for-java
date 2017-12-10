@@ -32,21 +32,21 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /** Translates an {@link Image} into a manifest or container configuration JSON BLOB. */
-public class ImageTranslator {
+public class ImageToJsonTranslator {
 
   private final Image image;
 
   @Nullable private BlobStream containerConfigurationBlobStream;
-
   @Nullable private BlobStream manifestBlobStream;
 
   /** Instantiate with an {@link Image} that should not be modified afterwards. */
-  public ImageTranslator(Image image) {
+  public ImageToJsonTranslator(Image image) {
     this.image = image;
   }
 
+  /** Gets the container configuration as a {@link BlobStream} */
   public BlobStream getContainerConfiguration() throws IOException, LayerException {
-    if (containerConfigurationBlobStream != null) {
+    if (null != containerConfigurationBlobStream) {
       return containerConfigurationBlobStream;
     }
 
@@ -74,16 +74,26 @@ public class ImageTranslator {
     // Sets the entrypoint.
     template.setContainerEntrypoint(image.getEntrypoint());
 
-    // Serialize into JSON.
+    // Serializes into JSON.
     containerConfigurationBlobStream = JsonHelper.toBlobStream(template);
 
     return containerConfigurationBlobStream;
   }
 
+  /**
+   * Gets the manifest as a {@link BlobStream}. This is only valid <b>after</b> {@code
+   * getContainerConfiguration} is called.
+   *
+   * @throws IllegalStateException if the container configuration BLOB does not exist or has not
+   *     been written
+   */
   public BlobStream getManifest()
       throws IOException, NoSuchAlgorithmException, DigestException, LayerException {
-    if (manifestBlobStream != null) {
+    if (null != manifestBlobStream) {
       return manifestBlobStream;
+    }
+    if (null == containerConfigurationBlobStream) {
+      throw new IllegalStateException("Must call getContainerConfiguration before getManifest");
     }
 
     // Set up the JSON template.
