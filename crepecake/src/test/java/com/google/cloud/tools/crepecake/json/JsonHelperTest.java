@@ -17,6 +17,7 @@
 package com.google.cloud.tools.crepecake.json;
 
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
+import com.google.common.io.CharStreams;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,8 +28,6 @@ import java.security.DigestException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import com.google.common.io.CharStreams;
 import org.junit.Assert;
 import org.junit.Test;
 
