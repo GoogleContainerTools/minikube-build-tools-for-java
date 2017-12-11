@@ -16,7 +16,7 @@
 
 package com.google.cloud.tools.crepecake.json.templates;
 
-import com.google.cloud.tools.crepecake.image.Digest;
+import com.google.cloud.tools.crepecake.image.DescriptorDigest;
 import com.google.cloud.tools.crepecake.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ public class ContainerConfigurationTemplate extends JsonTemplate {
      * The in-order list of layer content digests (hashes of the uncompressed partial filesystem
      * changeset).
      */
-    private final List<Digest> diff_ids = new ArrayList<>();
+    private final List<DescriptorDigest> diff_ids = new ArrayList<>();
   }
 
   public void setContainerEnvironment(List<String> environment) {
@@ -96,7 +96,7 @@ public class ContainerConfigurationTemplate extends JsonTemplate {
     config.Entrypoint = command;
   }
 
-  public void addLayerDiffId(Digest diffId) {
+  public void addLayerDiffId(DescriptorDigest diffId) {
     rootfs.diff_ids.add(diffId);
   }
 
@@ -111,7 +111,7 @@ public class ContainerConfigurationTemplate extends JsonTemplate {
   }
 
   @VisibleForTesting
-  Digest getLayerDiffId(int index) {
+  DescriptorDigest getLayerDiffId(int index) {
     return rootfs.diff_ids.get(index);
   }
 }

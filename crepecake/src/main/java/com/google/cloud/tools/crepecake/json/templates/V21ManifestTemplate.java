@@ -1,6 +1,6 @@
 package com.google.cloud.tools.crepecake.json.templates;
 
-import com.google.cloud.tools.crepecake.image.Digest;
+import com.google.cloud.tools.crepecake.image.DescriptorDigest;
 import com.google.cloud.tools.crepecake.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class V21ManifestTemplate extends JsonTemplate {
    */
   private static class LayerObjectTemplate extends JsonTemplate {
 
-    private Digest blobSum;
+    private DescriptorDigest blobSum;
   }
 
   /** Template for inner JSON object representing the V1-compatible format for a layer. */
@@ -59,7 +59,7 @@ public class V21ManifestTemplate extends JsonTemplate {
   }
 
   @VisibleForTesting
-  Digest getLayerDigest(int index) {
+  DescriptorDigest getLayerDigest(int index) {
     return fsLayers.get(index).blobSum;
   }
 

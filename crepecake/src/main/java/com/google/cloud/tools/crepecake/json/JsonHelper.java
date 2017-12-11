@@ -23,7 +23,7 @@ import java.io.OutputStream;
 
 // TODO: Add JsonFactory for HTTP response parsing.
 /**
- * Interface to a JSON parser.
+ * Helper class for serializing and deserializing JSON.
  *
  * <p>The interface uses Jackson as the JSON parser. Some useful annotations to include on classes
  * used as templates for JSON are:
@@ -42,13 +42,9 @@ import java.io.OutputStream;
  *
  * @see <a href="https://github.com/FasterXML/jackson">https://github.com/FasterXML/jackson</a>
  */
-public class JsonParser {
+public class JsonHelper {
 
-  private static final ObjectMapper objectMapper;
-
-  static {
-    objectMapper = new ObjectMapper();
-  }
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   /**
    * Deserializes a JSON file via a JSON object template.

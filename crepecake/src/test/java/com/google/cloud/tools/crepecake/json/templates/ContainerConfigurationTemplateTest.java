@@ -1,8 +1,7 @@
 package com.google.cloud.tools.crepecake.json.templates;
 
-import com.google.cloud.tools.crepecake.image.Digest;
-import com.google.cloud.tools.crepecake.image.DigestException;
-import com.google.cloud.tools.crepecake.json.JsonParser;
+import com.google.cloud.tools.crepecake.image.DescriptorDigest;
+import com.google.cloud.tools.crepecake.json.JsonHelper;
 import com.google.common.io.CharStreams;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -10,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.security.DigestException;
 import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,7 +18,7 @@ import org.junit.Test;
 public class ContainerConfigurationTemplateTest {
 
   @Test
-  public void testToJson() throws DigestException, IOException, URISyntaxException {
+  public void testToJson() throws IOException, URISyntaxException, DigestException {
     // Loads the expected JSON string.
     File jsonFile =
         new File(getClass().getClassLoader().getResource("json/containerconfig.json").toURI());
@@ -32,12 +32,12 @@ public class ContainerConfigurationTemplateTest {
     containerConfigJson.setContainerEntrypoint(Arrays.asList("some", "entrypoint", "command"));
 
     containerConfigJson.addLayerDiffId(
-        Digest.fromDigest(
+        DescriptorDigest.fromDigest(
             "sha256:8c662931926fa990b41da3c9f42663a537ccd498130030f9149173a0493832ad"));
 
     // Serializes the JSON object.
     ByteArrayOutputStream jsonStream = new ByteArrayOutputStream();
-    JsonParser.writeJson(jsonStream, containerConfigJson);
+    JsonHelper.writeJson(jsonStream, containerConfigJson);
 
     Assert.assertEquals(expectedJson, jsonStream.toString());
   }
@@ -50,7 +50,7 @@ public class ContainerConfigurationTemplateTest {
 
     // Deserializes into a manifest JSON object.
     ContainerConfigurationTemplate containerConfigJson =
-        JsonParser.readJsonFromFile(jsonFile, ContainerConfigurationTemplate.class);
+        JsonHelper.readJsonFromFile(jsonFile, ContainerConfigurationTemplate.class);
 
     Assert.assertEquals(
         Arrays.asList("VAR1=VAL1", "VAR2=VAL2"), containerConfigJson.getContainerEnvironment());
@@ -60,7 +60,7 @@ public class ContainerConfigurationTemplateTest {
         containerConfigJson.getContainerEntrypoint());
 
     Assert.assertEquals(
-        Digest.fromDigest(
+        DescriptorDigest.fromDigest(
             "sha256:8c662931926fa990b41da3c9f42663a537ccd498130030f9149173a0493832ad"),
         containerConfigJson.getLayerDiffId(0));
   }

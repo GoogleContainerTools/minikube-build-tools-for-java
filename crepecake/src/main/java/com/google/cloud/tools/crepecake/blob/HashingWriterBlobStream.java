@@ -14,16 +14,24 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.json;
+package com.google.cloud.tools.crepecake.blob;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
- * All JSON templates to be used with {@link JsonHelper} must extend this class.
- *
- * <p>Json fields should be private fields and fields that are {@code null} will not be serialized.
+ * A {@link BlobStream} that streams with a {@link BlobStreamWriter} function and hashes the bytes.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public abstract class JsonTemplate {}
+class HashingWriterBlobStream extends AbstractHashingBlobStream {
+
+  private final BlobStreamWriter writer;
+
+  HashingWriterBlobStream(BlobStreamWriter writer) {
+    this.writer = writer;
+  }
+
+  @Override
+  protected void writeToAndHash(OutputStream outputStream) throws IOException {
+    writer.writeTo(outputStream);
+  }
+}
