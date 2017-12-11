@@ -29,9 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
-import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorOutputStream;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
 
 /** Builds a tarball archive. */
 public class TarStreamBuilder {
@@ -51,37 +48,8 @@ public class TarStreamBuilder {
     entries.add(entry);
   }
 
-  /** Writes the compressed archive to a {@link BlobStream}. */
-  public BlobStream toBlobStreamCompressed() throws IOException, CompressorException {
-    return toBlobStream(true);
-  }
-
-  /** Writes the uncompressed archive to a {@link BlobStream}. */
-  public BlobStream toBlobStreamUncompressed() throws IOException, CompressorException {
-    return toBlobStream(false);
-  }
-
-  /**
-   * Helper function to build the archive.
-   *
-   * @param compress compresses the archive if true
-   * @return a {@link BlobStream} containing the built archive BLOB.
-   */
-  private BlobStream toBlobStream(boolean compress) throws IOException, CompressorException {
-    if (compress) {
-      return BlobStreams.from(
-          outputStream -> {
-            try {
-              CompressorOutputStream compressorStream =
-                  new CompressorStreamFactory()
-                      .createCompressorOutputStream(CompressorStreamFactory.GZIP, outputStream);
-              writeEntriesAsTarArchive(compressorStream);
-            } catch (CompressorException ex) {
-              throw new IOException(ex);
-            }
-          });
-    }
-
+  /** Builds a {@link BlobStream} that can stream the uncompressed tarball archive BLOB. */
+  public BlobStream toBlobStream() throws IOException {
     return BlobStreams.from(this::writeEntriesAsTarArchive);
   }
 
