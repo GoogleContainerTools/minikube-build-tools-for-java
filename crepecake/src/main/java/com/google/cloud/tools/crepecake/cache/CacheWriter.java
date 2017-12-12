@@ -27,16 +27,16 @@ public class CacheWriter extends CacheHelper {
 
   }
 
-  public CachedLayer writeDependenciesLayer(UnwrittenLayer layer) throws IOException, DigestException {
-    writeLayer(ApplicationLayerType.DEPENDENCIES, layer);
+  public CachedLayer writeDependenciesLayer(UnwrittenLayer layer) throws IOException {
+    return writeLayer(ApplicationLayerType.DEPENDENCIES, layer);
   }
 
-  public void writeResourcesLayer(UnwrittenLayer layer) throws IOException {
-    writeLayer(ApplicationLayerType.RESOURCES, layer);
+  public CachedLayer writeResourcesLayer(UnwrittenLayer layer) throws IOException {
+    return writeLayer(ApplicationLayerType.RESOURCES, layer);
   }
 
-  public void writeClassesLayer(UnwrittenLayer layer) throws IOException {
-    writeLayer(ApplicationLayerType.CLASSES, layer);
+  public CachedLayer writeClassesLayer(UnwrittenLayer layer) throws IOException {
+    return writeLayer(ApplicationLayerType.CLASSES, layer);
   }
 
   private CachedLayer writeLayer(ApplicationLayerType layerType, UnwrittenLayer layer) throws IOException {
@@ -46,6 +46,8 @@ public class CacheWriter extends CacheHelper {
     TimestampedCachedLayer cachedLayer = new TimestampedCachedLayer(layer.writeTo(layerFile));
 
     cacheMetadata.setApplicationLayer(layerType, cachedLayer);
+
+    return cachedLayer;
   }
 
   /** Flushes any unwritten updates to disk. */

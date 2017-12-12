@@ -57,6 +57,10 @@ class CacheMetadata {
     return cacheMetadata;
   }
 
+  List<TimestampedCachedLayer> getBaseImageLayers() {
+    return baseImageLayers;
+  }
+
   @Nullable
   TimestampedCachedLayer  getApplicationLayer(ApplicationLayerType layerType) {
     return applicationLayers.get(layerType);
