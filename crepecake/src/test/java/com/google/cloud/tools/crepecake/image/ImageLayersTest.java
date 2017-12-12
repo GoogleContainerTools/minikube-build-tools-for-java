@@ -48,7 +48,7 @@ public class ImageLayersTest {
   @Mock private BlobDescriptor mockUnwrittenLayerBlobDescriptor;
 
   @Before
-  public void setUpFakes() {
+  public void setUpFakes() throws LayerPropertyNotFoundException {
     MockitoAnnotations.initMocks(this);
 
     Mockito.when(mockCachedLayerBlobDescriptor.getDigest()).thenReturn(mockDescriptorDigest1);
