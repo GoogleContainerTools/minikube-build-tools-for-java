@@ -14,11 +14,23 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.image;
+package com.google.cloud.tools.crepecake.blob;
 
-public class DigestException extends Exception {
+import com.google.common.base.Charsets;
+import java.io.IOException;
+import java.io.OutputStream;
 
-  public DigestException(String message) {
-    super(message);
+/** A {@link Blob} that holds a {@link String} and hashes the bytes when written out. */
+class HashingStringBlob extends AbstractHashingBlob {
+
+  private final byte[] contentBytes;
+
+  HashingStringBlob(String content) {
+    contentBytes = content.getBytes(Charsets.UTF_8);
+  }
+
+  @Override
+  protected void writeToAndHash(OutputStream outputStream) throws IOException {
+    outputStream.write(contentBytes);
   }
 }

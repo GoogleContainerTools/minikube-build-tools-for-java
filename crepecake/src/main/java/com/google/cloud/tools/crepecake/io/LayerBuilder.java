@@ -16,7 +16,6 @@
 
 package com.google.cloud.tools.crepecake.io;
 
-import com.google.cloud.tools.crepecake.blob.BlobStream;
 import com.google.cloud.tools.crepecake.hash.ByteHasher;
 import com.google.cloud.tools.crepecake.image.Digest;
 import com.google.cloud.tools.crepecake.image.DigestException;

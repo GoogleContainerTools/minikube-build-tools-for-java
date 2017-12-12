@@ -16,7 +16,6 @@
 
 package com.google.cloud.tools.crepecake.image;
 
-import com.google.cloud.tools.crepecake.blob.BlobStream;
 import javax.annotation.Nullable;
 
 /** Represents a layer in an image. */

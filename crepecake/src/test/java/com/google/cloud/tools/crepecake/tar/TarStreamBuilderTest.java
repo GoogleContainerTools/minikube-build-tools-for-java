@@ -16,97 +16,100 @@
 
 package com.google.cloud.tools.crepecake.tar;
 
-import com.google.cloud.tools.crepecake.blob.BlobStream;
+import com.google.cloud.tools.crepecake.blob.Blob;
+import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
+import com.google.common.io.Resources;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.util.function.Function;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.DigestException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /** Tests for {@link TarStreamBuilder}. */
 public class TarStreamBuilderTest {
 
-  @Test
-  public void testBuild_compressed() throws IOException, URISyntaxException, CompressorException {
-    testBuild(
-        tarStreamBuilder -> {
-          try {
-            return tarStreamBuilder.toBlobStreamCompressed();
-          } catch (IOException ex) {
-            throw new RuntimeException(ex);
-          }
-        },
-        inputStream -> {
-          try {
-            return new CompressorStreamFactory().createCompressorInputStream(inputStream);
-          } catch (CompressorException ex) {
-            throw new RuntimeException(ex);
-          }
-        });
+  private String expectedFileAString;
+  private String expectedFileBString;
+  private TarStreamBuilder testTarStreamBuilder = new TarStreamBuilder();
+
+  @Before
+  public void setUp() throws IOException, URISyntaxException {
+    // Gets the test resource files.
+    Path fileA = Paths.get(Resources.getResource("fileA").toURI());
+    Path fileB = Paths.get(Resources.getResource("fileB").toURI());
+
+    expectedFileAString = new String(Files.readAllBytes(fileA), Charsets.UTF_8);
+    expectedFileBString = new String(Files.readAllBytes(fileB), Charsets.UTF_8);
+
+    // Prepares a test TarStreamBuilder.
+    testTarStreamBuilder.addFile(fileA.toFile(), "some/path/to/resourceFileA");
+    testTarStreamBuilder.addFile(fileB.toFile(), "crepecake");
   }
 
   @Test
-  public void testBuild_uncompressed() throws IOException, URISyntaxException {
-    testBuild(
-        tarStreamBuilder -> {
-          try {
-            return tarStreamBuilder.toBlobStreamUncompressed();
-          } catch (IOException ex) {
-            throw new RuntimeException(ex);
-          }
-        },
-        Function.identity());
+  public void testToBlob() throws IOException, DigestException {
+    Blob blobStream = testTarStreamBuilder.toBlob();
+
+    // Writes the BLOB and captures the output.
+    ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
+    blobStream.writeTo(tarByteOutputStream);
+
+    // Rearrange the output into input for verification.
+    ByteArrayInputStream tarByteInputStream =
+        new ByteArrayInputStream(tarByteOutputStream.toByteArray());
+    TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(tarByteInputStream);
+
+    verifyTarArchive(tarArchiveInputStream);
+  }
+
+  @Test
+  public void testToBlob_withCompression()
+      throws IOException, CompressorException, DigestException {
+    Blob blobStream = testTarStreamBuilder.toBlob();
+
+    // Writes the BLOB and captures the output.
+    ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
+    CompressorOutputStream compressorStream =
+        new CompressorStreamFactory()
+            .createCompressorOutputStream(CompressorStreamFactory.GZIP, tarByteOutputStream);
+    blobStream.writeTo(compressorStream);
+
+    // Rearrange the output into input for verification.
+    ByteArrayInputStream byteArrayInputStream =
+        new ByteArrayInputStream(tarByteOutputStream.toByteArray());
+    InputStream tarByteInputStream =
+        new CompressorStreamFactory().createCompressorInputStream(byteArrayInputStream);
+    TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(tarByteInputStream);
+
+    verifyTarArchive(tarArchiveInputStream);
   }
 
   /**
-   * Helper function to perform the archive build testing.
-   *
-   * @param buildFunction {@link TarStreamBuilder} function to test
-   * @param wrapInputStreamFunction function to wrap an {@link InputStream} in another {@link
-   *     InputStream}. This wrap can be a decompressor.
+   * Helper method to verify that the files were archived correctly by reading {@code
+   * tarArchiveInputStream}.
    */
-  private void testBuild(
-      Function<TarStreamBuilder, BlobStream> buildFunction,
-      Function<InputStream, InputStream> wrapInputStreamFunction)
-      throws URISyntaxException, IOException {
-    File fileA = new File(getClass().getClassLoader().getResource("fileA").toURI());
-    File fileB = new File(getClass().getClassLoader().getResource("fileB").toURI());
-
-    String expectedFileAString =
-        CharStreams.toString(new InputStreamReader(new FileInputStream(fileA)));
-    String expectedFileBString =
-        CharStreams.toString(new InputStreamReader(new FileInputStream(fileB)));
-
-    TarStreamBuilder tarStreamBuilder = new TarStreamBuilder();
-    tarStreamBuilder.addFile(fileA, "some/path/to/fileA");
-    tarStreamBuilder.addFile(fileB, "crepecake");
-
-    BlobStream blobStreamCompressed = buildFunction.apply(tarStreamBuilder);
-
-    ByteArrayOutputStream compressedTarByteStream = new ByteArrayOutputStream();
-    blobStreamCompressed.writeTo(compressedTarByteStream);
-
-    ByteArrayInputStream byteArrayInputStream =
-        new ByteArrayInputStream(compressedTarByteStream.toByteArray());
-    InputStream wrappedInputStream = wrapInputStreamFunction.apply(byteArrayInputStream);
-    TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(wrappedInputStream);
-
+  private void verifyTarArchive(TarArchiveInputStream tarArchiveInputStream) throws IOException {
+    // Verifies fileA was archived correctly.
     TarArchiveEntry headerA = tarArchiveInputStream.getNextTarEntry();
-    Assert.assertEquals("some/path/to/fileA", headerA.getName());
+    Assert.assertEquals("some/path/to/resourceFileA", headerA.getName());
     String fileAString = CharStreams.toString(new InputStreamReader(tarArchiveInputStream));
     Assert.assertEquals(expectedFileAString, fileAString);
 
+    // Verifies fileB was archived correctly.
     TarArchiveEntry headerB = tarArchiveInputStream.getNextTarEntry();
     Assert.assertEquals("crepecake", headerB.getName());
     String fileBString = CharStreams.toString(new InputStreamReader(tarArchiveInputStream));

@@ -14,25 +14,21 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.util;
+package com.google.cloud.tools.crepecake.blob;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.security.DigestException;
 
-public class JsonParser {
-  private static final Gson GSON;
+/** Holds a BLOB source for writing to an {@link OutputStream}. */
+public interface Blob {
 
-  static {
-    GsonBuilder gsonBuilder = new GsonBuilder();
-    // TODO: Add serializer for digests.
-    GSON = gsonBuilder.create();
-  }
-
-  public static String toJson(Object src) {
-    return GSON.toJson(src);
-  }
-
-  public static <T> T fromJson(String json, Class<T> classOfT) {
-    return GSON.fromJson(json, classOfT);
-  }
+  /**
+   * Writes the BLOB to an {@link OutputStream}.
+   *
+   * @param outputStream the {@link OutputStream} to write to
+   * @return the {@link BlobDescriptor} of the written BLOB
+   * @throws DigestException if the written BLOB digest failed to generate
+   */
+  BlobDescriptor writeTo(OutputStream outputStream) throws IOException, DigestException;
 }
