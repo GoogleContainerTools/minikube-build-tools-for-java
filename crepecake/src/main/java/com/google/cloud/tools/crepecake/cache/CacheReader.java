@@ -14,29 +14,27 @@ public class CacheReader extends CacheHelper {
   /** Gets the file that stores the content BLOB for the dependencies layer. */
   @Nullable
   public File getDependenciesLayerFile() throws IOException {
-    return getLayerFile(CacheMetadata::getDependenciesLayer);
+    return getLayerFile(ApplicationLayerType.DEPENDENCIES);
   }
 
   /** Gets the file that stores the content BLOB for the resources layer. */
   @Nullable
   public File getResourcesLayerFile() throws IOException {
-    return getLayerFile(CacheMetadata::getResourcesLayer);
+    return getLayerFile(ApplicationLayerType.RESOURCES);
   }
 
   /** Gets the file that stores the content BLOB for the classes layer. */
   @Nullable
   public File getClassesLayerFile() throws IOException {
-    return getLayerFile(CacheMetadata::getClassesLayer);
+    return getLayerFile(ApplicationLayerType.CLASSES);
   }
 
   /**
-   * Gets the file that stores the content BLOB for a layer in the {@link CacheMetadata}.
-   *
-   * @param getLayerFunction a function that retrieves a layer from a {@link CacheMetadata}
+   * Gets the file that stores the content BLOB for an application layer.
    */
-  private File getLayerFile(Function<CacheMetadata, TimestampedCachedLayer> getLayerFunction) throws IOException {
+  private File getLayerFile(ApplicationLayerType layerType) throws IOException {
     CacheMetadata cacheMetadata = getMetadata();
-    TimestampedCachedLayer dependenciesLayer = getLayerFunction.apply(cacheMetadata);
+    TimestampedCachedLayer dependenciesLayer = cacheMetadata.getApplicationLayer(layerType);
 
     if (null == dependenciesLayer) {
       return null;
