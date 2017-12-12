@@ -19,36 +19,21 @@ package com.google.cloud.tools.crepecake.blob;
 import com.google.common.base.Charsets;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.security.DigestException;
-import java.security.NoSuchAlgorithmException;
-import javax.annotation.Nonnull;
 
-/** A {@link BlobStream} that streams from a {@link String}. */
-class StringBlobStream implements BlobStream {
+/** A {@link Blob} that holds a {@link String}. */
+class StringBlob implements Blob {
 
   private final String content;
 
-  private BlobDescriptor writtenBlobDescriptor;
-
-  StringBlobStream(String content) {
+  StringBlob(String content) {
     this.content = content;
   }
 
   @Override
-  public void writeTo(OutputStream outputStream)
-      throws IOException, NoSuchAlgorithmException, DigestException {
+  public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
     byte[] contentBytes = content.getBytes(Charsets.UTF_8);
     outputStream.write(contentBytes);
     outputStream.flush();
-    writtenBlobDescriptor = new BlobDescriptor(content.length());
-  }
-
-  @Nonnull
-  @Override
-  public BlobDescriptor getWrittenBlobDescriptor() {
-    if (null == writtenBlobDescriptor) {
-      BlobStream.super.getWrittenBlobDescriptor();
-    }
-    return writtenBlobDescriptor;
+    return new BlobDescriptor(content.length());
   }
 }

@@ -29,79 +29,61 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.security.DigestException;
-import java.security.NoSuchAlgorithmException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-/** Tests for {@link BlobStream}. */
-public class BlobStreamTest {
+/** Tests for {@link Blob}. */
+public class BlobTest {
 
   @Test
-  public void testEmpty() throws IOException, DigestException, NoSuchAlgorithmException {
-    verifyBlobStreamWriteTo("", BlobStreams.empty());
+  public void testEmpty() throws IOException, DigestException {
+    verifyBlobStreamWriteTo("", Blobs.empty());
   }
 
   @Test
-  public void testEmpty_didNotCallWriteTo() {
-    try {
-      BlobStreams.empty().getWrittenBlobDescriptor();
-      Assert.fail(
-          "Getting written BlobDescriptor should have failed when writeTo has not been called");
-    } catch (IllegalStateException ex) {
-      Assert.assertEquals(
-          "Written BlobDescriptor not available - must call writeTo first", ex.getMessage());
-    }
-  }
-
-  @Test
-  public void testFromInputStream()
-      throws IOException, DigestException, NoSuchAlgorithmException, URISyntaxException {
+  public void testFromInputStream() throws IOException, DigestException, URISyntaxException {
     String expected = "crepecake";
     InputStream inputStream = new ByteArrayInputStream(expected.getBytes(Charsets.UTF_8));
-    verifyBlobStreamWriteTo(expected, BlobStreams.from(inputStream));
+    verifyBlobStreamWriteTo(expected, Blobs.from(inputStream));
   }
 
   @Test
-  public void testFromFile()
-      throws IOException, DigestException, NoSuchAlgorithmException, URISyntaxException {
+  public void testFromFile() throws IOException, DigestException, URISyntaxException {
     File fileA = new File(Resources.getResource("fileA").toURI());
     String expected = new String(Files.readAllBytes(fileA.toPath()), Charsets.UTF_8);
-    verifyBlobStreamWriteTo(expected, BlobStreams.from(fileA));
+    verifyBlobStreamWriteTo(expected, Blobs.from(fileA));
   }
 
   @Test
-  public void testFromString_hashing()
-      throws IOException, DigestException, NoSuchAlgorithmException {
+  public void testFromString_hashing() throws IOException, DigestException {
     String expected = "crepecake";
-    verifyBlobStreamWriteTo(expected, BlobStreams.from(expected, true));
+    verifyBlobStreamWriteTo(expected, Blobs.from(expected, true));
   }
 
   @Test
-  public void testFromString_noHashing()
-      throws IOException, DigestException, NoSuchAlgorithmException {
+  public void testFromString_noHashing() throws IOException, DigestException {
     String expected = "crepecake";
-    verifyBlobStreamWriteTo(expected, BlobStreams.from(expected, false));
+    verifyBlobStreamWriteTo(expected, Blobs.from(expected, false));
   }
 
   @Test
-  public void testFromBlobWriter() throws NoSuchAlgorithmException, IOException, DigestException {
+  public void testFromBlobWriter() throws IOException, DigestException {
     String expected = "crepecake";
 
-    BlobStreamWriter writer =
+    BlobWriter writer =
         outputStream -> {
           outputStream.write(expected.getBytes(Charsets.UTF_8));
         };
 
-    verifyBlobStreamWriteTo(expected, BlobStreams.from(writer));
+    verifyBlobStreamWriteTo(expected, Blobs.from(writer));
   }
 
-  /** Checks that the {@link BlobStream} streams the expected string. */
-  private void verifyBlobStreamWriteTo(String expected, BlobStream blobStream)
-      throws NoSuchAlgorithmException, IOException, DigestException {
+  /** Checks that the {@link Blob} streams the expected string. */
+  private void verifyBlobStreamWriteTo(String expected, Blob blob)
+      throws IOException, DigestException {
     OutputStream outputStream = new ByteArrayOutputStream();
-    blobStream.writeTo(outputStream);
-    BlobDescriptor blobDescriptor = blobStream.getWrittenBlobDescriptor();
+    BlobDescriptor blobDescriptor = blob.writeTo(outputStream);
 
     String output = outputStream.toString();
     Assert.assertEquals(expected, output);

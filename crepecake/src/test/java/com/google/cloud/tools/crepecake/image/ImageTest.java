@@ -16,7 +16,6 @@
 
 package com.google.cloud.tools.crepecake.image;
 
-import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 import com.google.common.collect.ImmutableMap;
 import java.security.DigestException;
 import java.util.Arrays;
@@ -25,34 +24,36 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 /** Tests for {@link Image}. */
 public class ImageTest {
 
-  private DescriptorDigest fakeDigest;
-  private Layer fakeLayer;
+  @Mock private Layer mockLayer;
+  @Mock private ImageLayers<Layer> mockImageLayers;
 
   @Before
   public void setUpFakes() throws DigestException {
-    fakeDigest =
-        DescriptorDigest.fromDigest(
-            "sha256:8c662931926fa990b41da3c9f42663a537ccd498130030f9149173a0493832ad");
-    fakeLayer = new ReferenceLayer(new BlobDescriptor(1000, fakeDigest), fakeDigest);
+    MockitoAnnotations.initMocks(this);
   }
 
   @Test
-  public void test_smokeTest() throws ImageException, LayerException {
+  public void test_smokeTest() throws DuplicateLayerException, LayerPropertyNotFoundException {
     Map<String, String> expectedEnvironment =
         ImmutableMap.of("crepecake", "is great", "VARIABLE", "VALUE");
 
-    Image image = new Image();
+    Image<Layer> image = new Image<>(mockImageLayers);
 
     image.setEnvironmentVariable("crepecake", "is great");
     image.setEnvironmentVariable("VARIABLE", "VALUE");
 
     image.setEntrypoint(Arrays.asList("some", "command"));
 
-    image.addLayer(fakeLayer);
+    image.addLayer(mockLayer);
+
+    Mockito.verify(mockImageLayers).add(mockLayer);
 
     Assert.assertThat(image.getEnvironmentMap(), CoreMatchers.is(expectedEnvironment));
 

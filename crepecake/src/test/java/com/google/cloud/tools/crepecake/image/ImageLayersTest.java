@@ -17,47 +17,81 @@
 package com.google.cloud.tools.crepecake.image;
 
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
-import java.security.DigestException;
 import java.util.Arrays;
 import java.util.List;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 /** Tests for {@link ImageLayers}. */
 public class ImageLayersTest {
 
-  private DescriptorDigest fakeDigest;
-  private Layer fakeLayer;
+  @Mock private DescriptorDigest mockDescriptorDigest1;
+  @Mock private DescriptorDigest mockDescriptorDigest2;
+  @Mock private DescriptorDigest mockDescriptorDigest3;
+
+  @Mock private CachedLayer mockCachedLayer;
+  @Mock private BlobDescriptor mockCachedLayerBlobDescriptor;
+
+  @Mock private ReferenceLayer mockReferenceLayer;
+  @Mock private BlobDescriptor mockReferenceLayerBlobDescriptor;
+
+  @Mock private ReferenceNoDiffIdLayer mockReferenceNoDiffIdLayer;
+  @Mock private BlobDescriptor mockReferenceNoDiffIdLayerBlobDescriptor;
+
+  @Mock private UnwrittenLayer mockUnwrittenLayer;
+  @Mock private BlobDescriptor mockUnwrittenLayerBlobDescriptor;
 
   @Before
-  public void setUpFakes() throws DigestException {
-    fakeDigest =
-        DescriptorDigest.fromDigest(
-            "sha256:8c662931926fa990b41da3c9f42663a537ccd498130030f9149173a0493832ad");
-    fakeLayer = new ReferenceLayer(new BlobDescriptor(1000, fakeDigest), fakeDigest);
+  public void setUpFakes() throws LayerPropertyNotFoundException {
+    MockitoAnnotations.initMocks(this);
+
+    Mockito.when(mockCachedLayerBlobDescriptor.getDigest()).thenReturn(mockDescriptorDigest1);
+    Mockito.when(mockReferenceLayerBlobDescriptor.getDigest()).thenReturn(mockDescriptorDigest2);
+    Mockito.when(mockReferenceNoDiffIdLayerBlobDescriptor.getDigest())
+        .thenReturn(mockDescriptorDigest3);
+    // Intentionally the same digest as the mockCachedLayer.
+    Mockito.when(mockUnwrittenLayerBlobDescriptor.getDigest()).thenReturn(mockDescriptorDigest1);
+
+    Mockito.when(mockCachedLayer.getBlobDescriptor()).thenReturn(mockCachedLayerBlobDescriptor);
+    Mockito.when(mockReferenceLayer.getBlobDescriptor())
+        .thenReturn(mockReferenceLayerBlobDescriptor);
+    Mockito.when(mockReferenceNoDiffIdLayer.getBlobDescriptor())
+        .thenReturn(mockReferenceNoDiffIdLayerBlobDescriptor);
+    Mockito.when(mockUnwrittenLayer.getBlobDescriptor())
+        .thenReturn(mockUnwrittenLayerBlobDescriptor);
   }
 
   @Test
-  public void testAddLayer_success() throws DigestException, ImageException, LayerException {
-    List<Layer> expectedLayers = Arrays.asList(fakeLayer);
+  public void testAddLayer_success()
+      throws DuplicateLayerException, LayerPropertyNotFoundException {
+    List<Layer> expectedLayers =
+        Arrays.asList(mockCachedLayer, mockReferenceLayer, mockReferenceNoDiffIdLayer);
 
-    ImageLayers imageLayers = new ImageLayers();
-    imageLayers.add(fakeLayer);
+    ImageLayers<Layer> imageLayers = new ImageLayers<>();
+    imageLayers.add(mockCachedLayer);
+    imageLayers.add(mockReferenceLayer);
+    imageLayers.add(mockReferenceNoDiffIdLayer);
 
     Assert.assertThat(imageLayers.asList(), CoreMatchers.is(expectedLayers));
   }
 
   @Test
-  public void testAddLayer_duplicate() throws ImageException, LayerException {
-    ImageLayers imageLayers = new ImageLayers();
-    imageLayers.add(fakeLayer);
+  public void testAddLayer_duplicate()
+      throws DuplicateLayerException, LayerPropertyNotFoundException {
+    ImageLayers<Layer> imageLayers = new ImageLayers<>();
+    imageLayers.add(mockCachedLayer);
+    imageLayers.add(mockReferenceLayer);
+    imageLayers.add(mockReferenceNoDiffIdLayer);
 
     try {
-      imageLayers.add(fakeLayer);
-      Assert.fail("Adding duplicate layer should throw ImageException");
-    } catch (ImageException ex) {
+      imageLayers.add(mockUnwrittenLayer);
+      Assert.fail("Adding duplicate layer should throw DuplicateLayerException");
+    } catch (DuplicateLayerException ex) {
       Assert.assertEquals("Cannot add the same layer more than once", ex.getMessage());
     }
   }

@@ -17,34 +17,31 @@
 package com.google.cloud.tools.crepecake.blob;
 
 import com.google.cloud.tools.crepecake.hash.CountingDigestOutputStream;
-import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.DigestException;
-import java.security.NoSuchAlgorithmException;
-import javax.annotation.Nonnull;
 
-/**
- * An empty {@link BlobStream}. This is used, for e.g., to send an HTTP request with an empty body
- * without having to pass {@code null} for the body {@link BlobStream}.
- */
-class EmptyBlobStream implements BlobStream {
+/** Abstract parent for {@link Blob}s that hash the BLOB when written out. */
+abstract class AbstractHashingBlob implements Blob {
 
-  private BlobDescriptor writtenBlobDescriptor;
+  /**
+   * Writes to a {@link CountingDigestOutputStream}.
+   *
+   * @param outputStream the {@link CountingDigestOutputStream} to write to
+   */
+  abstract void writeToWithHashing(CountingDigestOutputStream outputStream) throws IOException;
 
   @Override
-  public void writeTo(OutputStream outputStream)
-      throws IOException, NoSuchAlgorithmException, DigestException {
-    writtenBlobDescriptor =
-        new CountingDigestOutputStream(ByteStreams.nullOutputStream()).toBlobDescriptor();
-  }
+  public final BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
+    CountingDigestOutputStream hashingOutputStream = new CountingDigestOutputStream(outputStream);
 
-  @Nonnull
-  @Override
-  public BlobDescriptor getWrittenBlobDescriptor() {
-    if (null == writtenBlobDescriptor) {
-      BlobStream.super.getWrittenBlobDescriptor();
+    writeToWithHashing(hashingOutputStream);
+    hashingOutputStream.flush();
+
+    try {
+      return hashingOutputStream.toBlobDescriptor();
+    } catch (DigestException ex) {
+      throw new IOException("BLOB hashing failed: " + ex.getMessage());
     }
-    return writtenBlobDescriptor;
   }
 }

@@ -16,28 +16,16 @@
 
 package com.google.cloud.tools.crepecake.blob;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
-/** A {@link BlobStream} that streams from a {@link File}. */
-class FileBlobStream extends InputStreamBlobStream {
-
-  private final File file;
-
-  FileBlobStream(File file) {
-    // The input stream will be opened when writing.
-    super(null);
-    this.file = file;
-  }
+/**
+ * An empty {@link Blob}. This is used, for example, to send an HTTP request with an empty body
+ * without having to pass {@code null} for the body {@link Blob}.
+ */
+class EmptyBlob implements Blob {
 
   @Override
-  public void writeTo(OutputStream outputStream) throws IOException {
-    try (InputStream fileStream = new BufferedInputStream(new FileInputStream(file))) {
-      writeFromInputStream(fileStream, outputStream);
-    }
+  public BlobDescriptor writeTo(OutputStream outputStream) {
+    return new BlobDescriptor(0);
   }
 }

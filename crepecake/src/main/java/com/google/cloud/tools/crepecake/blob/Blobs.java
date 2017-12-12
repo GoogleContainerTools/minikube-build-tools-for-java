@@ -16,22 +16,29 @@
 
 package com.google.cloud.tools.crepecake.blob;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.File;
+import java.io.InputStream;
 
-/**
- * A {@link BlobStream} that streams with a {@link BlobStreamWriter} function and hashes the bytes.
- */
-class HashingWriterBlobStream extends AbstractHashingBlobStream {
+/** Static initializers for {@link Blob}. */
+public class Blobs {
 
-  private final BlobStreamWriter writer;
-
-  HashingWriterBlobStream(BlobStreamWriter writer) {
-    this.writer = writer;
+  public static Blob empty() {
+    return new EmptyBlob();
   }
 
-  @Override
-  protected void writeToAndHash(OutputStream outputStream) throws IOException {
-    writer.writeTo(outputStream);
+  public static Blob from(InputStream inputStream) {
+    return new InputStreamBlob(inputStream);
+  }
+
+  public static Blob from(File file) {
+    return new FileBlob(file);
+  }
+
+  public static Blob from(String content, boolean hashing) {
+    return hashing ? new HashingStringBlob(content) : new StringBlob(content);
+  }
+
+  public static Blob from(BlobWriter writer) {
+    return new HashingWriterBlob(writer);
   }
 }

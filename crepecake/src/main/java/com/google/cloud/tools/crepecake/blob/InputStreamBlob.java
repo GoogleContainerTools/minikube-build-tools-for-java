@@ -19,24 +19,19 @@ package com.google.cloud.tools.crepecake.blob;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.DigestException;
-import java.security.NoSuchAlgorithmException;
-import javax.annotation.Nonnull;
 
-/** A {@link BlobStream} that streams from an {@link InputStream}. */
-class InputStreamBlobStream implements BlobStream {
+/** A {@link Blob} that holds an {@link InputStream}. */
+class InputStreamBlob implements Blob {
 
   private final InputStream inputStream;
 
   private final byte[] byteBuffer = new byte[8192];
 
-  private BlobDescriptor writtenBlobDescriptor;
-
-  InputStreamBlobStream(InputStream inputStream) {
+  InputStreamBlob(InputStream inputStream) {
     this.inputStream = inputStream;
   }
 
-  protected void writeFromInputStream(InputStream inputStream, OutputStream outputStream)
+  BlobDescriptor writeFromInputStream(InputStream inputStream, OutputStream outputStream)
       throws IOException {
     long bytesWritten = 0;
     int bytesRead;
@@ -45,21 +40,11 @@ class InputStreamBlobStream implements BlobStream {
       bytesWritten += bytesRead;
     }
     outputStream.flush();
-    writtenBlobDescriptor = new BlobDescriptor(bytesWritten);
+    return new BlobDescriptor(bytesWritten);
   }
 
   @Override
-  public void writeTo(OutputStream outputStream)
-      throws IOException, NoSuchAlgorithmException, DigestException {
-    writeFromInputStream(inputStream, outputStream);
-  }
-
-  @Nonnull
-  @Override
-  public BlobDescriptor getWrittenBlobDescriptor() {
-    if (null == writtenBlobDescriptor) {
-      BlobStream.super.getWrittenBlobDescriptor();
-    }
-    return writtenBlobDescriptor;
+  public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
+    return writeFromInputStream(inputStream, outputStream);
   }
 }

@@ -17,8 +17,8 @@
 package com.google.cloud.tools.crepecake.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.cloud.tools.crepecake.blob.BlobStream;
-import com.google.cloud.tools.crepecake.blob.BlobStreams;
+import com.google.cloud.tools.crepecake.blob.Blob;
+import com.google.cloud.tools.crepecake.blob.Blobs;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -71,8 +71,8 @@ public class JsonHelper {
     objectMapper.writeValue(outputStream, source);
   }
 
-  /** Convert a {@link JsonTemplate} to a {@link BlobStream} of the JSON string. */
-  public static BlobStream toBlobStream(JsonTemplate template) throws IOException {
-    return BlobStreams.from(outputStream -> writeJson(outputStream, template));
+  /** Convert a {@link JsonTemplate} to a {@link Blob} of the JSON string. */
+  public static Blob toBlob(JsonTemplate template) throws IOException {
+    return Blobs.from(outputStream -> writeJson(outputStream, template));
   }
 }

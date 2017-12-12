@@ -17,6 +17,7 @@
 package com.google.cloud.tools.crepecake.json;
 
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
+import com.google.common.io.CharStreams;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +28,6 @@ import java.security.DigestException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.gradle.internal.impldep.com.google.common.io.CharStreams;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -42,6 +42,7 @@ public class JsonHelperTest {
     private List<InnerObject> list;
 
     private static class InnerObject extends JsonTemplate {
+      // This field has the same name as a field in the outer class, but either NOT interfere with the other.
       private int number;
       private List<String> texts;
       private List<DescriptorDigest> digests;

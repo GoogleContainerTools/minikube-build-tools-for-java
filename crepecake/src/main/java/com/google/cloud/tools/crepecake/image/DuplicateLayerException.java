@@ -16,9 +16,10 @@
 
 package com.google.cloud.tools.crepecake.image;
 
-public class LayerException extends Exception {
+/** Thrown when attempting to add a layer to an image but that layer already exists in the image. */
+public class DuplicateLayerException extends Exception {
 
-  public LayerException(String message) {
+  public DuplicateLayerException(String message) {
     super(message);
   }
 }
