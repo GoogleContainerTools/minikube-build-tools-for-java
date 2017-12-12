@@ -18,6 +18,7 @@ package com.google.cloud.tools.crepecake.tar;
 
 import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.Blobs;
+import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteStreams;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -36,25 +37,9 @@ public class TarStreamBuilder {
   /** Holds the entries added to the archive. */
   private final List<TarArchiveEntry> entries = new ArrayList<>();
 
-  /**
-   * Adds a file to the archive.
-   *
-   * @param file the file to add
-   * @param path the relative archive extraction path
-   */
-  public void addFile(File file, String path) throws IOException {
-    TarArchiveEntry entry = new TarArchiveEntry(file, path);
-
-    entries.add(entry);
-  }
-
-  /** Builds a {@link Blob} that can stream the uncompressed tarball archive BLOB. */
-  public Blob toBlob() throws IOException {
-    return Blobs.from(this::writeEntriesAsTarArchive);
-  }
-
   /** Writes each entry in the filesystem to the tarball archive stream. */
-  private void writeEntriesAsTarArchive(OutputStream tarByteStream) throws IOException {
+  private static void writeEntriesAsTarArchive(
+      ImmutableList<TarArchiveEntry> entries, OutputStream tarByteStream) throws IOException {
     try (TarArchiveOutputStream tarArchiveOutputStream =
         new TarArchiveOutputStream(tarByteStream)) {
       for (TarArchiveEntry entry : entries) {
@@ -64,5 +49,23 @@ public class TarStreamBuilder {
         tarArchiveOutputStream.closeArchiveEntry();
       }
     }
+  }
+
+  /**
+   * Adds a file to the archive.
+   *
+   * @param file the file to add
+   * @param path the relative archive extraction path
+   */
+  public void addFile(File file, String path) {
+    TarArchiveEntry entry = new TarArchiveEntry(file, path);
+
+    entries.add(entry);
+  }
+
+  /** Builds a {@link Blob} that can stream the uncompressed tarball archive BLOB. */
+  public Blob toBlob() {
+    ImmutableList<TarArchiveEntry> immutableEntries = ImmutableList.copyOf(entries);
+    return Blobs.from(outputStream -> writeEntriesAsTarArchive(immutableEntries, outputStream));
   }
 }
