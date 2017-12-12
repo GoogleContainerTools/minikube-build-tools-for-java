@@ -16,7 +16,7 @@
 
 package com.google.cloud.tools.crepecake.tar;
 
-import com.google.cloud.tools.crepecake.blob.BlobStream;
+import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Resources;
@@ -61,8 +61,8 @@ public class TarStreamBuilderTest {
   }
 
   @Test
-  public void testToBlobStream() throws IOException, DigestException {
-    BlobStream blobStream = testTarStreamBuilder.toBlobStream();
+  public void testToBlob() throws IOException, DigestException {
+    Blob blobStream = testTarStreamBuilder.toBlob();
 
     // Writes the BLOB and captures the output.
     ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
@@ -77,9 +77,9 @@ public class TarStreamBuilderTest {
   }
 
   @Test
-  public void testToBlobStream_withCompression()
+  public void testToBlob_withCompression()
       throws IOException, CompressorException, DigestException {
-    BlobStream blobStream = testTarStreamBuilder.toBlobStream();
+    Blob blobStream = testTarStreamBuilder.toBlob();
 
     // Writes the BLOB and captures the output.
     ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();

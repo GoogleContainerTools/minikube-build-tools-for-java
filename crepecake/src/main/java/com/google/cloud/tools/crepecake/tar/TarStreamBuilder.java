@@ -16,8 +16,8 @@
 
 package com.google.cloud.tools.crepecake.tar;
 
-import com.google.cloud.tools.crepecake.blob.BlobStream;
-import com.google.cloud.tools.crepecake.blob.BlobStreams;
+import com.google.cloud.tools.crepecake.blob.Blob;
+import com.google.cloud.tools.crepecake.blob.Blobs;
 import com.google.common.io.ByteStreams;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -48,9 +48,9 @@ public class TarStreamBuilder {
     entries.add(entry);
   }
 
-  /** Builds a {@link BlobStream} that can stream the uncompressed tarball archive BLOB. */
-  public BlobStream toBlobStream() throws IOException {
-    return BlobStreams.from(this::writeEntriesAsTarArchive);
+  /** Builds a {@link Blob} that can stream the uncompressed tarball archive BLOB. */
+  public Blob toBlob() throws IOException {
+    return Blobs.from(this::writeEntriesAsTarArchive);
   }
 
   /** Writes each entry in the filesystem to the tarball archive stream. */
