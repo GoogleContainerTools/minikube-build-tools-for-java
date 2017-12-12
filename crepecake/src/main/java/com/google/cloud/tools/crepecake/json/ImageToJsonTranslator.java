@@ -16,40 +16,42 @@
 
 package com.google.cloud.tools.crepecake.json;
 
-import com.google.cloud.tools.crepecake.blob.BlobStream;
+import com.google.cloud.tools.crepecake.blob.Blob;
+import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
 import com.google.cloud.tools.crepecake.image.Image;
 import com.google.cloud.tools.crepecake.image.Layer;
-import com.google.cloud.tools.crepecake.image.LayerException;
+import com.google.cloud.tools.crepecake.image.LayerPropertyNotFoundException;
 import com.google.cloud.tools.crepecake.json.templates.ContainerConfigurationTemplate;
 import com.google.cloud.tools.crepecake.json.templates.V22ManifestTemplate;
 import java.io.IOException;
-import java.security.DigestException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
-/** Translates an {@link Image} into a manifest or container configuration JSON BLOB. */
+/**
+ * Translates an {@link Image} into a manifest or container configuration JSON BLOB.
+ *
+ * <p>Example usage:
+ *
+ * <pre>{@code
+ * ImageToJsonTranslator translator = new ImageToJsonTranslator(image);
+ * Blob containerConfigurationBlob = translator.getContainerConfigurationBlob();
+ * BlobDescriptor containerConfigurationBlobDescriptor = blob.writeTo(outputStream);
+ * Blob manifestBlob = translator.getManifestBlob(containerConfigurationBlobDescriptor);
+ * }</pre>
+ */
 public class ImageToJsonTranslator {
 
-  private final Image image;
-
-  @Nullable private BlobStream containerConfigurationBlobStream;
-  @Nullable private BlobStream manifestBlobStream;
+  private final Image<Layer> image;
 
   /** Instantiate with an {@link Image} that should not be modified afterwards. */
-  public ImageToJsonTranslator(Image image) {
+  public ImageToJsonTranslator(Image<Layer> image) {
     this.image = image;
   }
 
-  /** Gets the container configuration as a {@link BlobStream} */
-  public BlobStream getContainerConfiguration() throws IOException, LayerException {
-    if (null != containerConfigurationBlobStream) {
-      return containerConfigurationBlobStream;
-    }
-
+  /** Gets the container configuration as a {@link Blob}. */
+  public Blob getContainerConfigurationBlob() throws IOException, LayerPropertyNotFoundException {
     // Set up the JSON template.
     ContainerConfigurationTemplate template = new ContainerConfigurationTemplate();
 
@@ -75,35 +77,23 @@ public class ImageToJsonTranslator {
     template.setContainerEntrypoint(image.getEntrypoint());
 
     // Serializes into JSON.
-    containerConfigurationBlobStream = JsonHelper.toBlobStream(template);
-
-    return containerConfigurationBlobStream;
+    return JsonHelper.toBlob(template);
   }
 
   /**
-   * Gets the manifest as a {@link BlobStream}. This is only valid <b>after</b> {@code
-   * getContainerConfiguration} is called.
-   *
-   * @throws IllegalStateException if the container configuration BLOB does not exist or has not
-   *     been written
+   * Gets the manifest as a {@link Blob}. The {@code containerConfigurationBlobDescriptor} must be
+   * the [@link BlobDescriptor} obtained by writing out the container configuration {@link Blob}
+   * returned from {@link #getContainerConfigurationBlob()}.
    */
-  public BlobStream getManifest()
-      throws IOException, NoSuchAlgorithmException, DigestException, LayerException {
-    if (null != manifestBlobStream) {
-      return manifestBlobStream;
-    }
-    if (null == containerConfigurationBlobStream) {
-      throw new IllegalStateException("Must call getContainerConfiguration before getManifest");
-    }
-
+  public Blob getManifestBlob(BlobDescriptor containerConfigurationBlobDescriptor)
+      throws IOException, LayerPropertyNotFoundException {
     // Set up the JSON template.
     V22ManifestTemplate template = new V22ManifestTemplate();
 
     // Adds the container configuration reference.
     DescriptorDigest containerConfigurationDigest =
-        containerConfigurationBlobStream.getWrittenBlobDescriptor().getDigest();
-    long containerConfigurationSize =
-        containerConfigurationBlobStream.getWrittenBlobDescriptor().getSize();
+        containerConfigurationBlobDescriptor.getDigest();
+    long containerConfigurationSize = containerConfigurationBlobDescriptor.getSize();
     template.setContainerConfiguration(containerConfigurationDigest, containerConfigurationSize);
 
     // Adds the layers.
@@ -112,8 +102,6 @@ public class ImageToJsonTranslator {
     }
 
     // Serializes into JSON.
-    manifestBlobStream = JsonHelper.toBlobStream(template);
-
-    return manifestBlobStream;
+    return JsonHelper.toBlob(template);
   }
 }

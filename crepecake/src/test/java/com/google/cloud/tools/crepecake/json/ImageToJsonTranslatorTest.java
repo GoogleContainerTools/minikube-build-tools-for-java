@@ -16,13 +16,13 @@
 
 package com.google.cloud.tools.crepecake.json;
 
+import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
-import com.google.cloud.tools.crepecake.blob.BlobStream;
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
+import com.google.cloud.tools.crepecake.image.DuplicateLayerException;
 import com.google.cloud.tools.crepecake.image.Image;
-import com.google.cloud.tools.crepecake.image.ImageException;
 import com.google.cloud.tools.crepecake.image.Layer;
-import com.google.cloud.tools.crepecake.image.LayerException;
+import com.google.cloud.tools.crepecake.image.LayerPropertyNotFoundException;
 import com.google.cloud.tools.crepecake.image.ReferenceLayer;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.security.DigestException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,13 +41,12 @@ import org.junit.Test;
 /** Tests for {@link ImageToJsonTranslator}. */
 public class ImageToJsonTranslatorTest {
 
-  private Image testImage;
-  private Layer fakeLayer;
   private ImageToJsonTranslator imageToJsonTranslator;
 
   @Before
-  public void setUp() throws ImageException, DigestException, LayerException {
-    testImage = new Image();
+  public void setUp()
+      throws DigestException, LayerPropertyNotFoundException, DuplicateLayerException {
+    Image<Layer> testImage = new Image<>();
 
     testImage.setEnvironmentVariable("VAR1", "VAL1");
     testImage.setEnvironmentVariable("VAR2", "VAL2");
@@ -58,7 +56,7 @@ public class ImageToJsonTranslatorTest {
     DescriptorDigest fakeDigest =
         DescriptorDigest.fromDigest(
             "sha256:8c662931926fa990b41da3c9f42663a537ccd498130030f9149173a0493832ad");
-    fakeLayer = new ReferenceLayer(new BlobDescriptor(1000, fakeDigest), fakeDigest);
+    Layer fakeLayer = new ReferenceLayer(new BlobDescriptor(1000, fakeDigest), fakeDigest);
     testImage.addLayer(fakeLayer);
 
     imageToJsonTranslator = new ImageToJsonTranslator(testImage);
@@ -66,8 +64,7 @@ public class ImageToJsonTranslatorTest {
 
   @Test
   public void testGetContainerConfiguration()
-      throws IOException, LayerException, DigestException, NoSuchAlgorithmException,
-          URISyntaxException {
+      throws IOException, LayerPropertyNotFoundException, URISyntaxException {
     // Loads the expected JSON string.
     File jsonFile =
         new File(getClass().getClassLoader().getResource("json/containerconfig.json").toURI());
@@ -75,18 +72,17 @@ public class ImageToJsonTranslatorTest {
         CharStreams.toString(new InputStreamReader(new FileInputStream(jsonFile)));
 
     // Translates the image to the container configuration and writes the JSON string.
-    BlobStream containerConfigurationBlobStream = imageToJsonTranslator.getContainerConfiguration();
+    Blob containerConfigurationBlob = imageToJsonTranslator.getContainerConfigurationBlob();
 
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    containerConfigurationBlobStream.writeTo(byteArrayOutputStream);
+    containerConfigurationBlob.writeTo(byteArrayOutputStream);
 
     Assert.assertEquals(expectedJson, byteArrayOutputStream.toString());
   }
 
   @Test
   public void testGetManifest()
-      throws URISyntaxException, IOException, LayerException, DigestException,
-          NoSuchAlgorithmException {
+      throws URISyntaxException, IOException, LayerPropertyNotFoundException {
     // Loads the expected JSON string.
     File jsonFile =
         new File(getClass().getClassLoader().getResource("json/translatedmanifest.json").toURI());
@@ -94,12 +90,13 @@ public class ImageToJsonTranslatorTest {
         CharStreams.toString(new InputStreamReader(new FileInputStream(jsonFile)));
 
     // Translates the image to the manifest and writes the JSON string.
-    BlobStream containerConfigurationBlobStream = imageToJsonTranslator.getContainerConfiguration();
-    containerConfigurationBlobStream.writeTo(ByteStreams.nullOutputStream());
-    BlobStream manifestBlobStream = imageToJsonTranslator.getManifest();
+    Blob containerConfigurationBlob = imageToJsonTranslator.getContainerConfigurationBlob();
+    BlobDescriptor blobDescriptor =
+        containerConfigurationBlob.writeTo(ByteStreams.nullOutputStream());
+    Blob manifestBlob = imageToJsonTranslator.getManifestBlob(blobDescriptor);
 
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    manifestBlobStream.writeTo(byteArrayOutputStream);
+    manifestBlob.writeTo(byteArrayOutputStream);
 
     Assert.assertEquals(expectedJson, byteArrayOutputStream.toString());
   }

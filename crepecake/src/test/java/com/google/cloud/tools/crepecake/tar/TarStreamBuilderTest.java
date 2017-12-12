@@ -16,7 +16,7 @@
 
 package com.google.cloud.tools.crepecake.tar;
 
-import com.google.cloud.tools.crepecake.blob.BlobStream;
+import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Resources;
@@ -75,15 +75,15 @@ public class TarStreamBuilderTest {
     tarStreamBuilder.addFile(fileA.toFile(), "some/path/to/resourceFileA");
     tarStreamBuilder.addFile(fileB.toFile(), "crepecake");
 
-    // Constructs the corresponding BlobStream (compressed vs. uncompressed).
-    BlobStream blobStream =
+    // Constructs the corresponding Blob (compressed vs. uncompressed).
+    Blob blob =
         compress
             ? tarStreamBuilder.toBlobStreamCompressed()
             : tarStreamBuilder.toBlobStreamUncompressed();
 
     // Writes the BLOB and captures the output.
     ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
-    blobStream.writeTo(tarByteOutputStream);
+    blob.writeTo(tarByteOutputStream);
 
     // Rearrange the output into input for verification.
     ByteArrayInputStream byteArrayInputStream =

@@ -16,8 +16,8 @@
 
 package com.google.cloud.tools.crepecake.tar;
 
-import com.google.cloud.tools.crepecake.blob.BlobStream;
-import com.google.cloud.tools.crepecake.blob.BlobStreams;
+import com.google.cloud.tools.crepecake.blob.Blob;
+import com.google.cloud.tools.crepecake.blob.Blobs;
 import com.google.common.io.ByteStreams;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -51,13 +51,13 @@ public class TarStreamBuilder {
     entries.add(entry);
   }
 
-  /** Writes the compressed archive to a {@link BlobStream}. */
-  public BlobStream toBlobStreamCompressed() throws IOException, CompressorException {
+  /** Writes the compressed archive to a {@link Blob}. */
+  public Blob toBlobStreamCompressed() throws IOException, CompressorException {
     return toBlobStream(true);
   }
 
-  /** Writes the uncompressed archive to a {@link BlobStream}. */
-  public BlobStream toBlobStreamUncompressed() throws IOException, CompressorException {
+  /** Writes the uncompressed archive to a {@link Blob}. */
+  public Blob toBlobStreamUncompressed() throws IOException, CompressorException {
     return toBlobStream(false);
   }
 
@@ -65,11 +65,11 @@ public class TarStreamBuilder {
    * Helper function to build the archive.
    *
    * @param compress compresses the archive if true
-   * @return a {@link BlobStream} containing the built archive BLOB.
+   * @return a {@link Blob} containing the built archive BLOB.
    */
-  private BlobStream toBlobStream(boolean compress) throws IOException, CompressorException {
+  private Blob toBlobStream(boolean compress) throws IOException, CompressorException {
     if (compress) {
-      return BlobStreams.from(
+      return Blobs.from(
           outputStream -> {
             try {
               CompressorOutputStream compressorStream =
@@ -82,7 +82,7 @@ public class TarStreamBuilder {
           });
     }
 
-    return BlobStreams.from(this::writeEntriesAsTarArchive);
+    return Blobs.from(this::writeEntriesAsTarArchive);
   }
 
   /** Writes each entry in the filesystem to the tarball archive stream. */
