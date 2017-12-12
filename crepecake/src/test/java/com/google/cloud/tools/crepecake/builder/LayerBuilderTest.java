@@ -16,6 +16,7 @@
 
 package com.google.cloud.tools.crepecake.builder;
 
+import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.hash.ByteHasher;
 import com.google.cloud.tools.crepecake.image.Digest;
 import com.google.cloud.tools.crepecake.image.DigestException;
@@ -38,7 +39,8 @@ import org.mockito.MockitoAnnotations;
 /** Tests for {@link LayerBuilder}. */
 public class LayerBuilderTest {
 
-  @Mock private TarStreamBuilder tarStreamBuilderMock;
+  @Mock private Blob mockBlob;
+  @Mock private TarStreamBuilder mockTarStreamBuilder;
 
   @Before
   public void setUpMocksAndFakes() throws IOException {
@@ -47,11 +49,11 @@ public class LayerBuilderTest {
 
   @Test
   public void testBuild() {
-    BlobStream expectedBlobStream = new BlobStream();
-    Digest expectedLayerDigest = Digest.fromHash(ByteHasher.hash(expectedBlobStream.toByteArray()));
+    Blob expectedBlob = new Blob();
+    Digest expectedLayerDigest = Digest.fromHash(ByteHasher.hash(expectedBlob.toByteArray()));
 
-    Mockito.when(tarStreamBuilderMock.toBlobStreamCompressed()).thenReturn(expectedBlobStream);
-    Mockito.when(tarStreamBuilderMock.toBlobStreamUncompressed()).thenReturn(expectedBlobStream);
+    Mockito.when(tarStreamBuilderMock.toBlobCompressed()).thenReturn(expectedBlob);
+    Mockito.when(tarStreamBuilderMock.toBlobUncompressed()).thenReturn(expectedBlob);
 
     // Fake files to build into the layer.
     List<LayerFileEntry> fileEntries =
@@ -77,12 +79,12 @@ public class LayerBuilderTest {
 
       Mockito.verify(tarStreamBuilderMock).addFile(file, archivePath);
     }
-    Mockito.verify(tarStreamBuilderMock).toBlobStreamCompressed();
-    Mockito.verify(tarStreamBuilderMock).toBlobStreamUncompressed();
+    Mockito.verify(tarStreamBuilderMock).toBlobCompressed();
+    Mockito.verify(tarStreamBuilderMock).toBlobUncompressed();
 
     Assert.assertTrue(layer.hasContent());
 
-    Assert.assertEquals(expectedBlobStream, layer.getContent());
+    Assert.assertEquals(expectedBlob, layer.getContent());
     Assert.assertEquals(expectedLayerDigest, layer.getDigest());
     Assert.assertEquals(expectedLayerDigest, layer.getDiffId());
     Assert.assertEquals(0, layer.getSize());
