@@ -27,19 +27,29 @@ import java.io.File;
  */
 public class CachedLayer extends Layer {
 
-  private final File contentTarFile;
+  private final File contentFile;
   private final BlobDescriptor blobDescriptor;
   private final DescriptorDigest diffId;
 
-  public CachedLayer(File contentTarFile, BlobDescriptor blobDescriptor, DescriptorDigest diffId) {
-    this.contentTarFile = contentTarFile;
+  /**
+   * Initializes the layer with its file-backed content BLOB, content descriptor (digest and size),
+   * and diff ID. The {@code blobDescriptor} and {@code diffId} <b>must match</b> the BLOB stored in
+   * the file - no checks are made at runtime.
+   *
+   * @param contentFile the file with the layer's content BLOB
+   * @param blobDescriptor the content descriptor for the layer's content BLOB
+   * @param diffId the diff ID for the layer
+   * @see Layer
+   */
+  public CachedLayer(File contentFile, BlobDescriptor blobDescriptor, DescriptorDigest diffId) {
+    this.contentFile = contentFile;
     this.blobDescriptor = blobDescriptor;
     this.diffId = diffId;
   }
 
   /** Gets a new {@link BlobStream} for the content of the cached layer. */
   public BlobStream getBlobStream() {
-    return BlobStreams.from(contentTarFile);
+    return BlobStreams.from(contentFile);
   }
 
   @Override
@@ -48,7 +58,7 @@ public class CachedLayer extends Layer {
   }
 
   public File getContentTarFile() {
-    return contentTarFile;
+    return contentFile;
   }
 
   @Override
