@@ -40,11 +40,11 @@ public class ImageLayers<T extends Layer> {
    * Adds a layer.
    *
    * @param layer the layer to add
-   * @throws ImageException if the layer has already been added
+   * @throws DuplicateLayerException if the layer has already been added
    */
-  public void add(T layer) throws ImageException, LayerPropertyNotFoundException {
+  public void add(T layer) throws LayerPropertyNotFoundException, DuplicateLayerException {
     if (layerDigests.contains(layer.getBlobDescriptor().getDigest())) {
-      throw new ImageException("Cannot add the same layer more than once");
+      throw new DuplicateLayerException("Cannot add the same layer more than once");
     }
 
     layerDigests.add(layer.getBlobDescriptor().getDigest());
