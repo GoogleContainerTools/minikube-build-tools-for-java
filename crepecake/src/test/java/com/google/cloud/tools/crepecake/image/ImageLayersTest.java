@@ -48,7 +48,7 @@ public class ImageLayersTest {
   @Mock private BlobDescriptor mockUnwrittenLayerBlobDescriptor;
 
   @Before
-  public void setUpFakes() throws LayerException {
+  public void setUpFakes() throws LayerPropertyNotFoundException {
     MockitoAnnotations.initMocks(this);
 
     Mockito.when(mockCachedLayerBlobDescriptor.getDigest()).thenReturn(mockDescriptorDigest1);
@@ -68,7 +68,7 @@ public class ImageLayersTest {
   }
 
   @Test
-  public void testAddLayer_success() throws ImageException, LayerException {
+  public void testAddLayer_success() throws ImageException, LayerPropertyNotFoundException {
     List<Layer> expectedLayers =
         Arrays.asList(mockCachedLayer, mockReferenceLayer, mockReferenceNoDiffIdLayer);
 
@@ -81,7 +81,7 @@ public class ImageLayersTest {
   }
 
   @Test
-  public void testAddLayer_duplicate() throws ImageException, LayerException {
+  public void testAddLayer_duplicate() throws ImageException, LayerPropertyNotFoundException {
     ImageLayers<Layer> imageLayers = new ImageLayers<>();
     imageLayers.add(mockCachedLayer);
     imageLayers.add(mockReferenceLayer);

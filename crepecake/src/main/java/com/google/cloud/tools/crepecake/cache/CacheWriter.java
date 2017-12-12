@@ -49,9 +49,9 @@ public class CacheWriter {
   private CachedLayer writeUnwrittenLayerToFile(UnwrittenLayer unwrittenLayer, File file)
       throws IOException {
     try (OutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(file))) {
-      BlobDescriptor blobDescriptor = unwrittenLayer.writeCompressedBlobStreamTo(fileOutputStream);
+      BlobDescriptor blobDescriptor = unwrittenLayer.writeCompressedBlobTo(fileOutputStream);
       DescriptorDigest diffId =
-          unwrittenLayer.writeUncompressedBlobStreamTo(ByteStreams.nullOutputStream());
+          unwrittenLayer.writeUncompressedBlobTo(ByteStreams.nullOutputStream());
 
       return new CachedLayer(file, blobDescriptor, diffId);
     }

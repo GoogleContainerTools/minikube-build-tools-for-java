@@ -16,9 +16,9 @@
 
 package com.google.cloud.tools.crepecake.cache;
 
+import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
-import com.google.cloud.tools.crepecake.blob.BlobStream;
-import com.google.cloud.tools.crepecake.blob.BlobStreams;
+import com.google.cloud.tools.crepecake.blob.Blobs;
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
 import com.google.cloud.tools.crepecake.image.Layer;
 import com.google.cloud.tools.crepecake.image.LayerType;
@@ -51,9 +51,9 @@ public class CachedLayer implements Layer {
     this.diffId = diffId;
   }
 
-  /** Gets a new {@link BlobStream} for the content of the cached layer. */
-  public BlobStream getBlobStream() {
-    return BlobStreams.from(contentFile);
+  /** Gets a new {@link Blob} for the content of the cached layer. */
+  public Blob getBlob() {
+    return Blobs.from(contentFile);
   }
 
   @Override
