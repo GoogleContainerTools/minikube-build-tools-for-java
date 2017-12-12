@@ -49,7 +49,7 @@ public class CachedLayer implements Layer {
   }
 
   /** Gets a new {@link Blob} for the content of the cached layer. */
-  public Blob getBlobStream() {
+  public Blob getBlob() {
     return Blobs.from(file);
   }
 

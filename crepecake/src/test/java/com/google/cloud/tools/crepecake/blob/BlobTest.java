@@ -71,8 +71,7 @@ public class BlobTest {
   public void testFromBlobWriter() throws IOException, DigestException {
     String expected = "crepecake";
 
-    BlobWriter writer =
-        outputStream -> outputStream.write(expected.getBytes(Charsets.UTF_8));
+    BlobWriter writer = outputStream -> outputStream.write(expected.getBytes(Charsets.UTF_8));
 
     verifyBlobStreamWriteTo(expected, Blobs.from(writer));
   }
