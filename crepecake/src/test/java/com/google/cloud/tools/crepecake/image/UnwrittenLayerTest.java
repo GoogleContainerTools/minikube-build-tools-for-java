@@ -22,8 +22,8 @@ import com.google.common.io.ByteStreams;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.security.DigestException;
-import java.security.NoSuchAlgorithmException;
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,7 +47,7 @@ public class UnwrittenLayerTest {
   @Mock private DescriptorDigest mockDiffId;
 
   @Before
-  public void setUpMocks() throws IOException, DigestException {
+  public void setUpMocks() throws IOException {
     MockitoAnnotations.initMocks(this);
 
     Mockito.when(mockCompressedBlob.writeTo(Mockito.any(OutputStream.class)))
@@ -58,14 +58,14 @@ public class UnwrittenLayerTest {
   }
 
   @Test
-  public void testWriteTo() throws IOException, DigestException, NoSuchAlgorithmException {
+  public void testWriteTo() throws IOException, CompressorException {
     File testFile = fakeFolder.newFile("fakefile");
 
-    UnwrittenLayer unwrittenLayer = new UnwrittenLayer(mockCompressedBlob, mockUncompressedBlob);
+    UnwrittenLayer unwrittenLayer = new UnwrittenLayer(mockUncompressedBlob);
 
     CachedLayer cachedLayer = unwrittenLayer.writeTo(testFile);
 
-    Mockito.verify(mockCompressedBlob).writeTo(Mockito.any(OutputStream.class));
+    Mockito.verify(mockUncompressedBlob).writeTo(Mockito.any(CompressorOutputStream.class));
     Mockito.verify(mockUncompressedBlob).writeTo(ByteStreams.nullOutputStream());
 
     Assert.assertEquals(mockBlobDescriptor, cachedLayer.getBlobDescriptor());

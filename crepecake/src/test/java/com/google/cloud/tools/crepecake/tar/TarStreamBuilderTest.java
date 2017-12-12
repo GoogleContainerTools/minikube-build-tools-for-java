@@ -56,7 +56,8 @@ public class TarStreamBuilderTest {
     expectedFileBString = new String(Files.readAllBytes(fileB), Charsets.UTF_8);
 
     // Prepares a test TarStreamBuilder.
-    testTarStreamBuilder.addEntry(new TarArchiveEntry(fileA.toFile(), "some/path/to/resourceFileA"));
+    testTarStreamBuilder.addEntry(
+        new TarArchiveEntry(fileA.toFile(), "some/path/to/resourceFileA"));
     testTarStreamBuilder.addEntry(new TarArchiveEntry(fileB.toFile(), "crepecake"));
   }
 

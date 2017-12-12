@@ -28,7 +28,6 @@ import org.mockito.MockitoAnnotations;
 /** Tests for {@link Layer}. */
 public class LayerTest {
 
-  @Mock private Blob mockCompressedBlob;
   @Mock private Blob mockUncompressedBlob;
   @Mock private File mockFile;
   @Mock private BlobDescriptor mockBlobDescriptor;
@@ -41,7 +40,7 @@ public class LayerTest {
 
   @Test
   public void testNew_unwritten() {
-    Layer layer = new UnwrittenLayer(mockCompressedBlob, mockUncompressedBlob);
+    Layer layer = new UnwrittenLayer(mockUncompressedBlob);
 
     Assert.assertEquals(LayerType.UNWRITTEN, layer.getType());
 

@@ -23,7 +23,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 
 /** Builds an {@link UnwrittenLayer} from files. */

@@ -16,7 +16,6 @@
 
 package com.google.cloud.tools.crepecake.image;
 
-import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 
 /**

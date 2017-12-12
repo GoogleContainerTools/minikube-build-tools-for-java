@@ -20,13 +20,12 @@ import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 import com.google.cloud.tools.crepecake.tar.GzipCompressor;
 import com.google.common.io.ByteStreams;
-import org.apache.commons.compress.compressors.CompressorException;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import org.apache.commons.compress.compressors.CompressorException;
 
 /** A layer that has not been written out and only has the unwritten content {@link Blob}. */
 public class UnwrittenLayer implements Layer {
