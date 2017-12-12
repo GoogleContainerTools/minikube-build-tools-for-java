@@ -1,6 +1,7 @@
 package com.google.cloud.tools.crepecake.cache;
 
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
+import com.google.cloud.tools.crepecake.builder.BuildOutputDirectories;
 import com.google.cloud.tools.crepecake.image.Image;
 import com.google.cloud.tools.crepecake.image.ReferenceLayer;
 import java.io.File;
@@ -8,23 +9,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-public class CacheChecker extends CacheHelper {
-
-  CacheChecker(Cache cache) {
-    super(cache);
-  }
+public class CacheChecker {
 
   /** @return true if the base image is different from the cached base image; false otherwise */
   public boolean isBaseImageModified(Image<ReferenceLayer> baseImage) throws IOException {
-    CacheMetadata cacheMetadata = getMetadata();
-
-    List<TimestampedCachedLayer> cachedLayers = cacheMetadata.getBaseImageLayers();
+    // Gets the base image layers.
+    List<TimestampedCachedLayer> cachedLayers = Cache.getMetadata().getBaseImageLayers();
     List<ReferenceLayer> baseImageLayers = baseImage.getLayers();
 
     if (cachedLayers.size() != baseImageLayers.size()) {
       return false;
     }
 
+    // Checks if each layers' BLOB descriptors are equal.
     for (int layerIndex = 0; layerIndex < baseImageLayers.size(); layerIndex++) {
       BlobDescriptor cachedLayerBlobDescriptor = cachedLayers.get(layerIndex).getBlobDescriptor();
       BlobDescriptor baseImageBlobDescriptor = baseImageLayers.get(layerIndex).getBlobDescriptor();
@@ -56,9 +53,8 @@ public class CacheChecker extends CacheHelper {
   private boolean isLayerModified(
       ApplicationLayerType layerType, BuildOutputDirectories buildOutputDirectories)
       throws IOException {
-    CacheMetadata cacheMetadata = getMetadata();
     TimestampedCachedLayer cachedLayer =
-        cacheMetadata.getApplicationLayer(ApplicationLayerType.CLASSES);
+        Cache.getMetadata().getApplicationLayer(ApplicationLayerType.CLASSES);
 
     // Returns true if there is no cached layer.
     if (null == cachedLayer) {

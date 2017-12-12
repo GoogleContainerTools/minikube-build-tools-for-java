@@ -4,11 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.annotation.Nullable;
 
-public class CacheReader extends CacheHelper {
-
-  CacheReader(Cache cache) {
-    super(cache);
-  }
+public class CacheReader {
 
   /** Gets the file that stores the content BLOB for the dependencies layer. */
   @Nullable
@@ -30,13 +26,7 @@ public class CacheReader extends CacheHelper {
 
   /** Gets the file that stores the content BLOB for an application layer. */
   private File getLayerFile(ApplicationLayerType layerType) throws IOException {
-    CacheMetadata cacheMetadata = getMetadata();
-    TimestampedCachedLayer dependenciesLayer = cacheMetadata.getApplicationLayer(layerType);
-
-    if (null == dependenciesLayer) {
-      return null;
-    }
-
-    return getLayerFilename(dependenciesLayer.getBlobDescriptor().getDigest().toString());
+    return CacheHelper.getLayerFilename(
+        Cache.getDirectory(), CacheHelper.getNameForApplicationLayer(layerType));
   }
 }

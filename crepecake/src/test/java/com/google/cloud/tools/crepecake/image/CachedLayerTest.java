@@ -18,6 +18,7 @@ package com.google.cloud.tools.crepecake.image;
 
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 import com.google.cloud.tools.crepecake.blob.BlobStream;
+import com.google.cloud.tools.crepecake.cache.CachedLayer;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.ByteArrayOutputStream;

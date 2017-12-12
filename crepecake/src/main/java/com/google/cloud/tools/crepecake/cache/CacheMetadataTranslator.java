@@ -1,7 +1,6 @@
 package com.google.cloud.tools.crepecake.cache;
 
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
-import com.google.cloud.tools.crepecake.image.CachedLayer;
 import com.google.cloud.tools.crepecake.json.templates.CacheMetadataTemplate;
 import java.io.File;
 
@@ -9,7 +8,6 @@ import java.io.File;
 public class CacheMetadataTranslator {
 
   static CacheMetadata fromTemplate(CacheMetadataTemplate template) {
-    Cache cache = Cache.getInstance();
     CacheMetadata cacheMetadata = new CacheMetadata();
 
     // Adds the base image layers to the template.
@@ -17,7 +15,7 @@ public class CacheMetadataTranslator {
         template.getBaseImageLayers()) {
       File cachedLayerFile =
           CacheHelper.getLayerFilename(
-              cache.getDirectory(), baseImageLayerTemplate.getDigest().toString());
+              Cache.getDirectory(), baseImageLayerTemplate.getDigest().toString());
       TimestampedCachedLayer timestampedCachedLayer =
           fromTemplate(baseImageLayerTemplate, cachedLayerFile);
       cacheMetadata.addBaseImageLayer(timestampedCachedLayer);
@@ -27,7 +25,7 @@ public class CacheMetadataTranslator {
     for (ApplicationLayerType layerType : ApplicationLayerType.values()) {
       File layerFile =
           CacheHelper.getLayerFilename(
-              cache.getDirectory(), CacheHelper.getNameForApplicationLayer(layerType));
+              Cache.getDirectory(), CacheHelper.getNameForApplicationLayer(layerType));
       TimestampedCachedLayer cachedLayer = fromTemplate(template.getDependenciesLayer(), layerFile);
       cacheMetadata.setApplicationLayer(layerType, cachedLayer);
     }
@@ -35,6 +33,10 @@ public class CacheMetadataTranslator {
     return cacheMetadata;
   }
 
+  /**
+   * Translates a {@link CacheMetadataTemplate.LayerObjectTemplate} into a {@link
+   * TimestampedCachedLayer}.
+   */
   private static TimestampedCachedLayer fromTemplate(
       CacheMetadataTemplate.LayerObjectTemplate layerObjectTemplate, File contentTarFile) {
     CachedLayer cachedLayer =

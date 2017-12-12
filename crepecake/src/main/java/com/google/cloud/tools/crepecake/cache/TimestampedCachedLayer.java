@@ -1,10 +1,12 @@
 package com.google.cloud.tools.crepecake.cache;
 
-import com.google.cloud.tools.crepecake.image.CachedLayer;
-
 class TimestampedCachedLayer extends CachedLayer {
 
   private final long lastModifiedTime;
+
+  TimestampedCachedLayer(CachedLayer cachedLayer) {
+    this(cachedLayer, System.currentTimeMillis());
+  }
 
   TimestampedCachedLayer(CachedLayer cachedLayer, long lastModifiedTime) {
     super(

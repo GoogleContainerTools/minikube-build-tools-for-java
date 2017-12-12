@@ -14,18 +14,22 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.image;
+package com.google.cloud.tools.crepecake.cache;
 
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 import com.google.cloud.tools.crepecake.blob.BlobStream;
 import com.google.cloud.tools.crepecake.blob.BlobStreams;
+import com.google.cloud.tools.crepecake.image.DescriptorDigest;
+import com.google.cloud.tools.crepecake.image.Layer;
+import com.google.cloud.tools.crepecake.image.LayerType;
 import java.io.File;
 
+// TODO: Move this to the package with the caching classes.
 /**
- * A {@link Layer} that has been written out (i.e. to a cache) and has its file-backed content BLOB,
+ * A {@link Layer} that has been written out to a cache and has its file-backed content BLOB,
  * digest, size, and diff ID.
  */
-public class CachedLayer extends Layer {
+public class CachedLayer implements Layer {
 
   private final File contentFile;
   private final BlobDescriptor blobDescriptor;
@@ -41,7 +45,7 @@ public class CachedLayer extends Layer {
    * @param diffId the diff ID for the layer
    * @see Layer
    */
-  public CachedLayer(File contentFile, BlobDescriptor blobDescriptor, DescriptorDigest diffId) {
+  CachedLayer(File contentFile, BlobDescriptor blobDescriptor, DescriptorDigest diffId) {
     this.contentFile = contentFile;
     this.blobDescriptor = blobDescriptor;
     this.diffId = diffId;

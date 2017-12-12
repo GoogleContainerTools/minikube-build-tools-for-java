@@ -17,42 +17,51 @@ public class Cache {
 
   @Nullable private CacheMetadata cacheMetadata;
 
-  static Cache getInstance() {
-    return instance;
+  static Path getDirectory() {
+    if (null == instance.cacheDirectory) {
+      throw new IllegalStateException("Must initialize cache first");
+    }
+    return instance.cacheDirectory;
+  }
+
+  static CacheMetadata getMetadata() {
+    if (null == instance.cacheMetadata) {
+      throw new IllegalStateException("Must initialize cache first");
+    }
+    return instance.cacheMetadata;
   }
 
   /**
    * Initializes the cache with a directory. This also loads the cache metadata if it exists in the
    * directory. Can only be called once.
    */
-  void init(File cacheDirectory) throws IOException {
-    if (null != this.cacheMetadata) {
+  static void init(File cacheDirectory) throws IOException {
+    if (null != instance.cacheMetadata) {
       throw new IllegalStateException("Cannot initialize cache more than once");
     }
 
     if (!cacheDirectory.isDirectory()) {
       throw new NotDirectoryException("The cache can only write to a directory");
     }
-    this.cacheDirectory = cacheDirectory.toPath();
+    instance.cacheDirectory = cacheDirectory.toPath();
 
     // Loads the metadata.
     File cacheMetadataJsonFile =
-        this.cacheDirectory.resolve(CacheMetadata.METADATA_FILENAME).toFile();
+        instance.cacheDirectory.resolve(CacheMetadata.METADATA_FILENAME).toFile();
 
     if (!cacheMetadataJsonFile.exists()) {
-      cacheMetadata = new CacheMetadata();
+      instance.cacheMetadata = new CacheMetadata();
       return;
     }
 
     CacheMetadataTemplate cacheMetadataJson =
         JsonHelper.readJsonFromFile(cacheMetadataJsonFile, CacheMetadataTemplate.class);
-    cacheMetadata = CacheMetadataTranslator.fromTemplate(cacheMetadataJson);
+    instance.cacheMetadata = CacheMetadataTranslator.fromTemplate(cacheMetadataJson);
   }
 
-  Path getDirectory() {
-    if (null == cacheDirectory) {
-      throw new IllegalStateException("Must initialize cache first");
-    }
-    return cacheDirectory;
+  private static Cache getInstance() {
+    return instance;
   }
+
+  private Cache() {}
 }
