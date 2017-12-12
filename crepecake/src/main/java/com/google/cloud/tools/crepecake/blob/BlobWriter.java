@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 @FunctionalInterface
-public interface BlobStreamWriter {
+public interface BlobWriter {
 
   void writeTo(OutputStream outputStream) throws IOException;
 }

@@ -16,24 +16,16 @@
 
 package com.google.cloud.tools.crepecake.blob;
 
-import com.google.common.base.Charsets;
-import java.io.IOException;
 import java.io.OutputStream;
 
-/** A {@link BlobStream} that streams from a {@link String}. */
-class StringBlobStream implements BlobStream {
-
-  private final String content;
-
-  StringBlobStream(String content) {
-    this.content = content;
-  }
+/**
+ * An empty {@link Blob}. This is used, for example, to send an HTTP request with an empty body without
+ * having to pass {@code null} for the body {@link Blob}.
+ */
+class EmptyBlob implements Blob {
 
   @Override
-  public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
-    byte[] contentBytes = content.getBytes(Charsets.UTF_8);
-    outputStream.write(contentBytes);
-    outputStream.flush();
-    return new BlobDescriptor(content.length());
+  public BlobDescriptor writeTo(OutputStream outputStream) {
+    return new BlobDescriptor(0);
   }
 }
