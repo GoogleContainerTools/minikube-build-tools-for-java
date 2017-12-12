@@ -18,7 +18,6 @@ package com.google.cloud.tools.crepecake.image;
 
 import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
-import com.google.cloud.tools.crepecake.cache.CachedLayer;
 import java.io.File;
 import org.junit.Assert;
 import org.junit.Before;
@@ -59,15 +58,6 @@ public class LayerTest {
     } catch (LayerPropertyNotFoundException ex) {
       Assert.assertEquals("Diff ID not available for unwritten layer", ex.getMessage());
     }
-  }
-
-  @Test
-  public void testNew_cached() throws LayerPropertyNotFoundException {
-    Layer layer = new CachedLayer(mockFile, mockBlobDescriptor, mockDiffId);
-
-    Assert.assertEquals(LayerType.CACHED, layer.getType());
-    Assert.assertEquals(mockBlobDescriptor, layer.getBlobDescriptor());
-    Assert.assertEquals(mockDiffId, layer.getDiffId());
   }
 
   @Test

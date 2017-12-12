@@ -16,41 +16,40 @@
 
 package com.google.cloud.tools.crepecake.image;
 
+import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
-import com.google.cloud.tools.crepecake.blob.BlobStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/** A layer that has not been written out and only has the unwritten content {@link BlobStream}. */
+/** A layer that has not been written out and only has the unwritten content {@link Blob}. */
 public class UnwrittenLayer implements Layer {
 
-  private final BlobStream compressedBlobStream;
-  private final BlobStream uncompressedBlobStream;
+  private final Blob compressedBlob;
+  private final Blob uncompressedBlob;
 
   /**
-   * @param compressedBlobStream the compressed {@link BlobStream} of the layer content
-   * @param uncompressedBlobStream the uncompressed {@link BlobStream} of the layer content
+   * @param compressedBlob the compressed {@link Blob} of the layer content
+   * @param uncompressedBlob the uncompressed {@link Blob} of the layer content
    */
-  UnwrittenLayer(BlobStream compressedBlobStream, BlobStream uncompressedBlobStream) {
-    this.compressedBlobStream = compressedBlobStream;
-    this.uncompressedBlobStream = uncompressedBlobStream;
+  public UnwrittenLayer(Blob compressedBlob, Blob uncompressedBlob) {
+    this.compressedBlob = compressedBlob;
+    this.uncompressedBlob = uncompressedBlob;
   }
 
   /**
    * Writes the compressed layer BLOB to an {@link OutputStream} and returns the written BLOB
    * descriptor.
    */
-  public BlobDescriptor writeCompressedBlobStreamTo(OutputStream outputStream) throws IOException {
-    return compressedBlobStream.writeTo(outputStream);
+  public BlobDescriptor writeCompressedBlobTo(OutputStream outputStream) throws IOException {
+    return compressedBlob.writeTo(outputStream);
   }
 
   /**
    * Writes the uncompressed layer BLOB to an {@link OutputStream} and returns the associated diff
    * ID.
    */
-  public DescriptorDigest writeUncompressedBlobStreamTo(OutputStream outputStream)
-      throws IOException {
-    return uncompressedBlobStream.writeTo(outputStream).getDigest();
+  public DescriptorDigest writeUncompressedBlobTo(OutputStream outputStream) throws IOException {
+    return uncompressedBlob.writeTo(outputStream).getDigest();
   }
 
   @Override

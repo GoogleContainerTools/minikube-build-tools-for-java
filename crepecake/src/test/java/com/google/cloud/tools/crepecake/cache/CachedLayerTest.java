@@ -14,11 +14,14 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.image;
+package com.google.cloud.tools.crepecake.cache;
 
+import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
-import com.google.cloud.tools.crepecake.blob.BlobStream;
-import com.google.cloud.tools.crepecake.cache.CachedLayer;
+import com.google.cloud.tools.crepecake.image.DescriptorDigest;
+import com.google.cloud.tools.crepecake.image.Layer;
+import com.google.cloud.tools.crepecake.image.LayerPropertyNotFoundException;
+import com.google.cloud.tools.crepecake.image.LayerType;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.ByteArrayOutputStream;
@@ -37,8 +40,8 @@ import org.mockito.MockitoAnnotations;
 /** Tests for {@link CachedLayer}. */
 public class CachedLayerTest {
 
+  @Mock private File mockFile;
   @Mock private BlobDescriptor mockBlobDescriptor;
-
   @Mock private DescriptorDigest mockDiffId;
 
   @Before
@@ -47,7 +50,16 @@ public class CachedLayerTest {
   }
 
   @Test
-  public void testGetBlobStream()
+  public void testNew() throws LayerPropertyNotFoundException {
+    Layer layer = new CachedLayer(mockFile, mockBlobDescriptor, mockDiffId);
+
+    Assert.assertEquals(LayerType.CACHED, layer.getType());
+    Assert.assertEquals(mockBlobDescriptor, layer.getBlobDescriptor());
+    Assert.assertEquals(mockDiffId, layer.getDiffId());
+  }
+
+  @Test
+  public void testGetBlob()
       throws URISyntaxException, NoSuchAlgorithmException, IOException, DigestException {
     File fileA = new File(Resources.getResource("fileA").toURI());
     String expectedFileAString = new String(Files.readAllBytes(fileA.toPath()), Charsets.UTF_8);
@@ -55,8 +67,8 @@ public class CachedLayerTest {
     CachedLayer cachedLayer = new CachedLayer(fileA, mockBlobDescriptor, mockDiffId);
 
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    BlobStream fileBlobStream = cachedLayer.getBlobStream();
-    fileBlobStream.writeTo(outputStream);
+    Blob fileBlob = cachedLayer.getBlob();
+    fileBlob.writeTo(outputStream);
 
     Assert.assertEquals(
         expectedFileAString, new String(outputStream.toByteArray(), Charsets.UTF_8));
