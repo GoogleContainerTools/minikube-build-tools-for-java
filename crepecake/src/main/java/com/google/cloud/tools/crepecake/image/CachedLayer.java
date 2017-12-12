@@ -47,6 +47,10 @@ public class CachedLayer extends Layer {
     return LayerType.CACHED;
   }
 
+  public File getContentTarFile() {
+    return contentTarFile;
+  }
+
   @Override
   public BlobDescriptor getBlobDescriptor() {
     return blobDescriptor;

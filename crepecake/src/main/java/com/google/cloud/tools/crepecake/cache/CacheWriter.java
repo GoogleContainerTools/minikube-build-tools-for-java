@@ -19,7 +19,7 @@ public class CacheWriter extends CacheHelper {
     super(cache);
   }
 
-  public void writeBaseImageLayer(UnwrittenLayer layer) throws IOException, LayerException {
+  public void writeBaseImageLayer(UnwrittenLayer layer)  {
 
   }
 
@@ -28,20 +28,24 @@ public class CacheWriter extends CacheHelper {
   }
 
   public CachedLayer writeDependenciesLayer(UnwrittenLayer layer) throws IOException, DigestException {
+    writeLayer(ApplicationLayerType.DEPENDENCIES, layer);
+  }
+
+  public void writeResourcesLayer(UnwrittenLayer layer) throws IOException {
+    writeLayer(ApplicationLayerType.RESOURCES, layer);
+  }
+
+  public void writeClassesLayer(UnwrittenLayer layer) throws IOException {
+    writeLayer(ApplicationLayerType.CLASSES, layer);
+  }
+
+  private CachedLayer writeLayer(ApplicationLayerType layerType, UnwrittenLayer layer) throws IOException {
     CacheMetadata cacheMetadata = getMetadata();
 
-    File layerFile = getLayerFilename("dependencies");
-    CachedLayer cachedLayer = layer.writeTo(layerFile);
+    File layerFile = getLayerFilename(CacheMetadata.getNameForApplicationLayer(layerType));
+    TimestampedCachedLayer cachedLayer = new TimestampedCachedLayer(layer.writeTo(layerFile));
 
-    cacheMetadata.
-  }
-
-  public void writeResourcesLayer(UnwrittenLayer layer) {
-
-  }
-
-  public void writeClassesLayer(UnwrittenLayer layer) {
-
+    cacheMetadata.setApplicationLayer(layerType, cachedLayer);
   }
 
   /** Flushes any unwritten updates to disk. */

@@ -19,6 +19,6 @@ abstract class CacheHelper {
   }
 
   final File getLayerFilename(String layerName) {
-    return CacheMetadata.getLayerFilename(cache.getDirectory(), layerName);
+    return CacheMetadata.getLayerFilename(cache, layerName);
   }
 }

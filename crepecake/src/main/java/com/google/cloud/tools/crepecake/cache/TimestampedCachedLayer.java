@@ -11,12 +11,17 @@ class TimestampedCachedLayer extends CachedLayer {
 
   private final long lastModifiedTime;
 
-  static TimestampedCachedLayer from(CacheMetadataTemplate.LayerObjectTemplate layerObjectTemplate) {
-    return new TimestampedCachedLayer(new BlobDescriptor(layerObjectTemplate.getSize(), layerObjectTemplate.getDigest()), layerObjectTemplate.getDiffId(), layerObjectTemplate.getLastModifiedTime());
+  static TimestampedCachedLayer fromTemplate(File contentTarFile, CacheMetadataTemplate.LayerObjectTemplate layerObjectTemplate) {
+    CachedLayer cachedLayer = new CachedLayer(contentTarFile, new BlobDescriptor(layerObjectTemplate.getSize(), layerObjectTemplate.getDigest()), layerObjectTemplate.getDiffId());
+    return new TimestampedCachedLayer(cachedLayer, layerObjectTemplate.getLastModifiedTime());
   }
 
-  private TimestampedCachedLayer(File file, BlobDescriptor blobDescriptor, DescriptorDigest diffId, long lastModifiedTime) {
-    super(file, blobDescriptor, diffId);
+  TimestampedCachedLayer(CachedLayer cachedLayer) {
+    this(cachedLayer, System.nanoTime());
+  }
+
+  TimestampedCachedLayer(CachedLayer cachedLayer, long lastModifiedTime) {
+    super(cachedLayer.getContentTarFile(), cachedLayer.getBlobDescriptor(), cachedLayer.getDiffId());
     this.lastModifiedTime = lastModifiedTime;
   }
 
