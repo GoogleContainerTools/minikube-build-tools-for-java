@@ -16,26 +16,48 @@
 
 package com.google.cloud.tools.crepecake.cache;
 
+import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
+import com.google.cloud.tools.crepecake.image.DescriptorDigest;
+import com.google.cloud.tools.crepecake.image.DuplicateLayerException;
+import com.google.cloud.tools.crepecake.image.LayerPropertyNotFoundException;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 /** Tests for {@link CacheMetadata}. */
 public class CacheMetadataTest {
 
+  @Mock private DescriptorDigest mockDescriptorDigest;
+  @Mock private BlobDescriptor mockBlobDescriptor;
   @Mock private TimestampedCachedLayer mockLayer;
+  @Mock private ApplicationLayerType mockApplicationLayerType;
 
   @Before
   public void setUpMocks() {
     MockitoAnnotations.initMocks(this);
+
+    Mockito.when(mockBlobDescriptor.getDigest()).thenReturn(mockDescriptorDigest);
+    Mockito.when(mockLayer.getBlobDescriptor()).thenReturn(mockBlobDescriptor);
   }
 
   @Test
-  public void testAddBaseImageLayer() {
+  public void testAddBaseImageLayer()
+      throws LayerPropertyNotFoundException, DuplicateLayerException {
     CacheMetadata cacheMetadata = new CacheMetadata();
     cacheMetadata.addBaseImageLayer(mockLayer);
 
-    Assert.assertEquals()
+    Assert.assertThat(cacheMetadata.getBaseImageLayers().asList(), CoreMatchers.hasItem(mockLayer));
+  }
+
+  @Test
+  public void testAddApplicationLayer() {
+    CacheMetadata cacheMetadata = new CacheMetadata();
+    cacheMetadata.setApplicationLayer(mockApplicationLayerType, mockLayer);
+
+    Assert.assertEquals(mockLayer, cacheMetadata.getApplicationLayer(mockApplicationLayerType));
   }
 }
