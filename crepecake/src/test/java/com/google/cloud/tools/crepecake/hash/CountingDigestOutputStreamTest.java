@@ -55,7 +55,7 @@ public class CountingDigestOutputStreamTest {
   }
 
   @Test
-  public void test_smokeTest() throws NoSuchAlgorithmException, IOException, DigestException {
+  public void test_smokeTest() throws IOException, DigestException {
     for (Map.Entry<String, String> knownHash : knownSha256Hashes.entrySet()) {
       String toHash = knownHash.getKey();
       String expectedHash = knownHash.getValue();

@@ -64,7 +64,7 @@ public class TarStreamBuilderTest {
   }
 
   @Test
-  public void testToBlob() throws IOException, DigestException {
+  public void testToBlob() throws IOException {
     Blob blob = testTarStreamBuilder.toBlob();
 
     // Adding another file should not change a previously-obtained Blob.
@@ -84,7 +84,7 @@ public class TarStreamBuilderTest {
 
   @Test
   public void testToBlob_withCompression()
-      throws IOException, CompressorException, DigestException {
+      throws IOException, CompressorException {
     Blob blob = testTarStreamBuilder.toBlob();
 
     // Writes the BLOB and captures the output.
