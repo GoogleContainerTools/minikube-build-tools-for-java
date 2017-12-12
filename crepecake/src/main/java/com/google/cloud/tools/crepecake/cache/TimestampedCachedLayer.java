@@ -6,6 +6,7 @@ import com.google.cloud.tools.crepecake.image.DescriptorDigest;
 import com.google.cloud.tools.crepecake.json.templates.CacheMetadataTemplate;
 
 import java.io.File;
+import java.time.Instant;
 
 class TimestampedCachedLayer extends CachedLayer {
 
@@ -17,7 +18,8 @@ class TimestampedCachedLayer extends CachedLayer {
   }
 
   TimestampedCachedLayer(CachedLayer cachedLayer) {
-    this(cachedLayer, System.nanoTime());
+    // TODO: This needs to use Java 8 instant stuff in milliseconds.
+    this(cachedLayer, );
   }
 
   TimestampedCachedLayer(CachedLayer cachedLayer, long lastModifiedTime) {

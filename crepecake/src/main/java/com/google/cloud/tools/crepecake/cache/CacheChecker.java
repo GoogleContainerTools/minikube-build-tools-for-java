@@ -8,8 +8,13 @@ import com.google.cloud.tools.crepecake.image.ReferenceLayer;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class CacheChecker extends CacheHelper {
 
@@ -82,6 +87,7 @@ public class CacheChecker extends CacheHelper {
       case CLASSES:
         return isFileModifiedRecursive(buildOutputDirectories.getClassesDirectory(), lastModifiedTime);
     }
+    throw new IllegalStateException("Should never reach here - switch above is exhaustive");
   }
 
   /**

@@ -27,13 +27,10 @@ class CacheMetadata {
     switch (layerType) {
       case DEPENDENCIES:
         return DEPENDENCIES_LAYER_NAME;
-      break;
       case RESOURCES:
         return RESOURCES_LAYER_NAME;
-      break;
       case CLASSES:
         return CLASSES_LAYER_NAME;
-      break;
     }
     throw new IllegalStateException("Should never reach here - switch above is exhaustive");
   }
@@ -42,7 +39,7 @@ class CacheMetadata {
     CacheMetadata cacheMetadata = new CacheMetadata();
 
     for (CacheMetadataTemplate.LayerObjectTemplate baseImageLayerTemplate : template.getBaseImageLayers()) {
-      File cachedLayerFile = getLayerFilename(cache, baseImageLayerTemplate.getDigest().toString();
+      File cachedLayerFile = getLayerFilename(cache, baseImageLayerTemplate.getDigest().toString());
       TimestampedCachedLayer timestampedCachedLayer =
           TimestampedCachedLayer.fromTemplate(cachedLayerFile, baseImageLayerTemplate);
       cacheMetadata.baseImageLayers.add(timestampedCachedLayer);
