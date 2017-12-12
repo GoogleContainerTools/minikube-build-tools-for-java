@@ -19,7 +19,7 @@ package com.google.cloud.tools.crepecake.image;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 
 /**
- * Represents a layer in an image. Implementations represent the various {@link LayerType}s.
+ * Represents a layer in an image. Implementations represent the various types of layers.
  *
  * <p>An image layer consists of:
  *
@@ -52,9 +52,6 @@ import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
  * </ul>
  */
 public interface Layer {
-
-  /** @return the layer's {@link LayerType} */
-  LayerType getType();
 
   /**
    * @return the layer's content {@link BlobDescriptor}
