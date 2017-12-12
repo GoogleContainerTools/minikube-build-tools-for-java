@@ -1,16 +1,14 @@
 package com.google.cloud.tools.crepecake.json.templates;
 
-import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
 import com.google.cloud.tools.crepecake.json.JsonTemplate;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * JSON template for storing metadata about the cache.
  *
- * Example:
+ * <p>Example:
  *
  * <pre>{@code
  * {

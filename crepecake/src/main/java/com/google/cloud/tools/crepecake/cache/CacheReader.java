@@ -1,9 +1,8 @@
 package com.google.cloud.tools.crepecake.cache;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.util.function.Function;
+import javax.annotation.Nullable;
 
 public class CacheReader extends CacheHelper {
 
@@ -29,9 +28,7 @@ public class CacheReader extends CacheHelper {
     return getLayerFile(ApplicationLayerType.CLASSES);
   }
 
-  /**
-   * Gets the file that stores the content BLOB for an application layer.
-   */
+  /** Gets the file that stores the content BLOB for an application layer. */
   private File getLayerFile(ApplicationLayerType layerType) throws IOException {
     CacheMetadata cacheMetadata = getMetadata();
     TimestampedCachedLayer dependenciesLayer = cacheMetadata.getApplicationLayer(layerType);

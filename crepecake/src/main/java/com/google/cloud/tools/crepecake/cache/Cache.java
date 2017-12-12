@@ -1,70 +1,58 @@
 package com.google.cloud.tools.crepecake.cache;
 
-import com.google.cloud.tools.crepecake.image.Image;
-import com.google.cloud.tools.crepecake.image.ReferenceLayer;
-import com.google.cloud.tools.crepecake.image.UnwrittenLayer;
 import com.google.cloud.tools.crepecake.json.JsonHelper;
 import com.google.cloud.tools.crepecake.json.templates.CacheMetadataTemplate;
-
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import javax.annotation.Nullable;
 
+/** Holds various properties of the cache. */
 public class Cache {
 
-  private static final String METADATA_FILENAME = "metadata.json";
+  private static final Cache instance = new Cache();
 
-  private final Path cacheDirectory;
+  @Nullable private Path cacheDirectory;
 
-  private final CacheWriter cacheWriter;
-  private final CacheChecker cacheChecker;
-  private final CacheReader cacheReader;
+  @Nullable private CacheMetadata cacheMetadata;
 
-  private CacheMetadata cacheMetadata;
+  static Cache getInstance() {
+    return instance;
+  }
 
-  public Cache(File cacheDirectory) throws NotDirectoryException {
+  /**
+   * Initializes the cache with a directory. This also loads the cache metadata if it exists in the
+   * directory. Can only be called once.
+   */
+  void init(File cacheDirectory) throws IOException {
+    if (null != this.cacheMetadata) {
+      throw new IllegalStateException("Cannot initialize cache more than once");
+    }
+
     if (!cacheDirectory.isDirectory()) {
       throw new NotDirectoryException("The cache can only write to a directory");
     }
     this.cacheDirectory = cacheDirectory.toPath();
 
-    cacheWriter = new CacheWriter(this);
-    cacheChecker = new CacheChecker(this);
-    cacheReader = new CacheReader(this);
-  }
+    // Loads the metadata.
+    File cacheMetadataJsonFile =
+        this.cacheDirectory.resolve(CacheMetadata.METADATA_FILENAME).toFile();
 
-  public CacheWriter getWriter() {
-    return cacheWriter;
-  }
+    if (!cacheMetadataJsonFile.exists()) {
+      cacheMetadata = new CacheMetadata();
+      return;
+    }
 
-  public CacheChecker getChecker() {
-    return cacheChecker;
-  }
-
-  public CacheReader getReader() {
-    return cacheReader;
+    CacheMetadataTemplate cacheMetadataJson =
+        JsonHelper.readJsonFromFile(cacheMetadataJsonFile, CacheMetadataTemplate.class);
+    cacheMetadata = CacheMetadataTranslator.fromTemplate(cacheMetadataJson);
   }
 
   Path getDirectory() {
+    if (null == cacheDirectory) {
+      throw new IllegalStateException("Must initialize cache first");
+    }
     return cacheDirectory;
-  }
-
-  CacheMetadata loadMetadata() throws IOException {
-    if (null != cacheMetadata) {
-      return cacheMetadata;
-    }
-
-    File cacheMetadataJsonFile = cacheDirectory.resolve(METADATA_FILENAME).toFile();
-
-    if (!cacheMetadataJsonFile.exists()) {
-      return cacheMetadata = new CacheMetadata();
-    }
-
-    CacheMetadataTemplate cacheMetadataJson = JsonHelper.readJsonFromFile(cacheMetadataJsonFile, CacheMetadataTemplate.class);
-    return cacheMetadata = CacheMetadata.from(cacheMetadataJson);
   }
 }

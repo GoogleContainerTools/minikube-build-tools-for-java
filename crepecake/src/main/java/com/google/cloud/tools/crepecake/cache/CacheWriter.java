@@ -1,16 +1,11 @@
 package com.google.cloud.tools.crepecake.cache;
 
-import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 import com.google.cloud.tools.crepecake.image.CachedLayer;
 import com.google.cloud.tools.crepecake.image.Layer;
-import com.google.cloud.tools.crepecake.image.LayerException;
 import com.google.cloud.tools.crepecake.image.ReferenceLayer;
 import com.google.cloud.tools.crepecake.image.UnwrittenLayer;
-
 import java.io.File;
 import java.io.IOException;
-import java.security.DigestException;
-import java.security.NoSuchAlgorithmException;
 
 /** Writes {@link Layer}s to the cache. */
 public class CacheWriter extends CacheHelper {
@@ -19,13 +14,9 @@ public class CacheWriter extends CacheHelper {
     super(cache);
   }
 
-  public void writeBaseImageLayer(UnwrittenLayer layer)  {
+  public void writeBaseImageLayer(UnwrittenLayer layer) {}
 
-  }
-
-  public void writeBaseImageLayer(ReferenceLayer layer) {
-
-  }
+  public void writeBaseImageLayer(ReferenceLayer layer) {}
 
   public CachedLayer writeDependenciesLayer(UnwrittenLayer layer) throws IOException {
     return writeLayer(ApplicationLayerType.DEPENDENCIES, layer);
@@ -39,19 +30,10 @@ public class CacheWriter extends CacheHelper {
     return writeLayer(ApplicationLayerType.CLASSES, layer);
   }
 
-  private CachedLayer writeLayer(ApplicationLayerType layerType, UnwrittenLayer layer) throws IOException {
-    CacheMetadata cacheMetadata = getMetadata();
-
+  private CachedLayer writeLayer(ApplicationLayerType layerType, UnwrittenLayer layer)
+      throws IOException {
     File layerFile = getLayerFilename(CacheMetadata.getNameForApplicationLayer(layerType));
-    TimestampedCachedLayer cachedLayer = new TimestampedCachedLayer(layer.writeTo(layerFile));
 
-    cacheMetadata.setApplicationLayer(layerType, cachedLayer);
-
-    return cachedLayer;
-  }
-
-  /** Flushes any unwritten updates to disk. */
-  public void flush() {
-
+    return new TimestampedCachedLayer(layer.writeTo(layerFile));
   }
 }

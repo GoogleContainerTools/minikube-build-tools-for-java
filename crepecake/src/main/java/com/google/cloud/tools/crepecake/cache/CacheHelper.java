@@ -1,24 +1,28 @@
 package com.google.cloud.tools.crepecake.cache;
 
-import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
-import com.google.cloud.tools.crepecake.image.DescriptorDigest;
-
 import java.io.File;
-import java.io.IOException;
+import java.nio.file.Path;
 
+/** Methods for getting static cache properties. */
 abstract class CacheHelper {
 
-  private final Cache cache;
+  private static final String DEPENDENCIES_LAYER_NAME = "dependencies";
+  private static final String RESOURCES_LAYER_NAME = "resources";
+  private static final String CLASSES_LAYER_NAME = "classes";
 
-  CacheHelper(Cache cache) {
-    this.cache = cache;
+  static File getLayerFilename(Path cacheDirectory, String layerName) {
+    return cacheDirectory.resolve(layerName + ".tar").toFile();
   }
 
-  final CacheMetadata getMetadata() throws IOException {
-    return cache.loadMetadata();
-  }
-
-  final File getLayerFilename(String layerName) {
-    return CacheMetadata.getLayerFilename(cache, layerName);
+  static String getNameForApplicationLayer(ApplicationLayerType layerType) {
+    switch (layerType) {
+      case DEPENDENCIES:
+        return DEPENDENCIES_LAYER_NAME;
+      case RESOURCES:
+        return RESOURCES_LAYER_NAME;
+      case CLASSES:
+        return CLASSES_LAYER_NAME;
+    }
+    throw new IllegalStateException("Should never reach here - switch above is exhaustive");
   }
 }
