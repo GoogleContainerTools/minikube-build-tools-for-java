@@ -16,8 +16,8 @@
 
 package com.google.cloud.tools.crepecake.image;
 
+import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
-import com.google.cloud.tools.crepecake.blob.BlobStream;
 import com.google.cloud.tools.crepecake.cache.CachedLayer;
 import java.io.File;
 import org.junit.Assert;
@@ -29,14 +29,10 @@ import org.mockito.MockitoAnnotations;
 /** Tests for {@link Layer}. */
 public class LayerTest {
 
-  @Mock private BlobStream mockCompressedBlobStream;
-
-  @Mock private BlobStream mockUncompressedBlobStream;
-
+  @Mock private Blob mockCompressedBlob;
+  @Mock private Blob mockUncompressedBlob;
   @Mock private File mockFile;
-
   @Mock private BlobDescriptor mockBlobDescriptor;
-
   @Mock private DescriptorDigest mockDiffId;
 
   @Before
@@ -46,7 +42,7 @@ public class LayerTest {
 
   @Test
   public void testNew_unwritten() {
-    Layer layer = new UnwrittenLayer(mockCompressedBlobStream, mockUncompressedBlobStream);
+    Layer layer = new UnwrittenLayer(mockCompressedBlob, mockUncompressedBlob);
 
     Assert.assertEquals(LayerType.UNWRITTEN, layer.getType());
 

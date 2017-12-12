@@ -24,7 +24,6 @@ import com.google.cloud.tools.crepecake.image.Layer;
 import com.google.cloud.tools.crepecake.image.LayerType;
 import java.io.File;
 
-// TODO: Move this to the package with the caching classes.
 /**
  * A {@link Layer} that has been written out to a cache and has its file-backed content BLOB,
  * digest, size, and diff ID.

@@ -48,7 +48,7 @@ public class ImageLayersTest {
   @Mock private BlobDescriptor mockUnwrittenLayerBlobDescriptor;
 
   @Before
-  public void setUpFakes() throws LayerException {
+  public void setUpFakes()  {
     MockitoAnnotations.initMocks(this);
 
     Mockito.when(mockCachedLayerBlobDescriptor.getDigest()).thenReturn(mockDescriptorDigest1);
@@ -68,7 +68,8 @@ public class ImageLayersTest {
   }
 
   @Test
-  public void testAddLayer_success() throws ImageException, LayerException {
+  public void testAddLayer_success()
+      throws DuplicateLayerException, LayerPropertyNotFoundException {
     List<Layer> expectedLayers =
         Arrays.asList(mockCachedLayer, mockReferenceLayer, mockReferenceNoDiffIdLayer);
 
@@ -81,7 +82,8 @@ public class ImageLayersTest {
   }
 
   @Test
-  public void testAddLayer_duplicate() throws ImageException, LayerException {
+  public void testAddLayer_duplicate()
+      throws DuplicateLayerException, LayerPropertyNotFoundException {
     ImageLayers<Layer> imageLayers = new ImageLayers<>();
     imageLayers.add(mockCachedLayer);
     imageLayers.add(mockReferenceLayer);
@@ -89,8 +91,8 @@ public class ImageLayersTest {
 
     try {
       imageLayers.add(mockUnwrittenLayer);
-      Assert.fail("Adding duplicate layer should throw ImageException");
-    } catch (ImageException ex) {
+      Assert.fail("Adding duplicate layer should throw DuplicateLayerException");
+    } catch (DuplicateLayerException ex) {
       Assert.assertEquals("Cannot add the same layer more than once", ex.getMessage());
     }
   }
