@@ -33,11 +33,6 @@ public class ReferenceNoDiffIdLayer implements Layer {
   }
 
   @Override
-  public LayerType getType() {
-    return LayerType.REFERENCE_NO_DIFF_ID;
-  }
-
-  @Override
   public BlobDescriptor getBlobDescriptor() {
     return blobDescriptor;
   }

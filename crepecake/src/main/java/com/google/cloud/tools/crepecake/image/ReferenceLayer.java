@@ -37,11 +37,6 @@ public class ReferenceLayer implements Layer {
   }
 
   @Override
-  public LayerType getType() {
-    return LayerType.REFERENCE;
-  }
-
-  @Override
   public BlobDescriptor getBlobDescriptor() {
     return blobDescriptor;
   }

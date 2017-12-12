@@ -54,11 +54,6 @@ public class CachedLayer implements Layer {
   }
 
   @Override
-  public LayerType getType() {
-    return LayerType.CACHED;
-  }
-
-  @Override
   public BlobDescriptor getBlobDescriptor() {
     return blobDescriptor;
   }
