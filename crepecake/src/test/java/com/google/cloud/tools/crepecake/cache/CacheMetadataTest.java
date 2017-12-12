@@ -16,23 +16,26 @@
 
 package com.google.cloud.tools.crepecake.cache;
 
-/** A {@link CachedLayer} with a last modified time. */
-class TimestampedCachedLayer extends CachedLayer {
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-  private final long lastModifiedTime;
+/** Tests for {@link CacheMetadata}. */
+public class CacheMetadataTest {
 
-  /** Initialize with a {@link CachedLayer} and the current time (in millis). */
-  TimestampedCachedLayer(CachedLayer cachedLayer) {
-    this(cachedLayer, System.currentTimeMillis());
+  @Mock private TimestampedCachedLayer mockLayer;
+
+  @Before
+  public void setUpMocks() {
+    MockitoAnnotations.initMocks(this);
   }
 
-  TimestampedCachedLayer(CachedLayer cachedLayer, long lastModifiedTime) {
-    super(
-        cachedLayer.getContentTarFile(), cachedLayer.getBlobDescriptor(), cachedLayer.getDiffId());
-    this.lastModifiedTime = lastModifiedTime;
-  }
+  @Test
+  public void testAddBaseImageLayer() {
+    CacheMetadata cacheMetadata = new CacheMetadata();
+    cacheMetadata.addBaseImageLayer(mockLayer);
 
-  long getLastModifiedTime() {
-    return lastModifiedTime;
+    Assert.assertEquals()
   }
 }

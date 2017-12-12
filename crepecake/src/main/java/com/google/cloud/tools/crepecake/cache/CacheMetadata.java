@@ -1,5 +1,9 @@
 package com.google.cloud.tools.crepecake.cache;
 
+import com.google.cloud.tools.crepecake.image.ImageException;
+import com.google.cloud.tools.crepecake.image.ImageLayers;
+import com.google.cloud.tools.crepecake.image.LayerPropertyNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,15 +13,15 @@ class CacheMetadata {
 
   static final String METADATA_FILENAME = "metadata.json";
 
-  private final List<TimestampedCachedLayer> baseImageLayers = new ArrayList<>();
+  private final ImageLayers<TimestampedCachedLayer> baseImageLayers = new ImageLayers<>();
 
   private Map<ApplicationLayerType, TimestampedCachedLayer> applicationLayers;
 
-  List<TimestampedCachedLayer> getBaseImageLayers() {
+  ImageLayers<TimestampedCachedLayer> getBaseImageLayers() {
     return baseImageLayers;
   }
 
-  void addBaseImageLayer(TimestampedCachedLayer layer) {
+  void addBaseImageLayer(TimestampedCachedLayer layer) throws LayerPropertyNotFoundException, ImageException {
     baseImageLayers.add(layer);
   }
 
