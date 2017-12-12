@@ -30,7 +30,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.DigestException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.CompressorException;
@@ -46,11 +45,14 @@ public class TarStreamBuilderTest {
   private String expectedFileBString;
   private TarStreamBuilder testTarStreamBuilder = new TarStreamBuilder();
 
+  private Path fileA;
+  private Path fileB;
+
   @Before
   public void setUp() throws IOException, URISyntaxException {
     // Gets the test resource files.
-    Path fileA = Paths.get(Resources.getResource("fileA").toURI());
-    Path fileB = Paths.get(Resources.getResource("fileB").toURI());
+    fileA = Paths.get(Resources.getResource("fileA").toURI());
+    fileB = Paths.get(Resources.getResource("fileB").toURI());
 
     expectedFileAString = new String(Files.readAllBytes(fileA), Charsets.UTF_8);
     expectedFileBString = new String(Files.readAllBytes(fileB), Charsets.UTF_8);
@@ -62,12 +64,12 @@ public class TarStreamBuilderTest {
   }
 
   @Test
-  public void testToBlob() throws IOException, DigestException {
-    Blob blobStream = testTarStreamBuilder.toBlob();
+  public void testToBlob() throws IOException {
+    Blob blob = testTarStreamBuilder.toBlob();
 
     // Writes the BLOB and captures the output.
     ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
-    blobStream.writeTo(tarByteOutputStream);
+    blob.writeTo(tarByteOutputStream);
 
     // Rearrange the output into input for verification.
     ByteArrayInputStream tarByteInputStream =
@@ -78,14 +80,13 @@ public class TarStreamBuilderTest {
   }
 
   @Test
-  public void testToBlob_withCompression()
-      throws IOException, CompressorException, DigestException {
-    Blob blobStream = testTarStreamBuilder.toBlob();
+  public void testToBlob_withCompression() throws IOException, CompressorException {
+    Blob blob = testTarStreamBuilder.toBlob();
 
     // Writes the BLOB and captures the output.
     ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
     OutputStream compressorStream = GzipCompressor.wrap(tarByteOutputStream);
-    blobStream.writeTo(compressorStream);
+    blob.writeTo(compressorStream);
 
     // Rearrange the output into input for verification.
     ByteArrayInputStream byteArrayInputStream =
@@ -113,5 +114,7 @@ public class TarStreamBuilderTest {
     Assert.assertEquals("crepecake", headerB.getName());
     String fileBString = CharStreams.toString(new InputStreamReader(tarArchiveInputStream));
     Assert.assertEquals(expectedFileBString, fileBString);
+
+    Assert.assertNull(tarArchiveInputStream.getNextTarEntry());
   }
 }
