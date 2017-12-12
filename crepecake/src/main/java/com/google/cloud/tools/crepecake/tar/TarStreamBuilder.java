@@ -36,20 +36,13 @@ public class TarStreamBuilder {
   /** Holds the entries added to the archive. */
   private final List<TarArchiveEntry> entries = new ArrayList<>();
 
-  /**
-   * Adds a file to the archive.
-   *
-   * @param file the file to add
-   * @param path the relative archive extraction path
-   */
-  public void addFile(File file, String path) throws IOException {
-    TarArchiveEntry entry = new TarArchiveEntry(file, path);
-
+  /** Adds an entry to the archive. */
+  public void addEntry(TarArchiveEntry entry) {
     entries.add(entry);
   }
 
   /** Builds a {@link Blob} that can stream the uncompressed tarball archive BLOB. */
-  public Blob toBlob() throws IOException {
+  public Blob toBlob() {
     return Blobs.from(this::writeEntriesAsTarArchive);
   }
 

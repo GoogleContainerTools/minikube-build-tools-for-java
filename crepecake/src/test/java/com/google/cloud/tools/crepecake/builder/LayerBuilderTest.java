@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.io;
+package com.google.cloud.tools.crepecake.builder;
 
 import com.google.cloud.tools.crepecake.hash.ByteHasher;
 import com.google.cloud.tools.crepecake.image.Digest;
@@ -46,9 +46,7 @@ public class LayerBuilderTest {
   }
 
   @Test
-  public void testBuild()
-      throws URISyntaxException, IOException, NoSuchAlgorithmException, CompressorException,
-          DigestException {
+  public void testBuild() {
     BlobStream expectedBlobStream = new BlobStream();
     Digest expectedLayerDigest = Digest.fromHash(ByteHasher.hash(expectedBlobStream.toByteArray()));
 

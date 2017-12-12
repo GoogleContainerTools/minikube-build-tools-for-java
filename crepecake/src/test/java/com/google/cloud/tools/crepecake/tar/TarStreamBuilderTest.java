@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,7 +34,6 @@ import java.security.DigestException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,8 +56,8 @@ public class TarStreamBuilderTest {
     expectedFileBString = new String(Files.readAllBytes(fileB), Charsets.UTF_8);
 
     // Prepares a test TarStreamBuilder.
-    testTarStreamBuilder.addFile(fileA.toFile(), "some/path/to/resourceFileA");
-    testTarStreamBuilder.addFile(fileB.toFile(), "crepecake");
+    testTarStreamBuilder.addEntry(new TarArchiveEntry(fileA.toFile(), "some/path/to/resourceFileA"));
+    testTarStreamBuilder.addEntry(new TarArchiveEntry(fileB.toFile(), "crepecake"));
   }
 
   @Test
@@ -83,9 +83,7 @@ public class TarStreamBuilderTest {
 
     // Writes the BLOB and captures the output.
     ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
-    CompressorOutputStream compressorStream =
-        new CompressorStreamFactory()
-            .createCompressorOutputStream(CompressorStreamFactory.GZIP, tarByteOutputStream);
+    OutputStream compressorStream = GzipCompressor.wrap(tarByteOutputStream);
     blobStream.writeTo(compressorStream);
 
     // Rearrange the output into input for verification.
