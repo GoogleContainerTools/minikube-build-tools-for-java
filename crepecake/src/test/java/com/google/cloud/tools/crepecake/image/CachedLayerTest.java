@@ -35,7 +35,6 @@ import org.mockito.MockitoAnnotations;
 public class CachedLayerTest {
 
   @Mock private BlobDescriptor mockBlobDescriptor;
-
   @Mock private DescriptorDigest mockDiffId;
 
   @Before
