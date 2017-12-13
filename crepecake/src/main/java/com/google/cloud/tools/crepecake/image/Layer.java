@@ -16,6 +16,7 @@
 
 package com.google.cloud.tools.crepecake.image;
 
+import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 
 /**
@@ -52,6 +53,12 @@ import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
  * </ul>
  */
 public interface Layer {
+
+  /**
+   * @return the layer's content BLOB
+   * @throws LayerPropertyNotFoundException if not available
+   */
+  Blob getBlob() throws LayerPropertyNotFoundException;
 
   /**
    * @return the layer's content {@link BlobDescriptor}

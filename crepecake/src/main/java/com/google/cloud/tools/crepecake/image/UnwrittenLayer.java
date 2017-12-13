@@ -59,6 +59,12 @@ public class UnwrittenLayer implements Layer {
   }
 
   @Override
+  public Blob getBlob() throws LayerPropertyNotFoundException {
+    // TODO: This should change when the #writeTo method is moved.
+    return compressedBlob;
+  }
+
+  @Override
   public BlobDescriptor getBlobDescriptor() throws LayerPropertyNotFoundException {
     throw new LayerPropertyNotFoundException("Blob descriptor not available for unwritten layer");
   }

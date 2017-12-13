@@ -51,7 +51,7 @@ public class CachedLayerTest {
     CachedLayer cachedLayer = new CachedLayer(fileA, mockBlobDescriptor, mockDiffId);
 
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    Blob fileBlob = cachedLayer.getBlobStream();
+    Blob fileBlob = cachedLayer.getBlob();
     fileBlob.writeTo(outputStream);
 
     Assert.assertEquals(
