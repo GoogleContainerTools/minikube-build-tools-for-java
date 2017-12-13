@@ -58,6 +58,8 @@ public class AsyncStepTest {
     }
   }
 
+  // TODO: Add test using #getResult().
+
   @Test
   public void testRun_correctOrder() {
     // Creates 5 steps.
