@@ -19,9 +19,7 @@ package com.google.cloud.tools.crepecake.cache;
 import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
-import com.google.cloud.tools.crepecake.image.Layer;
 import com.google.cloud.tools.crepecake.image.LayerPropertyNotFoundException;
-import com.google.cloud.tools.crepecake.image.LayerType;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.ByteArrayOutputStream;
@@ -51,9 +49,9 @@ public class CachedLayerTest {
 
   @Test
   public void testNew() throws LayerPropertyNotFoundException {
-    Layer layer = new CachedLayer(mockFile, mockBlobDescriptor, mockDiffId);
+    CachedLayer layer = new CachedLayer(mockFile, mockBlobDescriptor, mockDiffId);
 
-    Assert.assertEquals(LayerType.CACHED, layer.getType());
+    Assert.assertEquals(mockFile, layer.getContentTarFile());
     Assert.assertEquals(mockBlobDescriptor, layer.getBlobDescriptor());
     Assert.assertEquals(mockDiffId, layer.getDiffId());
   }

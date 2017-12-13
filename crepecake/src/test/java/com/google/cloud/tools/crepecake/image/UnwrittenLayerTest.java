@@ -18,11 +18,15 @@ package com.google.cloud.tools.crepecake.image;
 
 import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
+import com.google.cloud.tools.crepecake.cache.CachedLayer;
+import com.google.common.io.ByteStreams;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.security.DigestException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -34,15 +38,12 @@ public class UnwrittenLayerTest {
   @Rule public TemporaryFolder fakeFolder = new TemporaryFolder();
 
   @Mock private Blob mockCompressedBlob;
-
   @Mock private Blob mockUncompressedBlob;
-
   @Mock private BlobDescriptor mockBlobDescriptor;
-
   @Mock private DescriptorDigest mockDiffId;
 
   @Before
-  public void setUpMocks() throws IOException, DigestException {
+  public void setUpMocks() throws IOException {
     MockitoAnnotations.initMocks(this);
 
     Mockito.when(mockCompressedBlob.writeTo(Mockito.any(OutputStream.class)))
@@ -53,18 +54,18 @@ public class UnwrittenLayerTest {
   }
 
   // TODO: Test writeCompressedBlobTo
-  //  @Test
-  //  public void testWriteTo() throws IOException, DigestException, NoSuchAlgorithmException {
-  //    File testFile = fakeFolder.newFile("fakefile");
-  //
-  //    UnwrittenLayer unwrittenLayer = new UnwrittenLayer(mockCompressedBlob, mockUncompressedBlob);
-  //
-  //    CachedLayer cachedLayer = unwrittenLayer.writeTo(testFile);
-  //
-  //    Mockito.verify(mockCompressedBlob).writeTo(Mockito.any(OutputStream.class));
-  //    Mockito.verify(mockUncompressedBlob).writeTo(ByteStreams.nullOutputStream());
-  //
-  //    Assert.assertEquals(mockBlobDescriptor, cachedLayer.getBlobDescriptor());
-  //    Assert.assertEquals(mockDiffId, cachedLayer.getDiffId());
-  //  }
+  @Test
+  public void testWriteTo() throws IOException {
+    File testFile = fakeFolder.newFile("fakefile");
+
+    UnwrittenLayer unwrittenLayer = new UnwrittenLayer(mockCompressedBlob, mockUncompressedBlob);
+
+    CachedLayer cachedLayer = unwrittenLayer.writeTo(testFile);
+
+    Mockito.verify(mockCompressedBlob).writeTo(Mockito.any(OutputStream.class));
+    Mockito.verify(mockUncompressedBlob).writeTo(ByteStreams.nullOutputStream());
+
+    Assert.assertEquals(mockBlobDescriptor, cachedLayer.getBlobDescriptor());
+    Assert.assertEquals(mockDiffId, cachedLayer.getDiffId());
+  }
 }

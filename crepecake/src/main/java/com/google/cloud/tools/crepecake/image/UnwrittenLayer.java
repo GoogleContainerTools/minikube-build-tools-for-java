@@ -18,10 +18,18 @@ package com.google.cloud.tools.crepecake.image;
 
 import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
+import com.google.cloud.tools.crepecake.cache.CachedLayer;
+import com.google.common.io.ByteStreams;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/** A layer that has not been written out and only has the unwritten content {@link Blob}. */
+/**
+ * A layer that has not been written out and only has the unwritten content {@link Blob}. Once
+ * written, this layer becomes a {@link CachedLayer}.
+ */
 public class UnwrittenLayer implements Layer {
 
   private final Blob compressedBlob;
@@ -36,25 +44,25 @@ public class UnwrittenLayer implements Layer {
     this.uncompressedBlob = uncompressedBlob;
   }
 
+  // TODO: This functionality should belong in the cache management classes.
   /**
-   * Writes the compressed layer BLOB to an {@link OutputStream} and returns the written BLOB
-   * descriptor.
+   * Writes the compressed layer BLOB to a file and returns a {@link CachedLayer} that represents
+   * the new cached layer.
    */
-  public BlobDescriptor writeCompressedBlobTo(OutputStream outputStream) throws IOException {
-    return compressedBlob.writeTo(outputStream);
-  }
+  public CachedLayer writeTo(File file) throws IOException {
+    try (OutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(file))) {
+      BlobDescriptor blobDescriptor = compressedBlob.writeTo(fileOutputStream);
+      DescriptorDigest diffId =
+          uncompressedBlob.writeTo(ByteStreams.nullOutputStream()).getDigest();
 
-  /**
-   * Writes the uncompressed layer BLOB to an {@link OutputStream} and returns the associated diff
-   * ID.
-   */
-  public DescriptorDigest writeUncompressedBlobTo(OutputStream outputStream) throws IOException {
-    return uncompressedBlob.writeTo(outputStream).getDigest();
+      return new CachedLayer(file, blobDescriptor, diffId);
+    }
   }
 
   @Override
-  public LayerType getType() {
-    return LayerType.UNWRITTEN;
+  public Blob getBlob() {
+    // TODO: This should change when the #writeTo method is moved.
+    return compressedBlob;
   }
 
   @Override

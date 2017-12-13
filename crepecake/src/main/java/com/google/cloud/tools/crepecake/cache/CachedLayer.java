@@ -21,7 +21,6 @@ import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 import com.google.cloud.tools.crepecake.blob.Blobs;
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
 import com.google.cloud.tools.crepecake.image.Layer;
-import com.google.cloud.tools.crepecake.image.LayerType;
 import java.io.File;
 
 /**
@@ -44,24 +43,19 @@ public class CachedLayer implements Layer {
    * @param diffId the diff ID for the layer
    * @see Layer
    */
-  CachedLayer(File contentFile, BlobDescriptor blobDescriptor, DescriptorDigest diffId) {
+  public CachedLayer(File contentFile, BlobDescriptor blobDescriptor, DescriptorDigest diffId) {
     this.contentFile = contentFile;
     this.blobDescriptor = blobDescriptor;
     this.diffId = diffId;
   }
 
-  /** Gets a new {@link Blob} for the content of the cached layer. */
-  public Blob getBlob() {
-    return Blobs.from(contentFile);
+  public File getContentTarFile() {
+    return contentFile;
   }
 
   @Override
-  public LayerType getType() {
-    return LayerType.CACHED;
-  }
-
-  public File getContentTarFile() {
-    return contentFile;
+  public Blob getBlob() {
+    return Blobs.from(contentFile);
   }
 
   @Override
