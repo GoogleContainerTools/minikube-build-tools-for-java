@@ -27,7 +27,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import org.apache.commons.compress.compressors.CompressorException;
 
-/** A layer that has not been written out and only has the unwritten content {@link Blob}. */
+/**
+ * A layer that has not been written out and only has the unwritten content {@link Blob}. Once
+ * written, this layer becomes a {@link CachedLayer}.
+ */
 public class UnwrittenLayer implements Layer {
 
   private final Blob uncompressedBlob;
@@ -53,9 +56,10 @@ public class UnwrittenLayer implements Layer {
     }
   }
 
+  /** Gets the uncompressed layer content BLOB. */
   @Override
-  public LayerType getType() {
-    return LayerType.UNWRITTEN;
+  public Blob getBlob() throws LayerPropertyNotFoundException {
+    return uncompressedBlob;
   }
 
   @Override

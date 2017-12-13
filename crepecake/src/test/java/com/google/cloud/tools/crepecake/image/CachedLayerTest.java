@@ -25,8 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.security.DigestException;
-import java.security.NoSuchAlgorithmException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +35,6 @@ import org.mockito.MockitoAnnotations;
 public class CachedLayerTest {
 
   @Mock private BlobDescriptor mockBlobDescriptor;
-
   @Mock private DescriptorDigest mockDiffId;
 
   @Before
@@ -46,15 +43,14 @@ public class CachedLayerTest {
   }
 
   @Test
-  public void testGetBlobStream()
-      throws URISyntaxException, NoSuchAlgorithmException, IOException, DigestException {
+  public void testGetBlob() throws URISyntaxException, IOException {
     File fileA = new File(Resources.getResource("fileA").toURI());
     String expectedFileAString = new String(Files.readAllBytes(fileA.toPath()), Charsets.UTF_8);
 
     CachedLayer cachedLayer = new CachedLayer(fileA, mockBlobDescriptor, mockDiffId);
 
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    Blob fileBlob = cachedLayer.getBlobStream();
+    Blob fileBlob = cachedLayer.getBlob();
     fileBlob.writeTo(outputStream);
 
     Assert.assertEquals(

@@ -18,7 +18,6 @@ package com.google.cloud.tools.crepecake.image;
 
 import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
-import com.google.common.io.ByteStreams;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,11 +38,8 @@ public class UnwrittenLayerTest {
   @Rule public TemporaryFolder fakeFolder = new TemporaryFolder();
 
   @Mock private Blob mockCompressedBlob;
-
   @Mock private Blob mockUncompressedBlob;
-
   @Mock private BlobDescriptor mockBlobDescriptor;
-
   @Mock private DescriptorDigest mockDiffId;
 
   @Before
@@ -66,7 +62,6 @@ public class UnwrittenLayerTest {
     CachedLayer cachedLayer = unwrittenLayer.writeTo(testFile);
 
     Mockito.verify(mockUncompressedBlob).writeTo(Mockito.any(CompressorOutputStream.class));
-    Mockito.verify(mockUncompressedBlob).writeTo(ByteStreams.nullOutputStream());
 
     Assert.assertEquals(mockBlobDescriptor, cachedLayer.getBlobDescriptor());
     Assert.assertEquals(mockDiffId, cachedLayer.getDiffId());

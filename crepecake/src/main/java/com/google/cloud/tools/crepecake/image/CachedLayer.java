@@ -48,14 +48,9 @@ public class CachedLayer implements Layer {
     this.diffId = diffId;
   }
 
-  /** Gets a new {@link Blob} for the content of the cached layer. */
-  public Blob getBlobStream() {
-    return Blobs.from(file);
-  }
-
   @Override
-  public LayerType getType() {
-    return LayerType.CACHED;
+  public Blob getBlob() {
+    return Blobs.from(file);
   }
 
   @Override
