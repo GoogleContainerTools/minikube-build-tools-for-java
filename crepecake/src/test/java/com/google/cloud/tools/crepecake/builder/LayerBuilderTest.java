@@ -17,12 +17,14 @@
 package com.google.cloud.tools.crepecake.builder;
 
 import com.google.cloud.tools.crepecake.blob.Blob;
+import com.google.cloud.tools.crepecake.image.LayerPropertyNotFoundException;
 import com.google.cloud.tools.crepecake.tar.TarStreamBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -41,7 +43,7 @@ public class LayerBuilderTest {
   }
 
   @Test
-  public void testBuild() {
+  public void testBuild() throws LayerPropertyNotFoundException {
     Mockito.when(mockTarStreamBuilder.toBlob()).thenReturn(mockBlob);
 
     // Fake files to build into the layer.
@@ -59,7 +61,7 @@ public class LayerBuilderTest {
       layerBuilder.addFile(fileEntry.getFile(), fileEntry.getName());
     }
 
-    layerBuilder.build();
+    Assert.assertEquals(mockBlob, layerBuilder.build().getBlob());
 
     // Verifies that all the files have been added to the tarball stream.
     for (TarArchiveEntry entry : fileEntries) {
