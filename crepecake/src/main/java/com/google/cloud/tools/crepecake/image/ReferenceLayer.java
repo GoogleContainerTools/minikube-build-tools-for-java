@@ -16,6 +16,7 @@
 
 package com.google.cloud.tools.crepecake.image;
 
+import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 
 /**
@@ -34,6 +35,11 @@ public class ReferenceLayer implements Layer {
   public ReferenceLayer(BlobDescriptor blobDescriptor, DescriptorDigest diffId) {
     this.blobDescriptor = blobDescriptor;
     this.diffId = diffId;
+  }
+
+  @Override
+  public Blob getBlob() throws LayerPropertyNotFoundException {
+    throw new LayerPropertyNotFoundException("Blob not available for reference layer");
   }
 
   @Override
