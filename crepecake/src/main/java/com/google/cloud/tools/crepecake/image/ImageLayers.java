@@ -32,7 +32,7 @@ public class ImageLayers<T extends Layer> {
   private final Set<DescriptorDigest> layerDigests = new HashSet<>();
 
   /** Returns an immutable copy of the image layers. */
-  public List<T> asList() {
+  public ImmutableList<T> asList() {
     return ImmutableList.copyOf(layers);
   }
 
@@ -42,7 +42,7 @@ public class ImageLayers<T extends Layer> {
    * @param layer the layer to add
    * @throws DuplicateLayerException if the layer has already been added
    */
-  public void add(T layer) throws LayerPropertyNotFoundException, DuplicateLayerException {
+  public void add(T layer) throws DuplicateLayerException, LayerPropertyNotFoundException {
     if (layerDigests.contains(layer.getBlobDescriptor().getDigest())) {
       throw new DuplicateLayerException("Cannot add the same layer more than once");
     }
