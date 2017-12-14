@@ -18,14 +18,13 @@ package com.google.cloud.tools.crepecake.image;
 
 import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
-import com.google.cloud.tools.crepecake.tar.GzipCompressor;
 import com.google.common.io.ByteStreams;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import org.apache.commons.compress.compressors.CompressorException;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * A layer that has not been written out and only has the unwritten content {@link Blob}. Once
@@ -45,9 +44,9 @@ public class UnwrittenLayer implements Layer {
    * Writes the compressed layer BLOB to a file and returns a {@link CachedLayer} that represents
    * the new cached layer.
    */
-  public CachedLayer writeTo(File file) throws IOException, CompressorException {
+  public CachedLayer writeTo(File file) throws IOException {
     try (OutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(file))) {
-      OutputStream compressorStream = GzipCompressor.wrap(fileOutputStream);
+      OutputStream compressorStream = new GZIPOutputStream(fileOutputStream);
       BlobDescriptor blobDescriptor = uncompressedBlob.writeTo(compressorStream);
       DescriptorDigest diffId =
           uncompressedBlob.writeTo(ByteStreams.nullOutputStream()).getDigest();
@@ -58,7 +57,7 @@ public class UnwrittenLayer implements Layer {
 
   /** Gets the uncompressed layer content BLOB. */
   @Override
-  public Blob getBlob() throws LayerPropertyNotFoundException {
+  public Blob getBlob() {
     return uncompressedBlob;
   }
 

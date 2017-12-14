@@ -30,10 +30,10 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,19 +80,18 @@ public class TarStreamBuilderTest {
   }
 
   @Test
-  public void testToBlob_withCompression() throws IOException, CompressorException {
+  public void testToBlob_withCompression() throws IOException {
     Blob blob = testTarStreamBuilder.toBlob();
 
     // Writes the BLOB and captures the output.
     ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
-    OutputStream compressorStream = GzipCompressor.wrap(tarByteOutputStream);
+    OutputStream compressorStream = new GZIPOutputStream(tarByteOutputStream);
     blob.writeTo(compressorStream);
 
     // Rearrange the output into input for verification.
     ByteArrayInputStream byteArrayInputStream =
         new ByteArrayInputStream(tarByteOutputStream.toByteArray());
-    InputStream tarByteInputStream =
-        new CompressorStreamFactory().createCompressorInputStream(byteArrayInputStream);
+    InputStream tarByteInputStream = new GZIPInputStream(byteArrayInputStream);
     TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(tarByteInputStream);
 
     verifyTarArchive(tarArchiveInputStream);

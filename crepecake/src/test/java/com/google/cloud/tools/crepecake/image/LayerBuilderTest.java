@@ -14,10 +14,9 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.builder;
+package com.google.cloud.tools.crepecake.image;
 
 import com.google.cloud.tools.crepecake.blob.Blob;
-import com.google.cloud.tools.crepecake.image.LayerPropertyNotFoundException;
 import com.google.cloud.tools.crepecake.tar.TarStreamBuilder;
 import java.io.File;
 import java.io.IOException;

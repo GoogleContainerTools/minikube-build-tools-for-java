@@ -21,8 +21,7 @@ import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorOutputStream;
+import java.util.zip.GZIPOutputStream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,14 +53,14 @@ public class UnwrittenLayerTest {
   }
 
   @Test
-  public void testWriteTo() throws IOException, CompressorException {
+  public void testWriteTo() throws IOException {
     File testFile = fakeFolder.newFile("fakefile");
 
     UnwrittenLayer unwrittenLayer = new UnwrittenLayer(mockUncompressedBlob);
 
     CachedLayer cachedLayer = unwrittenLayer.writeTo(testFile);
 
-    Mockito.verify(mockUncompressedBlob).writeTo(Mockito.any(CompressorOutputStream.class));
+    Mockito.verify(mockUncompressedBlob).writeTo(Mockito.any(GZIPOutputStream.class));
 
     Assert.assertEquals(mockBlobDescriptor, cachedLayer.getBlobDescriptor());
     Assert.assertEquals(mockDiffId, cachedLayer.getDiffId());

@@ -14,9 +14,8 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.builder;
+package com.google.cloud.tools.crepecake.image;
 
-import com.google.cloud.tools.crepecake.image.UnwrittenLayer;
 import com.google.cloud.tools.crepecake.tar.TarStreamBuilder;
 import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
