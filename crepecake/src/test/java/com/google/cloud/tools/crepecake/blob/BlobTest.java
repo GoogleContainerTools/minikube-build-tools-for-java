@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.security.DigestException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -77,8 +76,7 @@ public class BlobTest {
   }
 
   /** Checks that the {@link Blob} streams the expected string. */
-  private void verifyBlobWriteTo(String expected, Blob blob)
-      throws IOException {
+  private void verifyBlobWriteTo(String expected, Blob blob) throws IOException {
     OutputStream outputStream = new ByteArrayOutputStream();
     BlobDescriptor blobDescriptor = blob.writeTo(outputStream);
 
