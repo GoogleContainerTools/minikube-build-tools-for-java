@@ -37,48 +37,48 @@ import org.mockito.Mockito;
 public class BlobTest {
 
   @Test
-  public void testEmpty() throws IOException, DigestException {
-    verifyBlobStreamWriteTo("", Blobs.empty());
+  public void testEmpty() throws IOException {
+    verifyBlobWriteTo("", Blobs.empty());
   }
 
   @Test
-  public void testFromInputStream() throws IOException, DigestException {
+  public void testFromInputStream() throws IOException {
     String expected = "crepecake";
     InputStream inputStream = new ByteArrayInputStream(expected.getBytes(Charsets.UTF_8));
-    verifyBlobStreamWriteTo(expected, Blobs.from(inputStream));
+    verifyBlobWriteTo(expected, Blobs.from(inputStream));
   }
 
   @Test
-  public void testFromFile() throws IOException, DigestException, URISyntaxException {
+  public void testFromFile() throws IOException, URISyntaxException {
     File fileA = new File(Resources.getResource("fileA").toURI());
     String expected = new String(Files.readAllBytes(fileA.toPath()), Charsets.UTF_8);
-    verifyBlobStreamWriteTo(expected, Blobs.from(fileA));
+    verifyBlobWriteTo(expected, Blobs.from(fileA));
   }
 
   @Test
-  public void testFromString_hashing() throws IOException, DigestException {
+  public void testFromString_hashing() throws IOException {
     String expected = "crepecake";
-    verifyBlobStreamWriteTo(expected, Blobs.from(expected, true));
+    verifyBlobWriteTo(expected, Blobs.from(expected, true));
   }
 
   @Test
-  public void testFromString_noHashing() throws IOException, DigestException {
+  public void testFromString_noHashing() throws IOException {
     String expected = "crepecake";
-    verifyBlobStreamWriteTo(expected, Blobs.from(expected, false));
+    verifyBlobWriteTo(expected, Blobs.from(expected, false));
   }
 
   @Test
-  public void testFromBlobWriter() throws IOException, DigestException {
+  public void testFromBlobWriter() throws IOException {
     String expected = "crepecake";
 
     BlobWriter writer = outputStream -> outputStream.write(expected.getBytes(Charsets.UTF_8));
 
-    verifyBlobStreamWriteTo(expected, Blobs.from(writer));
+    verifyBlobWriteTo(expected, Blobs.from(writer));
   }
 
   /** Checks that the {@link Blob} streams the expected string. */
-  private void verifyBlobStreamWriteTo(String expected, Blob blob)
-      throws IOException, DigestException {
+  private void verifyBlobWriteTo(String expected, Blob blob)
+      throws IOException {
     OutputStream outputStream = new ByteArrayOutputStream();
     BlobDescriptor blobDescriptor = blob.writeTo(outputStream);
 

@@ -24,7 +24,6 @@ import java.security.DigestException;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.function.Consumer;
 
 /** A {@link DigestOutputStream} that also keeps track of the total number of bytes written. */
 public class CountingDigestOutputStream extends DigestOutputStream {
@@ -33,24 +32,6 @@ public class CountingDigestOutputStream extends DigestOutputStream {
 
   /** Keeps track of the total number of bytes appended. */
   private long totalBytes = 0;
-
-  public interface WriteFunction {
-
-    void write(CountingDigestOutputStream countingDigestOutputStream) throws IOException;
-  }
-
-  public static BlobDescriptor decoratedWrite(OutputStream outputStream, WriteFunction writeFunction) throws IOException {
-    CountingDigestOutputStream hashingOutputStream = new CountingDigestOutputStream(outputStream);
-
-    writeFunction.write(hashingOutputStream);
-    hashingOutputStream.flush();
-
-    try {
-      return hashingOutputStream.toBlobDescriptor();
-    } catch (DigestException ex) {
-      throw new IOException("BLOB hashing failed: " + ex.getMessage(), ex);
-    }
-  }
 
   /** Wraps the {@code outputStream}. */
   public CountingDigestOutputStream(OutputStream outputStream) {
@@ -64,18 +45,23 @@ public class CountingDigestOutputStream extends DigestOutputStream {
   }
 
   /** Builds a {@link BlobDescriptor} with the hash and size of the bytes written. */
-  public BlobDescriptor toBlobDescriptor() throws DigestException {
-    byte[] hashedBytes = digest.digest();
+  public BlobDescriptor toBlobDescriptor() {
+    try {
+      byte[] hashedBytes = digest.digest();
 
-    // Encodes each hashed byte into 2-character hexadecimal representation.
-    StringBuilder stringBuilder = new StringBuilder(2 * hashedBytes.length);
-    for (byte b : hashedBytes) {
-      stringBuilder.append(String.format("%02x", b));
+      // Encodes each hashed byte into 2-character hexadecimal representation.
+      StringBuilder stringBuilder = new StringBuilder(2 * hashedBytes.length);
+      for (byte b : hashedBytes) {
+        stringBuilder.append(String.format("%02x", b));
+      }
+      String hash = stringBuilder.toString();
+
+      DescriptorDigest digest = DescriptorDigest.fromHash(hash);
+      return new BlobDescriptor(totalBytes, digest);
+
+    } catch (DigestException ex) {
+      throw new RuntimeException("SHA-256 algorithm produced invalid hash: " + ex.getMessage(), ex);
     }
-    String hash = stringBuilder.toString();
-
-    DescriptorDigest digest = DescriptorDigest.fromHash(hash);
-    return new BlobDescriptor(totalBytes, digest);
   }
 
   /** @return the total number of bytes that were hashed */
