@@ -17,33 +17,33 @@
 package com.google.cloud.tools.crepecake.image;
 
 import com.google.cloud.tools.crepecake.blob.Blob;
+import com.google.cloud.tools.crepecake.blob.Blobs;
 import com.google.cloud.tools.crepecake.tar.TarStreamBuilder;
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /** Tests for {@link LayerBuilder}. */
+@RunWith(MockitoJUnitRunner.class)
 public class LayerBuilderTest {
 
-  @Mock private Blob mockBlob;
   @Mock private TarStreamBuilder mockTarStreamBuilder;
 
-  @Before
-  public void setUpMocks() throws IOException {
-    MockitoAnnotations.initMocks(this);
-  }
+  @InjectMocks private LayerBuilder layerBuilder;
 
   @Test
-  public void testBuild() throws LayerPropertyNotFoundException {
-    Mockito.when(mockTarStreamBuilder.toBlob()).thenReturn(mockBlob);
+  public void testBuild() {
+    Blob emptyBlob = Blobs.empty();
+
+    Mockito.when(mockTarStreamBuilder.toBlob()).thenReturn(emptyBlob);
 
     // Fake files to build into the layer.
     List<TarArchiveEntry> fileEntries =
@@ -53,14 +53,12 @@ public class LayerBuilderTest {
             new TarArchiveEntry(new File("directory/fileC"), "/path/to/directory/fileC"),
             new TarArchiveEntry(new File("directory/"), "/path/to/directory/"));
 
-    LayerBuilder layerBuilder = new LayerBuilder(() -> mockTarStreamBuilder);
-
     // Adds each file in the layer directory to the layer builder.
     for (TarArchiveEntry fileEntry : fileEntries) {
       layerBuilder.addFile(fileEntry.getFile(), fileEntry.getName());
     }
 
-    Assert.assertEquals(mockBlob, layerBuilder.build().getBlob());
+    Assert.assertEquals(emptyBlob, layerBuilder.build().getBlob());
 
     // Verifies that all the files have been added to the tarball stream.
     for (TarArchiveEntry entry : fileEntries) {

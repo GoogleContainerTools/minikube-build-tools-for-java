@@ -17,11 +17,9 @@
 package com.google.cloud.tools.crepecake.image;
 
 import com.google.cloud.tools.crepecake.tar.TarStreamBuilder;
-import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 
 /** Builds an {@link UnwrittenLayer} from files. */
@@ -30,9 +28,7 @@ public class LayerBuilder {
   /** The partial filesystem changeset to build the layer with. */
   private final List<TarArchiveEntry> filesystemEntries = new ArrayList<>();
 
-  private Supplier<TarStreamBuilder> tarStreamBuilderSupplier = TarStreamBuilder::new;
-
-  public LayerBuilder() {}
+  private TarStreamBuilder tarStreamBuilder = new TarStreamBuilder();
 
   /**
    * Prepares a file to be built into the layer.
@@ -46,18 +42,11 @@ public class LayerBuilder {
 
   /** Builds and returns the layer. */
   public UnwrittenLayer build() {
-    TarStreamBuilder tarStreamBuilder = tarStreamBuilderSupplier.get();
-
     // Adds all the files to a tar.gzip stream.
     for (TarArchiveEntry entry : filesystemEntries) {
       tarStreamBuilder.addEntry(entry);
     }
 
     return new UnwrittenLayer(tarStreamBuilder.toBlob());
-  }
-
-  @VisibleForTesting
-  LayerBuilder(Supplier<TarStreamBuilder> tarStreamBuilderSupplier) {
-    this.tarStreamBuilderSupplier = tarStreamBuilderSupplier;
   }
 }
