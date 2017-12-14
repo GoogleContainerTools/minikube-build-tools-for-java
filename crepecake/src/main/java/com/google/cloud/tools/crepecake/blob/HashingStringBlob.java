@@ -19,9 +19,11 @@ package com.google.cloud.tools.crepecake.blob;
 import com.google.cloud.tools.crepecake.hash.CountingDigestOutputStream;
 import com.google.common.base.Charsets;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.security.DigestException;
 
 /** A {@link Blob} that holds a {@link String} and hashes the bytes when written out. */
-class HashingStringBlob extends AbstractHashingBlob {
+class HashingStringBlob implements Blob {
 
   private final byte[] contentBytes;
 
@@ -29,8 +31,12 @@ class HashingStringBlob extends AbstractHashingBlob {
     contentBytes = content.getBytes(Charsets.UTF_8);
   }
 
-  @Override
-  void writeToWithHashing(CountingDigestOutputStream outputStream) throws IOException {
+  private void writeToWithHashing(CountingDigestOutputStream outputStream) throws IOException {
     outputStream.write(contentBytes);
+  }
+
+  @Override
+  public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
+    CountingDigestOutputStream.decoratedWrite(outputStream, this::writeToWithHashing);
   }
 }

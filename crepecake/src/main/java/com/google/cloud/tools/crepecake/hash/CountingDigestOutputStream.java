@@ -24,6 +24,7 @@ import java.security.DigestException;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.function.Consumer;
 
 /** A {@link DigestOutputStream} that also keeps track of the total number of bytes written. */
 public class CountingDigestOutputStream extends DigestOutputStream {
@@ -32,6 +33,24 @@ public class CountingDigestOutputStream extends DigestOutputStream {
 
   /** Keeps track of the total number of bytes appended. */
   private long totalBytes = 0;
+
+  public interface WriteFunction {
+
+    void write(CountingDigestOutputStream countingDigestOutputStream) throws IOException;
+  }
+
+  public static BlobDescriptor decoratedWrite(OutputStream outputStream, WriteFunction writeFunction) throws IOException {
+    CountingDigestOutputStream hashingOutputStream = new CountingDigestOutputStream(outputStream);
+
+    writeFunction.write(hashingOutputStream);
+    hashingOutputStream.flush();
+
+    try {
+      return hashingOutputStream.toBlobDescriptor();
+    } catch (DigestException ex) {
+      throw new IOException("BLOB hashing failed: " + ex.getMessage(), ex);
+    }
+  }
 
   /** Wraps the {@code outputStream}. */
   public CountingDigestOutputStream(OutputStream outputStream) {
