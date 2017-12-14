@@ -46,7 +46,7 @@ public class ImageToJsonTranslatorTest {
   @Before
   public void setUp()
       throws DigestException, LayerPropertyNotFoundException, DuplicateLayerException {
-    Image<Layer> testImage = new Image<>();
+    Image testImage = new Image();
 
     testImage.setEnvironmentVariable("VAR1", "VAL1");
     testImage.setEnvironmentVariable("VAR2", "VAL2");

@@ -23,47 +23,38 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /** Tests for {@link ImageLayers}. */
+@RunWith(MockitoJUnitRunner.class)
 public class ImageLayersTest {
 
-  @Mock private DescriptorDigest mockDescriptorDigest1;
-  @Mock private DescriptorDigest mockDescriptorDigest2;
-  @Mock private DescriptorDigest mockDescriptorDigest3;
-
   @Mock private CachedLayer mockCachedLayer;
-  @Mock private BlobDescriptor mockCachedLayerBlobDescriptor;
-
   @Mock private ReferenceLayer mockReferenceLayer;
-  @Mock private BlobDescriptor mockReferenceLayerBlobDescriptor;
-
   @Mock private ReferenceNoDiffIdLayer mockReferenceNoDiffIdLayer;
-  @Mock private BlobDescriptor mockReferenceNoDiffIdLayerBlobDescriptor;
-
   @Mock private UnwrittenLayer mockUnwrittenLayer;
-  @Mock private BlobDescriptor mockUnwrittenLayerBlobDescriptor;
 
   @Before
   public void setUpFakes() throws LayerPropertyNotFoundException {
-    MockitoAnnotations.initMocks(this);
+    DescriptorDigest mockDescriptorDigest1 = Mockito.mock(DescriptorDigest.class);
+    DescriptorDigest mockDescriptorDigest2 = Mockito.mock(DescriptorDigest.class);
+    DescriptorDigest mockDescriptorDigest3 = Mockito.mock(DescriptorDigest.class);
 
-    Mockito.when(mockCachedLayerBlobDescriptor.getDigest()).thenReturn(mockDescriptorDigest1);
-    Mockito.when(mockReferenceLayerBlobDescriptor.getDigest()).thenReturn(mockDescriptorDigest2);
-    Mockito.when(mockReferenceNoDiffIdLayerBlobDescriptor.getDigest())
-        .thenReturn(mockDescriptorDigest3);
+    BlobDescriptor cachedLayerBlobDescriptor = new BlobDescriptor(0, mockDescriptorDigest1);
+    BlobDescriptor referenceLayerBlobDescriptor = new BlobDescriptor(0, mockDescriptorDigest2);
+    BlobDescriptor referenceNoDiffIdLayerBlobDescriptor =
+        new BlobDescriptor(0, mockDescriptorDigest3);
     // Intentionally the same digest as the mockCachedLayer.
-    Mockito.when(mockUnwrittenLayerBlobDescriptor.getDigest()).thenReturn(mockDescriptorDigest1);
+    BlobDescriptor unwrittenLayerBlobDescriptor = new BlobDescriptor(0, mockDescriptorDigest1);
 
-    Mockito.when(mockCachedLayer.getBlobDescriptor()).thenReturn(mockCachedLayerBlobDescriptor);
-    Mockito.when(mockReferenceLayer.getBlobDescriptor())
-        .thenReturn(mockReferenceLayerBlobDescriptor);
+    Mockito.when(mockCachedLayer.getBlobDescriptor()).thenReturn(cachedLayerBlobDescriptor);
+    Mockito.when(mockReferenceLayer.getBlobDescriptor()).thenReturn(referenceLayerBlobDescriptor);
     Mockito.when(mockReferenceNoDiffIdLayer.getBlobDescriptor())
-        .thenReturn(mockReferenceNoDiffIdLayerBlobDescriptor);
-    Mockito.when(mockUnwrittenLayer.getBlobDescriptor())
-        .thenReturn(mockUnwrittenLayerBlobDescriptor);
+        .thenReturn(referenceNoDiffIdLayerBlobDescriptor);
+    Mockito.when(mockUnwrittenLayer.getBlobDescriptor()).thenReturn(unwrittenLayerBlobDescriptor);
   }
 
   @Test

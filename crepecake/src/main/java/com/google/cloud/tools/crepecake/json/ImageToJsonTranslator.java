@@ -43,10 +43,10 @@ import java.util.Map;
  */
 public class ImageToJsonTranslator {
 
-  private final Image<Layer> image;
+  private final Image image;
 
   /** Instantiate with an {@link Image} that should not be modified afterwards. */
-  public ImageToJsonTranslator(Image<Layer> image) {
+  public ImageToJsonTranslator(Image image) {
     this.image = image;
   }
 
