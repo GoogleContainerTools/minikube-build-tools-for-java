@@ -28,8 +28,6 @@ public class LayerBuilder {
   /** The partial filesystem changeset to build the layer with. */
   private final List<TarArchiveEntry> filesystemEntries = new ArrayList<>();
 
-  private TarStreamBuilder tarStreamBuilder = new TarStreamBuilder();
-
   /**
    * Prepares a file to be built into the layer.
    *
@@ -42,7 +40,9 @@ public class LayerBuilder {
 
   /** Builds and returns the layer. */
   public UnwrittenLayer build() {
-    // Adds all the files to a tar.gzip stream.
+    TarStreamBuilder tarStreamBuilder = new TarStreamBuilder();
+
+    // Adds all the files to a tar stream.
     for (TarArchiveEntry entry : filesystemEntries) {
       tarStreamBuilder.addEntry(entry);
     }

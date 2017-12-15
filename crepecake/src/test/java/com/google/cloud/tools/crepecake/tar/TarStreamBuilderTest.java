@@ -47,12 +47,14 @@ public class TarStreamBuilderTest {
 
   private Path fileA;
   private Path fileB;
+  private Path directoryA;
 
   @Before
   public void setUp() throws IOException, URISyntaxException {
     // Gets the test resource files.
     fileA = Paths.get(Resources.getResource("fileA").toURI());
     fileB = Paths.get(Resources.getResource("fileB").toURI());
+    directoryA = Paths.get(Resources.getResource("directoryA").toURI());
 
     expectedFileAString = new String(Files.readAllBytes(fileA), Charsets.UTF_8);
     expectedFileBString = new String(Files.readAllBytes(fileB), Charsets.UTF_8);
@@ -61,6 +63,7 @@ public class TarStreamBuilderTest {
     testTarStreamBuilder.addEntry(
         new TarArchiveEntry(fileA.toFile(), "some/path/to/resourceFileA"));
     testTarStreamBuilder.addEntry(new TarArchiveEntry(fileB.toFile(), "crepecake"));
+    testTarStreamBuilder.addEntry(new TarArchiveEntry(directoryA.toFile(), "some/path/to"));
   }
 
   @Test
@@ -103,16 +106,22 @@ public class TarStreamBuilderTest {
    */
   private void verifyTarArchive(TarArchiveInputStream tarArchiveInputStream) throws IOException {
     // Verifies fileA was archived correctly.
-    TarArchiveEntry headerA = tarArchiveInputStream.getNextTarEntry();
-    Assert.assertEquals("some/path/to/resourceFileA", headerA.getName());
-    String fileAString = CharStreams.toString(new InputStreamReader(tarArchiveInputStream));
+    TarArchiveEntry headerFileA = tarArchiveInputStream.getNextTarEntry();
+    Assert.assertEquals("some/path/to/resourceFileA", headerFileA.getName());
+    String fileAString =
+        CharStreams.toString(new InputStreamReader(tarArchiveInputStream, Charsets.UTF_8));
     Assert.assertEquals(expectedFileAString, fileAString);
 
     // Verifies fileB was archived correctly.
-    TarArchiveEntry headerB = tarArchiveInputStream.getNextTarEntry();
-    Assert.assertEquals("crepecake", headerB.getName());
-    String fileBString = CharStreams.toString(new InputStreamReader(tarArchiveInputStream));
+    TarArchiveEntry headerFileB = tarArchiveInputStream.getNextTarEntry();
+    Assert.assertEquals("crepecake", headerFileB.getName());
+    String fileBString =
+        CharStreams.toString(new InputStreamReader(tarArchiveInputStream, Charsets.UTF_8));
     Assert.assertEquals(expectedFileBString, fileBString);
+
+    // Verifies directoryA was archived correctly.
+    TarArchiveEntry headerDirectoryA = tarArchiveInputStream.getNextTarEntry();
+    Assert.assertEquals("some/path/to/", headerDirectoryA.getName());
 
     Assert.assertNull(tarArchiveInputStream.getNextTarEntry());
   }

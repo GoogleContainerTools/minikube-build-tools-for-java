@@ -18,52 +18,89 @@ package com.google.cloud.tools.crepecake.image;
 
 import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.Blobs;
-import com.google.cloud.tools.crepecake.tar.TarStreamBuilder;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
+import com.google.common.io.Resources;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.zip.GZIPInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /** Tests for {@link LayerBuilder}. */
 @RunWith(MockitoJUnitRunner.class)
 public class LayerBuilderTest {
 
-  @Mock private TarStreamBuilder mockTarStreamBuilder;
-
-  @InjectMocks private LayerBuilder layerBuilder;
+  @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
   @Test
-  public void testBuild() {
-    Blob emptyBlob = Blobs.empty();
+  public void testBuild() throws URISyntaxException, IOException {
+    Path layerDirectory = Paths.get(Resources.getResource("layer").toURI());
 
-    Mockito.when(mockTarStreamBuilder.toBlob()).thenReturn(emptyBlob);
-
-    // Fake files to build into the layer.
-    List<TarArchiveEntry> fileEntries =
-        Arrays.asList(
-            new TarArchiveEntry(new File("fileA"), "/path/to/fileA"),
-            new TarArchiveEntry(new File("directory/fileB"), "/path/to/directory/fileB"),
-            new TarArchiveEntry(new File("directory/fileC"), "/path/to/directory/fileC"),
-            new TarArchiveEntry(new File("directory/"), "/path/to/directory/"));
+    LayerBuilder layerBuilder = new LayerBuilder();
 
     // Adds each file in the layer directory to the layer builder.
-    for (TarArchiveEntry fileEntry : fileEntries) {
-      layerBuilder.addFile(fileEntry.getFile(), fileEntry.getName());
-    }
+    Files.walk(layerDirectory)
+        .filter(path -> !path.equals(layerDirectory))
+        .forEach(
+            path ->
+                layerBuilder.addFile(path.toFile(), layerDirectory.relativize(path).toString()));
 
-    Assert.assertEquals(emptyBlob, layerBuilder.build().getBlob());
+    // Writes the layer tar to a temporary file.
+    UnwrittenLayer unwrittenLayer = layerBuilder.build();
+    File temporaryFile = temporaryFolder.newFile();
+    unwrittenLayer.writeTo(temporaryFile);
+
+    // Reads the file back.
+    Blob fileBlob = Blobs.from(temporaryFile);
+    ByteArrayOutputStream fileContentStream = new ByteArrayOutputStream();
+    fileBlob.writeTo(fileContentStream);
+    ByteArrayInputStream byteArrayInputStream =
+        new ByteArrayInputStream(fileContentStream.toByteArray());
+    InputStream tarByteInputStream = new GZIPInputStream(byteArrayInputStream);
+    TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(tarByteInputStream);
 
     // Verifies that all the files have been added to the tarball stream.
-    for (TarArchiveEntry entry : fileEntries) {
-      Mockito.verify(mockTarStreamBuilder).addEntry(entry);
-    }
-    Mockito.verify(mockTarStreamBuilder).toBlob();
+    Files.walk(layerDirectory)
+        .filter(path -> !path.equals(layerDirectory))
+        .forEach(
+            path -> {
+              try {
+                TarArchiveEntry header = tarArchiveInputStream.getNextTarEntry();
+
+                Assert.assertEquals(layerDirectory.relativize(path), Paths.get(header.getName()));
+
+                // If is a normal file, checks that the file contents match.
+                if (path.toFile().isFile()) {
+                  ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                  Blob blob = Blobs.from(path.toFile());
+                  blob.writeTo(byteArrayOutputStream);
+                  String expectedFileString =
+                      new String(byteArrayOutputStream.toByteArray(), Charsets.UTF_8);
+
+                  String extractedFileString =
+                      CharStreams.toString(
+                          new InputStreamReader(tarArchiveInputStream, Charsets.UTF_8));
+
+                  Assert.assertEquals(expectedFileString, extractedFileString);
+                }
+              } catch (IOException ex) {
+                throw new RuntimeException(ex);
+              }
+            });
   }
 }

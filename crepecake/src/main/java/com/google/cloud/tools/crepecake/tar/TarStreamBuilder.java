@@ -43,8 +43,10 @@ public class TarStreamBuilder {
         new TarArchiveOutputStream(tarByteStream)) {
       for (TarArchiveEntry entry : entries) {
         tarArchiveOutputStream.putArchiveEntry(entry);
-        InputStream contentStream = new BufferedInputStream(new FileInputStream(entry.getFile()));
-        ByteStreams.copy(contentStream, tarArchiveOutputStream);
+        if (entry.isFile()) {
+          InputStream contentStream = new BufferedInputStream(new FileInputStream(entry.getFile()));
+          ByteStreams.copy(contentStream, tarArchiveOutputStream);
+        }
         tarArchiveOutputStream.closeArchiveEntry();
       }
     }
