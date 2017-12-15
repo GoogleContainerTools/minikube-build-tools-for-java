@@ -45,16 +45,12 @@ public class TarStreamBuilderTest {
   private String expectedFileBString;
   private TarStreamBuilder testTarStreamBuilder = new TarStreamBuilder();
 
-  private Path fileA;
-  private Path fileB;
-  private Path directoryA;
-
   @Before
   public void setUp() throws IOException, URISyntaxException {
     // Gets the test resource files.
-    fileA = Paths.get(Resources.getResource("fileA").toURI());
-    fileB = Paths.get(Resources.getResource("fileB").toURI());
-    directoryA = Paths.get(Resources.getResource("directoryA").toURI());
+    Path fileA = Paths.get(Resources.getResource("fileA").toURI());
+    Path fileB = Paths.get(Resources.getResource("fileB").toURI());
+    Path directoryA = Paths.get(Resources.getResource("directoryA").toURI());
 
     expectedFileAString = new String(Files.readAllBytes(fileA), Charsets.UTF_8);
     expectedFileBString = new String(Files.readAllBytes(fileB), Charsets.UTF_8);
