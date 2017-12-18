@@ -49,7 +49,7 @@ public class CachedLayer implements Layer {
     this.diffId = diffId;
   }
 
-  public File getContentTarFile() {
+  public File getContentFile() {
     return contentFile;
   }
 

@@ -51,7 +51,7 @@ public class CachedLayerTest {
   public void testNew() throws LayerPropertyNotFoundException {
     CachedLayer layer = new CachedLayer(mockFile, mockBlobDescriptor, mockDiffId);
 
-    Assert.assertEquals(mockFile, layer.getContentTarFile());
+    Assert.assertEquals(mockFile, layer.getContentFile());
     Assert.assertEquals(mockBlobDescriptor, layer.getBlobDescriptor());
     Assert.assertEquals(mockDiffId, layer.getDiffId());
   }
