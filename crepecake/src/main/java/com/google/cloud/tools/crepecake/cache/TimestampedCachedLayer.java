@@ -27,8 +27,7 @@ class TimestampedCachedLayer extends CachedLayer {
   }
 
   TimestampedCachedLayer(CachedLayer cachedLayer, long lastModifiedTime) {
-    super(
-        cachedLayer.getContentFile(), cachedLayer.getBlobDescriptor(), cachedLayer.getDiffId());
+    super(cachedLayer.getContentFile(), cachedLayer.getBlobDescriptor(), cachedLayer.getDiffId());
     this.lastModifiedTime = lastModifiedTime;
   }
 
