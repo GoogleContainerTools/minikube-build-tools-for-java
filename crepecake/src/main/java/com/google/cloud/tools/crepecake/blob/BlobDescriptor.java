@@ -32,7 +32,7 @@ public class BlobDescriptor {
 
   /**
    * Creates a new {@link BlobDescriptor} from the contents of an {@link InputStream} while piping
-   * to an {@link OutputStream}.
+   * to an {@link OutputStream}. Does not close either streams.
    */
   static BlobDescriptor fromPipe(InputStream inputStream, OutputStream outputStream)
       throws IOException {

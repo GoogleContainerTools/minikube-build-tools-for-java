@@ -14,25 +14,12 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.blob;
+package com.google.cloud.tools.crepecake.image;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+/** Thrown when attempting to add a layer to an image but that layer already exists in the image. */
+public class DuplicateLayerException extends Exception {
 
-/** A {@link Blob} that holds an {@link InputStream}. */
-class InputStreamBlob implements Blob {
-
-  private final InputStream inputStream;
-
-  InputStreamBlob(InputStream inputStream) {
-    this.inputStream = inputStream;
-  }
-
-  @Override
-  public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
-    try (InputStream inputStream = this.inputStream) {
-      return BlobDescriptor.fromPipe(inputStream, outputStream);
-    }
+  public DuplicateLayerException(String message) {
+    super(message);
   }
 }
