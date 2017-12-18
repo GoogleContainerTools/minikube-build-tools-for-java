@@ -14,9 +14,7 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.json;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+package com.google.cloud.tools.crepecake.jsoimport com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.Blobs;
 import java.io.File;
