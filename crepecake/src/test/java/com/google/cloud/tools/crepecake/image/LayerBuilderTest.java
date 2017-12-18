@@ -57,8 +57,11 @@ public class LayerBuilderTest {
     Files.walk(layerDirectory)
         .filter(path -> !path.equals(layerDirectory))
         .forEach(
-            path ->
-                layerBuilder.addFile(path.toFile(), layerDirectory.relativize(path).toString()));
+            path -> {
+              Path extractionPathBase = Paths.get("extract/here");
+              Path extractionPath = extractionPathBase.resolve(layerDirectory.relativize(path));
+              layerBuilder.addFile(path.toFile(), extractionPath.toString());
+            });
 
     // Writes the layer tar to a temporary file.
     UnwrittenLayer unwrittenLayer = layerBuilder.build();
@@ -82,7 +85,9 @@ public class LayerBuilderTest {
               try {
                 TarArchiveEntry header = tarArchiveInputStream.getNextTarEntry();
 
-                Assert.assertEquals(layerDirectory.relativize(path), Paths.get(header.getName()));
+                Path expectedExtractionPath =
+                    Paths.get("extract/here").resolve(layerDirectory.relativize(path));
+                Assert.assertEquals(expectedExtractionPath, Paths.get(header.getName()));
 
                 // If is a normal file, checks that the file contents match.
                 if (path.toFile().isFile()) {

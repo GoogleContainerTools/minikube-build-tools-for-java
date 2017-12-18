@@ -32,10 +32,10 @@ public class LayerBuilder {
    * Prepares a file to be built into the layer.
    *
    * @param file the file to add
-   * @param path the path of the file in the partial filesystem changeset
+   * @param extractionPath the path of the file in the partial filesystem changeset
    */
-  public void addFile(File file, String path) {
-    filesystemEntries.add(new TarArchiveEntry(file, path));
+  public void addFile(File file, String extractionPath) {
+    filesystemEntries.add(new TarArchiveEntry(file, extractionPath));
   }
 
   /** Builds and returns the layer. */
