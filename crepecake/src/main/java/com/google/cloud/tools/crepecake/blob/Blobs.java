@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.InputStream;
 
 /** Static initializers for {@link Blob}. */
-public abstract class Blobs {
+public class Blobs {
 
   public static Blob empty() {
     return new EmptyBlob();
@@ -41,4 +41,6 @@ public abstract class Blobs {
   public static Blob from(BlobWriter writer) {
     return new HashingWriterBlob(writer);
   }
+
+  private Blobs() {}
 }

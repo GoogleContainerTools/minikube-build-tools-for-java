@@ -25,16 +25,7 @@ import org.junit.Test;
 /** Integration tests for {@link DockerCredentialRetriever}. */
 public class DockerCredentialRetrieverIntegrationTest {
 
-  /**
-   * Tests retrieval via {@code docker-credential-gcloud} CLI.
-   *
-   * <p>This test will ignore errors if
-   *
-   * <ul>
-   *   <li>{@code docker-credential-gcloud} does not exist, or
-   *   <li>{@code gcr.io} does not exist as a server URL
-   * </ul>
-   */
+  /** Tests retrieval via {@code docker-credential-gcloud} CLI. */
   @Test
   public void testRetrieveGCR() throws IOException {
     try {
@@ -50,13 +41,13 @@ public class DockerCredentialRetrieverIntegrationTest {
       if (!ex.getMessage().contains("No content to map due to end-of-input")) {
         throw ex;
       }
-      // The credential store has nothing for serverUrl=gcr.io.
+      throw new IOException("The credential store has nothing for serverUrl=gcr.io", ex);
 
     } catch (IOException ex) {
       if (!ex.getMessage().contains("No such file or directory")) {
         throw ex;
       }
-      // The system does not have docker-credential-gcloud CLI.
+      throw new IOException("The system does not have docker-credential-gcloud CLI", ex);
     }
   }
 }
