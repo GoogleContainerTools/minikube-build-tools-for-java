@@ -17,8 +17,6 @@
 package com.google.cloud.tools.crepecake.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.json.JsonObjectParser;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.Blobs;
 import java.io.File;

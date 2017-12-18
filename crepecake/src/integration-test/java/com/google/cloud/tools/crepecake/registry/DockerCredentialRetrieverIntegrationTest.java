@@ -25,12 +25,12 @@ import org.junit.Test;
 /** Integration tests for {@link DockerCredentialRetriever}. */
 public class DockerCredentialRetrieverIntegrationTest {
 
-  /** Tests retrieval via {@code docker-credential-gcloud} CLI. */
+  /** Tests retrieval via {@code docker-credential-gcr} CLI. */
   @Test
   public void testRetrieveGCR() throws IOException {
     try {
       DockerCredentialRetriever dockerCredentialRetriever =
-          new DockerCredentialRetriever("gcr.io", "gcloud");
+          new DockerCredentialRetriever("gcr.io", "gcr");
 
       Authorization authorization = dockerCredentialRetriever.retrieve();
 
@@ -47,7 +47,7 @@ public class DockerCredentialRetrieverIntegrationTest {
       if (!ex.getMessage().contains("No such file or directory")) {
         throw ex;
       }
-      throw new IOException("The system does not have docker-credential-gcloud CLI", ex);
+      throw new IOException("The system does not have docker-credential-gcr CLI", ex);
     }
   }
 }

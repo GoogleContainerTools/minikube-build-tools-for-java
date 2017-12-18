@@ -16,6 +16,7 @@
 
 package com.google.cloud.tools.crepecake.registry;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.cloud.tools.crepecake.http.Authorization;
 import com.google.cloud.tools.crepecake.http.Authorizations;
 import com.google.cloud.tools.crepecake.json.JsonHelper;
@@ -38,6 +39,7 @@ public class DockerCredentialRetriever {
   private final String credentialHelperCommand;
 
   /** Template for a Docker credential helper output. */
+  @JsonIgnoreProperties(ignoreUnknown = true)
   private static class DockerCredentialsTemplate extends JsonTemplate {
 
     private String Username;
