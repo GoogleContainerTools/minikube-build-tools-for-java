@@ -17,7 +17,6 @@
 package com.google.cloud.tools.crepecake.registry;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.cloud.tools.crepecake.http.Authorization;
 import com.google.cloud.tools.crepecake.http.Authorizations;
 import com.google.cloud.tools.crepecake.json.JsonHelper;
@@ -66,7 +65,7 @@ public class DockerCredentialRetriever {
    * }</pre>
    */
   public Authorization retrieve()
-      throws IOException, NonexistentServerUrlDockerCredentialRetrievalException,
+      throws IOException, NonexistentServerUrlDockerCredentialHelperException,
           NonexistentDockerCredentialHelperException {
     try {
       String credentialHelperCommand = "docker-credential-" + credentialHelperSuffix + " get";
@@ -80,7 +79,7 @@ public class DockerCredentialRetriever {
 
       // Throws an exception if the credential store does not have credentials for serverUrl.
       if (output.contains("credentials not found in native keychain")) {
-        throw new NonexistentServerUrlDockerCredentialRetrievalException(serverUrl);
+        throw new NonexistentServerUrlDockerCredentialHelperException(serverUrl);
       }
 
       DockerCredentialsTemplate dockerCredentials =

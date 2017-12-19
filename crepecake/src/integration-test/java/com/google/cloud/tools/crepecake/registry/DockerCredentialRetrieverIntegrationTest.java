@@ -37,7 +37,7 @@ public class DockerCredentialRetrieverIntegrationTest {
       // Checks that some token was received.
       Assert.assertTrue(0 < authorization.getToken().length());
 
-    } catch (NonexistentServerUrlDockerCredentialRetrievalException
+    } catch (NonexistentServerUrlDockerCredentialHelperException
         | NonexistentDockerCredentialHelperException ex) {
 
       Assume.assumeNoException("Skipping because docker-credential-gcr CLI not set up", ex);
@@ -46,7 +46,7 @@ public class DockerCredentialRetrieverIntegrationTest {
 
   @Test
   public void testRetrieve_nonexistentCredentialHelper()
-      throws IOException, NonexistentServerUrlDockerCredentialRetrievalException {
+      throws IOException, NonexistentServerUrlDockerCredentialHelperException {
     try {
       DockerCredentialRetriever fakeDockerCredentialRetriever =
           new DockerCredentialRetriever("", "fake-cloud-provider");
@@ -71,7 +71,7 @@ public class DockerCredentialRetrieverIntegrationTest {
 
       Assert.fail("Retrieve should have failed for nonexistent server URL");
 
-    } catch (NonexistentServerUrlDockerCredentialRetrievalException ex) {
+    } catch (NonexistentServerUrlDockerCredentialHelperException ex) {
       Assert.assertEquals(
           "The credential store has nothing for server URL of fake.server.url", ex.getMessage());
 
