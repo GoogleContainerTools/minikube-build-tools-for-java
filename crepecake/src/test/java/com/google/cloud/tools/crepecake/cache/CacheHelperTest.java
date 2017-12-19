@@ -19,23 +19,19 @@ package com.google.cloud.tools.crepecake.cache;
 import java.io.File;
 import java.nio.file.Path;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /** Tests for {@link CacheHelper}. */
 @RunWith(MockitoJUnitRunner.class)
 public class CacheHelperTest {
 
-  @Mock
-  private Path mockPath;
-  @Mock
-  private File mockFile;
+  @Mock private Path mockPath;
+  @Mock private File mockFile;
 
   @Test
   public void testGetLayerFilename() {
@@ -48,21 +44,17 @@ public class CacheHelperTest {
 
     File layerFile = CacheHelper.getLayerFile(mockPath, testLayerName);
 
-    Assert.assertEquals(
-        testLayerName + ".tar.gz", fileNameCaptor.getValue());
+    Assert.assertEquals(testLayerName + ".tar.gz", fileNameCaptor.getValue());
     Assert.assertEquals(mockFile, layerFile);
   }
 
   @Test
   public void testGetNameForApplicationLayer() {
     Assert.assertEquals(
-        "dependencies",
-        CacheHelper.getNameForApplicationLayer(ApplicationLayerType.DEPENDENCIES));
+        "dependencies", CacheHelper.getNameForApplicationLayer(ApplicationLayerType.DEPENDENCIES));
     Assert.assertEquals(
-        "resources",
-        CacheHelper.getNameForApplicationLayer(ApplicationLayerType.RESOURCES));
+        "resources", CacheHelper.getNameForApplicationLayer(ApplicationLayerType.RESOURCES));
     Assert.assertEquals(
-        "classes",
-        CacheHelper.getNameForApplicationLayer(ApplicationLayerType.CLASSES));
+        "classes", CacheHelper.getNameForApplicationLayer(ApplicationLayerType.CLASSES));
   }
 }

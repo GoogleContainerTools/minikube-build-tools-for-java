@@ -19,7 +19,6 @@ package com.google.cloud.tools.crepecake.cache;
 import com.google.cloud.tools.crepecake.blob.Blob;
 import com.google.cloud.tools.crepecake.blob.BlobDescriptor;
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
-import com.google.cloud.tools.crepecake.image.LayerPropertyNotFoundException;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.ByteArrayOutputStream;
@@ -27,14 +26,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.security.DigestException;
-import java.security.NoSuchAlgorithmException;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /** Tests for {@link CachedLayer}. */
@@ -55,8 +50,7 @@ public class CachedLayerTest {
   }
 
   @Test
-  public void testGetBlob()
-      throws URISyntaxException, IOException {
+  public void testGetBlob() throws URISyntaxException, IOException {
     File fileA = new File(Resources.getResource("fileA").toURI());
     String expectedFileAString = new String(Files.readAllBytes(fileA.toPath()), Charsets.UTF_8);
 
