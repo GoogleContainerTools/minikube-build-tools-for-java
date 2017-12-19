@@ -44,7 +44,7 @@ import java.io.OutputStream;
  *
  * @see <a href="https://github.com/FasterXML/jackson">https://github.com/FasterXML/jackson</a>
  */
-public abstract class JsonHelper {
+public class JsonHelper {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -81,4 +81,6 @@ public abstract class JsonHelper {
   public static Blob toBlob(JsonTemplate template) {
     return Blobs.from(outputStream -> writeJson(outputStream, template));
   }
+
+  private JsonHelper() {}
 }
