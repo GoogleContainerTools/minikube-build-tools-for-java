@@ -23,24 +23,9 @@ import java.nio.file.Path;
 class CacheHelper {
 
   private static final String LAYER_FILE_EXTENSION = ".tar.gz";
-  private static final String DEPENDENCIES_LAYER_FILENAME = "dependencies";
-  private static final String RESOURCES_LAYER_FILENAME = "resources";
-  private static final String CLASSES_LAYER_FILENAME = "classes";
 
   static File getLayerFile(Path cacheDirectory, String layerName) {
     return cacheDirectory.resolve(layerName + LAYER_FILE_EXTENSION).toFile();
-  }
-
-  static String getNameForApplicationLayer(ApplicationLayerType layerType) {
-    switch (layerType) {
-      case DEPENDENCIES:
-        return DEPENDENCIES_LAYER_FILENAME;
-      case RESOURCES:
-        return RESOURCES_LAYER_FILENAME;
-      case CLASSES:
-        return CLASSES_LAYER_FILENAME;
-    }
-    throw new IllegalStateException("Should never reach here - switch above is exhaustive");
   }
 
   private CacheHelper() {}
