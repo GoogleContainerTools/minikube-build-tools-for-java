@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 
-/** Hold information for what data the cache holds. */
+/** The cache stores all the BLOBs as separate files and the cache metadata contains information about each BLOB. */
 class CacheMetadata {
 
   static final String METADATA_FILENAME = "metadata.json";
