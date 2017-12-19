@@ -20,18 +20,16 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /** Tests for {@link TimestampedCachedLayer}. */
+@RunWith(MockitoJUnitRunner.class)
 public class TimestampedCachedLayerTest {
 
   @Mock private CachedLayer mockCachedLayer;
-
-  @Before
-  public void setUpMocks() {
-    MockitoAnnotations.initMocks(this);
-  }
 
   @Test
   public void testNew() {

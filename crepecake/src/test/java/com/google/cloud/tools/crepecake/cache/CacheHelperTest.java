@@ -21,21 +21,21 @@ import java.nio.file.Path;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /** Tests for {@link CacheHelper}. */
+@RunWith(MockitoJUnitRunner.class)
 public class CacheHelperTest {
 
-  @Mock Path mockPath;
-  @Mock File mockFile;
-
-  @Before
-  public void setupMocks() {
-    MockitoAnnotations.initMocks(this);
-  }
+  @Mock
+  private Path mockPath;
+  @Mock
+  private File mockFile;
 
   @Test
   public void testGetLayerFilename() {
@@ -49,20 +49,20 @@ public class CacheHelperTest {
     File layerFile = CacheHelper.getLayerFile(mockPath, testLayerName);
 
     Assert.assertEquals(
-        testLayerName + CacheHelper.LAYER_FILE_EXTENSION, fileNameCaptor.getValue());
+        testLayerName + ".tar.gz", fileNameCaptor.getValue());
     Assert.assertEquals(mockFile, layerFile);
   }
 
   @Test
   public void testGetNameForApplicationLayer() {
     Assert.assertEquals(
-        CacheHelper.DEPENDENCIES_LAYER_NAME,
+        "dependencies",
         CacheHelper.getNameForApplicationLayer(ApplicationLayerType.DEPENDENCIES));
     Assert.assertEquals(
-        CacheHelper.RESOURCES_LAYER_NAME,
+        "resources",
         CacheHelper.getNameForApplicationLayer(ApplicationLayerType.RESOURCES));
     Assert.assertEquals(
-        CacheHelper.CLASSES_LAYER_NAME,
+        "classes",
         CacheHelper.getNameForApplicationLayer(ApplicationLayerType.CLASSES));
   }
 }

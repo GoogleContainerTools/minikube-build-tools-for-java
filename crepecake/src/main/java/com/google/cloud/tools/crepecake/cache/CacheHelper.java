@@ -16,17 +16,16 @@
 
 package com.google.cloud.tools.crepecake.cache;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
 import java.nio.file.Path;
 
 /** Methods for getting static cache properties. */
 class CacheHelper {
 
-  @VisibleForTesting static final String LAYER_FILE_EXTENSION = ".tar.gz";
-  @VisibleForTesting static final String DEPENDENCIES_LAYER_NAME = "dependencies";
-  @VisibleForTesting static final String RESOURCES_LAYER_NAME = "resources";
-  @VisibleForTesting static final String CLASSES_LAYER_NAME = "classes";
+  private static final String LAYER_FILE_EXTENSION = ".tar.gz";
+  private static final String DEPENDENCIES_LAYER_FILENAME = "dependencies";
+  private static final String RESOURCES_LAYER_FILENAME = "resources";
+  private static final String CLASSES_LAYER_FILENAME = "classes";
 
   static File getLayerFile(Path cacheDirectory, String layerName) {
     return cacheDirectory.resolve(layerName + LAYER_FILE_EXTENSION).toFile();
@@ -35,11 +34,11 @@ class CacheHelper {
   static String getNameForApplicationLayer(ApplicationLayerType layerType) {
     switch (layerType) {
       case DEPENDENCIES:
-        return DEPENDENCIES_LAYER_NAME;
+        return DEPENDENCIES_LAYER_FILENAME;
       case RESOURCES:
-        return RESOURCES_LAYER_NAME;
+        return RESOURCES_LAYER_FILENAME;
       case CLASSES:
-        return CLASSES_LAYER_NAME;
+        return CLASSES_LAYER_FILENAME;
     }
     throw new IllegalStateException("Should never reach here - switch above is exhaustive");
   }

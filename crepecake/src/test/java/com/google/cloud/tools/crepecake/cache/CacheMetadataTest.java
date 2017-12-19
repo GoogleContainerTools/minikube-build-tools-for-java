@@ -24,11 +24,14 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /** Tests for {@link CacheMetadata}. */
+@RunWith(MockitoJUnitRunner.class)
 public class CacheMetadataTest {
 
   @Mock private DescriptorDigest mockDescriptorDigest;
@@ -38,8 +41,6 @@ public class CacheMetadataTest {
 
   @Before
   public void setUpMocks() {
-    MockitoAnnotations.initMocks(this);
-
     Mockito.when(mockBlobDescriptor.getDigest()).thenReturn(mockDescriptorDigest);
     Mockito.when(mockLayer.getBlobDescriptor()).thenReturn(mockBlobDescriptor);
   }

@@ -32,23 +32,21 @@ import java.security.NoSuchAlgorithmException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /** Tests for {@link CachedLayer}. */
+@RunWith(MockitoJUnitRunner.class)
 public class CachedLayerTest {
 
   @Mock private File mockFile;
   @Mock private BlobDescriptor mockBlobDescriptor;
   @Mock private DescriptorDigest mockDiffId;
 
-  @Before
-  public void setUpMocks() {
-    MockitoAnnotations.initMocks(this);
-  }
-
   @Test
-  public void testNew() throws LayerPropertyNotFoundException {
+  public void testNew() {
     CachedLayer layer = new CachedLayer(mockFile, mockBlobDescriptor, mockDiffId);
 
     Assert.assertEquals(mockFile, layer.getContentFile());
@@ -58,7 +56,7 @@ public class CachedLayerTest {
 
   @Test
   public void testGetBlob()
-      throws URISyntaxException, NoSuchAlgorithmException, IOException, DigestException {
+      throws URISyntaxException, IOException {
     File fileA = new File(Resources.getResource("fileA").toURI());
     String expectedFileAString = new String(Files.readAllBytes(fileA.toPath()), Charsets.UTF_8);
 

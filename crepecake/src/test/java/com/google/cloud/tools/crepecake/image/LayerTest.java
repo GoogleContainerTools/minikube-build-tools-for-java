@@ -22,22 +22,18 @@ import java.io.File;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /** Tests for {@link Layer}. */
+@RunWith(MockitoJUnitRunner.class)
 public class LayerTest {
 
-  @Mock private Blob mockCompressedBlob;
   @Mock private Blob mockUncompressedBlob;
-  @Mock private File mockFile;
   @Mock private BlobDescriptor mockBlobDescriptor;
   @Mock private DescriptorDigest mockDiffId;
-
-  @Before
-  public void setUpMocks() {
-    MockitoAnnotations.initMocks(this);
-  }
 
   @Test
   public void testNew_unwritten() throws LayerPropertyNotFoundException {
