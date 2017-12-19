@@ -16,10 +16,10 @@
 
 package com.google.cloud.tools.crepecake.registry;
 
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.google.cloud.tools.crepecake.http.Authorization;
 import java.io.IOException;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
 /** Integration tests for {@link DockerCredentialRetriever}. */
@@ -37,17 +37,47 @@ public class DockerCredentialRetrieverIntegrationTest {
       // Checks that some token was received.
       Assert.assertTrue(0 < authorization.getToken().length());
 
-    } catch (MismatchedInputException ex) {
-      if (!ex.getMessage().contains("No content to map due to end-of-input")) {
-        throw ex;
-      }
-      throw new IOException("The credential store has nothing for serverUrl=gcr.io", ex);
+    } catch (NonexistentServerUrlDockerCredentialRetrievalException
+        | NonexistentDockerCredentialHelperException ex) {
 
-    } catch (IOException ex) {
-      if (!ex.getMessage().contains("No such file or directory")) {
-        throw ex;
-      }
-      throw new IOException("The system does not have docker-credential-gcr CLI", ex);
+      Assume.assumeNoException("Skipping because docker-credential-gcr CLI not set up", ex);
+    }
+  }
+
+  @Test
+  public void testRetrieve_nonexistentCredentialHelper()
+      throws IOException, NonexistentServerUrlDockerCredentialRetrievalException {
+    try {
+      DockerCredentialRetriever fakeDockerCredentialRetriever =
+          new DockerCredentialRetriever("", "fake-cloud-provider");
+
+      fakeDockerCredentialRetriever.retrieve();
+
+      Assert.fail("Retrieve should have failed for nonexistent credential helper");
+
+    } catch (NonexistentDockerCredentialHelperException ex) {
+      Assert.assertEquals(
+          "The system does not have docker-credential-fake-cloud-provider CLI", ex.getMessage());
+    }
+  }
+
+  @Test
+  public void testRetrieve_nonexistentServerUrl() throws IOException {
+    try {
+      DockerCredentialRetriever fakeDockerCredentialRetriever =
+          new DockerCredentialRetriever("fake.server.url", "gcr");
+
+      fakeDockerCredentialRetriever.retrieve();
+
+      Assert.fail("Retrieve should have failed for nonexistent server URL");
+
+    } catch (NonexistentServerUrlDockerCredentialRetrievalException ex) {
+      Assert.assertEquals(
+          "The credential store has nothing for server URL of fake.server.url", ex.getMessage());
+
+    } catch (NonexistentDockerCredentialHelperException ex) {
+
+      Assume.assumeNoException("Skipping because docker-credential-gcr CLI not set up", ex);
     }
   }
 }
