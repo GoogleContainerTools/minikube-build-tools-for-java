@@ -47,4 +47,14 @@ public class CacheHelperTest {
     Assert.assertEquals(testLayerName + ".tar.gz", fileNameCaptor.getValue());
     Assert.assertEquals(mockFile, layerFile);
   }
+
+  @Test
+  public void testGetNameForApplicationLayer() {
+    Assert.assertEquals(
+        "dependencies", CacheHelper.getNameForApplicationLayer(ApplicationLayerType.DEPENDENCIES));
+    Assert.assertEquals(
+        "resources", CacheHelper.getNameForApplicationLayer(ApplicationLayerType.RESOURCES));
+    Assert.assertEquals(
+        "classes", CacheHelper.getNameForApplicationLayer(ApplicationLayerType.CLASSES));
+  }
 }

@@ -20,21 +20,11 @@ package com.google.cloud.tools.crepecake.cache;
 enum ApplicationLayerType {
 
   /** Layer of the application dependency JARs. */
-  DEPENDENCIES("dependencies"),
+  DEPENDENCIES,
 
   /** Layer of the application resources. */
-  RESOURCES("resources"),
+  RESOURCES,
 
   /** Layer of the application classes. */
-  CLASSES("classes");
-
-  private final String filename;
-
-  ApplicationLayerType(String filename) {
-    this.filename = filename;
-  }
-
-  public String getFilename() {
-    return filename;
-  }
+  CLASSES
 }
