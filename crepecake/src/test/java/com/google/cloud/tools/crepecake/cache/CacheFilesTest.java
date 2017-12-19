@@ -26,15 +26,28 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-/** Tests for {@link CacheHelper}. */
+/** Tests for {@link CacheFiles}. */
 @RunWith(MockitoJUnitRunner.class)
-public class CacheHelperTest {
+public class CacheFilesTest {
 
   @Mock private Path mockPath;
   @Mock private File mockFile;
 
   @Test
-  public void testGetLayerFilename() {
+  public void testGetMetadataFile() {
+    ArgumentCaptor<String> fileNameCaptor = ArgumentCaptor.forClass(String.class);
+
+    Mockito.when(mockPath.resolve(fileNameCaptor.capture())).thenReturn(mockPath);
+    Mockito.when(mockPath.toFile()).thenReturn(mockFile);
+
+    File metadataFile = CacheFiles.getMetadataFile(mockPath);
+
+    Assert.assertEquals("metadata.json", fileNameCaptor.getValue());
+    Assert.assertEquals(mockFile, metadataFile);
+  }
+
+  @Test
+  public void testGetLayerFile() {
     String testLayerName = "crepecake";
 
     ArgumentCaptor<String> fileNameCaptor = ArgumentCaptor.forClass(String.class);
@@ -42,19 +55,9 @@ public class CacheHelperTest {
     Mockito.when(mockPath.resolve(fileNameCaptor.capture())).thenReturn(mockPath);
     Mockito.when(mockPath.toFile()).thenReturn(mockFile);
 
-    File layerFile = CacheHelper.getLayerFile(mockPath, testLayerName);
+    File layerFile = CacheFiles.getLayerFile(mockPath, testLayerName);
 
     Assert.assertEquals(testLayerName + ".tar.gz", fileNameCaptor.getValue());
     Assert.assertEquals(mockFile, layerFile);
-  }
-
-  @Test
-  public void testGetNameForApplicationLayer() {
-    Assert.assertEquals(
-        "dependencies", CacheHelper.getNameForApplicationLayer(ApplicationLayerType.DEPENDENCIES));
-    Assert.assertEquals(
-        "resources", CacheHelper.getNameForApplicationLayer(ApplicationLayerType.RESOURCES));
-    Assert.assertEquals(
-        "classes", CacheHelper.getNameForApplicationLayer(ApplicationLayerType.CLASSES));
   }
 }
