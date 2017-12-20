@@ -17,6 +17,7 @@
 package com.google.cloud.tools.crepecake.registry;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.cloud.tools.crepecake.blob.Blobs;
 import com.google.cloud.tools.crepecake.http.Authorization;
 import com.google.cloud.tools.crepecake.http.Authorizations;
 import com.google.cloud.tools.crepecake.http.Connection;
@@ -55,7 +56,7 @@ public class RegistryAuthenticator {
   public Authorization authenticate() throws RegistryAuthenticationFailedException {
     try (Connection connection = new Connection(authenticationUrl)) {
       Response response = connection.get(new Request());
-      String responseString = response.getBody().writeToString();
+      String responseString = Blobs.writeToString(response.getBody());
 
       AuthenticationResponseTemplate responseJson =
           JsonTemplateMapper.readJson(responseString, AuthenticationResponseTemplate.class);

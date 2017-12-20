@@ -16,7 +16,6 @@
 
 package com.google.cloud.tools.crepecake.image.json;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
 import com.google.cloud.tools.crepecake.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
@@ -54,8 +53,7 @@ import java.util.List;
  *     Schema 1</a>
  * }</pre>
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class V21ManifestTemplate extends JsonTemplate {
+public class V21ManifestTemplate extends ManifestTemplate {
 
   private final int schemaVersion = 1;
 
@@ -81,6 +79,11 @@ public class V21ManifestTemplate extends JsonTemplate {
 
     // TODO: Change to its own JSON template that can extract the layer diff ID.
     private String v1Compatibility;
+  }
+
+  @Override
+  public int getSchemaVersion() {
+    return schemaVersion;
   }
 
   public ImmutableList<LayerObjectTemplate> getFsLayers() {

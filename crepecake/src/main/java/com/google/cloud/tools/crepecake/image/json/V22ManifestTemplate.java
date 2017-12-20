@@ -16,7 +16,6 @@
 
 package com.google.cloud.tools.crepecake.image.json;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.cloud.tools.crepecake.image.DescriptorDigest;
 import com.google.cloud.tools.crepecake.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
@@ -56,8 +55,7 @@ import java.util.List;
  * @see <a href="https://docs.docker.com/registry/spec/manifest-v2-2/">Image Manifest Version 2,
  *     Schema 2</a>
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class V22ManifestTemplate extends JsonTemplate {
+public class V22ManifestTemplate extends ManifestTemplate {
 
   public static final String MEDIA_TYPE = "application/vnd.docker.distribution.manifest.v2+json";
 
@@ -97,6 +95,11 @@ public class V22ManifestTemplate extends JsonTemplate {
     DescriptorDigest getDigest() {
       return digest;
     }
+  }
+
+  @Override
+  public int getSchemaVersion() {
+    return schemaVersion;
   }
 
   public ImmutableList<LayerObjectTemplate> getLayers() {
