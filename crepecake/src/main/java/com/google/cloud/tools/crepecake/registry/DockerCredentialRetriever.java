@@ -36,8 +36,6 @@ import java.io.InputStreamReader;
 public class DockerCredentialRetriever {
 
   private final String serverUrl;
-
-  /** Template for a Docker credential helper output. */
   private final String credentialHelperSuffix;
 
   /** Template for a Docker credential helper output. */
