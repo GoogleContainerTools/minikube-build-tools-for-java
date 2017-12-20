@@ -19,7 +19,11 @@ package com.google.cloud.tools.crepecake.registry;
 /** Thrown because the credential helper does not have credentials for the specified server URL. */
 public class NonexistentServerUrlDockerCredentialHelperException extends Exception {
 
-  NonexistentServerUrlDockerCredentialHelperException(String serverUrl) {
-    super("The credential store has nothing for server URL of " + serverUrl);
+  NonexistentServerUrlDockerCredentialHelperException(String credentialHelper, String serverUrl) {
+    super(
+        "The credential helper ("
+            + credentialHelper
+            + ") has nothing for server URL: "
+            + serverUrl);
   }
 }

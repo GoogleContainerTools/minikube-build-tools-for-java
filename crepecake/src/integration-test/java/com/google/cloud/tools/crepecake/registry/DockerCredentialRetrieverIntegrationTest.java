@@ -68,7 +68,8 @@ public class DockerCredentialRetrieverIntegrationTest {
 
     } catch (NonexistentServerUrlDockerCredentialHelperException ex) {
       Assert.assertEquals(
-          "The credential store has nothing for server URL of fake.server.url", ex.getMessage());
+          "The credential helper (docker-credential-gcr) has nothing for server URL: fake.server.url",
+          ex.getMessage());
     }
   }
 }

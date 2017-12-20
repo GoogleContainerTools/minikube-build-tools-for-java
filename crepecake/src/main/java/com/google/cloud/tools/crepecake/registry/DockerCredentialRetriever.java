@@ -68,7 +68,8 @@ public class DockerCredentialRetriever {
       throws IOException, NonexistentServerUrlDockerCredentialHelperException,
           NonexistentDockerCredentialHelperException {
     try {
-      String credentialHelperCommand = "docker-credential-" + credentialHelperSuffix + " get";
+      String credentialHelper = "docker-credential-" + credentialHelperSuffix;
+      String credentialHelperCommand = credentialHelper + " get";
 
       Process process = Runtime.getRuntime().exec(credentialHelperCommand);
       process.getOutputStream().write(serverUrl.getBytes(Charsets.UTF_8));
@@ -79,7 +80,7 @@ public class DockerCredentialRetriever {
 
       // Throws an exception if the credential store does not have credentials for serverUrl.
       if (output.contains("credentials not found in native keychain")) {
-        throw new NonexistentServerUrlDockerCredentialHelperException(serverUrl);
+        throw new NonexistentServerUrlDockerCredentialHelperException(credentialHelper, serverUrl);
       }
 
       DockerCredentialsTemplate dockerCredentials =
