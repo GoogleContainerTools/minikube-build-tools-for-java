@@ -23,7 +23,7 @@ import com.google.cloud.tools.crepecake.http.Authorizations;
 import com.google.cloud.tools.crepecake.http.Connection;
 import com.google.cloud.tools.crepecake.http.Request;
 import com.google.cloud.tools.crepecake.http.Response;
-import com.google.cloud.tools.crepecake.json.JsonHelper;
+import com.google.cloud.tools.crepecake.json.JsonTemplateMapper;
 import com.google.cloud.tools.crepecake.json.JsonTemplate;
 import com.google.common.base.Charsets;
 import java.io.ByteArrayOutputStream;
@@ -68,7 +68,7 @@ public class RegistryAuthenticator {
       String responseString = writeBlobToString(response.getBody());
 
       AuthenticationResponseTemplate responseJson =
-          JsonHelper.readJson(responseString, AuthenticationResponseTemplate.class);
+          JsonTemplateMapper.readJson(responseString, AuthenticationResponseTemplate.class);
       return Authorizations.withBearerToken(responseJson.token);
     } catch (IOException ex) {
       throw new RegistryAuthenticationFailedException(ex);

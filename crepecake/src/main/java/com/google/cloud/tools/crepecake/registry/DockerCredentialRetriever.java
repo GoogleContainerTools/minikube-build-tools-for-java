@@ -19,7 +19,7 @@ package com.google.cloud.tools.crepecake.registry;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.cloud.tools.crepecake.http.Authorization;
 import com.google.cloud.tools.crepecake.http.Authorizations;
-import com.google.cloud.tools.crepecake.json.JsonHelper;
+import com.google.cloud.tools.crepecake.json.JsonTemplateMapper;
 import com.google.cloud.tools.crepecake.json.JsonTemplate;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
@@ -83,7 +83,7 @@ public class DockerCredentialRetriever {
       }
 
       DockerCredentialsTemplate dockerCredentials =
-          JsonHelper.readJson(output, DockerCredentialsTemplate.class);
+          JsonTemplateMapper.readJson(output, DockerCredentialsTemplate.class);
 
       return Authorizations.withBasicToken(dockerCredentials.Secret);
 
