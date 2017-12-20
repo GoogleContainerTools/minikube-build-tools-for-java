@@ -19,7 +19,6 @@ package com.google.cloud.tools.crepecake.registry;
 import com.google.cloud.tools.crepecake.http.Authorization;
 import java.io.IOException;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Test;
 
 /** Integration tests for {@link DockerCredentialRetriever}. */
@@ -27,21 +26,16 @@ public class DockerCredentialRetrieverIntegrationTest {
 
   /** Tests retrieval via {@code docker-credential-gcr} CLI. */
   @Test
-  public void testRetrieveGCR() throws IOException {
-    try {
-      DockerCredentialRetriever dockerCredentialRetriever =
-          new DockerCredentialRetriever("gcr.io", "gcr");
+  public void testRetrieveGCR()
+      throws IOException, NonexistentServerUrlDockerCredentialHelperException,
+          NonexistentDockerCredentialHelperException {
+    DockerCredentialRetriever dockerCredentialRetriever =
+        new DockerCredentialRetriever("gcr.io", "gcr");
 
-      Authorization authorization = dockerCredentialRetriever.retrieve();
+    Authorization authorization = dockerCredentialRetriever.retrieve();
 
-      // Checks that some token was received.
-      Assert.assertTrue(0 < authorization.getToken().length());
-
-    } catch (NonexistentServerUrlDockerCredentialHelperException
-        | NonexistentDockerCredentialHelperException ex) {
-
-      Assume.assumeNoException("Skipping because docker-credential-gcr CLI not set up", ex);
-    }
+    // Checks that some token was received.
+    Assert.assertTrue(0 < authorization.getToken().length());
   }
 
   @Test
@@ -62,7 +56,8 @@ public class DockerCredentialRetrieverIntegrationTest {
   }
 
   @Test
-  public void testRetrieve_nonexistentServerUrl() throws IOException {
+  public void testRetrieve_nonexistentServerUrl()
+      throws IOException, NonexistentDockerCredentialHelperException {
     try {
       DockerCredentialRetriever fakeDockerCredentialRetriever =
           new DockerCredentialRetriever("fake.server.url", "gcr");
@@ -74,10 +69,6 @@ public class DockerCredentialRetrieverIntegrationTest {
     } catch (NonexistentServerUrlDockerCredentialHelperException ex) {
       Assert.assertEquals(
           "The credential store has nothing for server URL of fake.server.url", ex.getMessage());
-
-    } catch (NonexistentDockerCredentialHelperException ex) {
-
-      Assume.assumeNoException("Skipping because docker-credential-gcr CLI not set up", ex);
     }
   }
 }
