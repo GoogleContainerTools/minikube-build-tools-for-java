@@ -45,7 +45,10 @@ public class ManifestPuller {
   private final String serverUrl;
   private final String baseImage;
 
-  /** Instantiates a manifest template from a JSON string. */
+  /**
+   * Instantiates a {@link ManifestTemplate} from a JSON string. This checks the {@code
+   * schemaVersion} field of the JSON to determine which manifest version to use.
+   */
   public static ManifestTemplate getManifestTemplateFromJson(String jsonString)
       throws IOException, UnknownManifestFormatException {
     ManifestTemplate manifestTemplate =
