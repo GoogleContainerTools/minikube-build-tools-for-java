@@ -14,16 +14,17 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.json;
+package com.google.cloud.tools.crepecake.cache;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude;
+/** Types of application layers stored in cache. */
+enum ApplicationLayerType {
 
-/**
- * All JSON templates to be used with {@link JsonTemplateMapper} must extend this class.
- *
- * <p>Json fields should be private fields and fields that are {@code null} will not be serialized.
- */
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public abstract class JsonTemplate {}
+  /** Layer of the application dependency JARs. */
+  DEPENDENCIES,
+
+  /** Layer of the application resources. */
+  RESOURCES,
+
+  /** Layer of the application classes. */
+  CLASSES
+}

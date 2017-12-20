@@ -14,18 +14,24 @@
  * the License.
  */
 
-package com.google.cloud.tools.crepecake.http;
+package com.google.cloud.tools.crepecake.cache;
 
-/** Static initializers for {@link Authorization}. */
-public class Authorizations {
+import java.io.File;
+import java.nio.file.Path;
 
-  public static Authorization withBearerToken(String token) {
-    return new Authorization("Bearer", token);
+/** Methods for getting static cache filename properties. */
+class CacheFiles {
+
+  private static final String METADATA_FILENAME = "metadata.json";
+  private static final String LAYER_FILE_EXTENSION = ".tar.gz";
+
+  static File getMetadataFile(Path cacheDirectory) {
+    return cacheDirectory.resolve(METADATA_FILENAME).toFile();
   }
 
-  public static Authorization withBasicToken(String token) {
-    return new Authorization("Basic", token);
+  static File getLayerFile(Path cacheDirectory, String layerName) {
+    return cacheDirectory.resolve(layerName + LAYER_FILE_EXTENSION).toFile();
   }
 
-  private Authorizations() {}
+  private CacheFiles() {}
 }
