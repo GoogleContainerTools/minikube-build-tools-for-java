@@ -80,7 +80,7 @@ public class ManifestPuller {
 
     try (Connection connection = new Connection(pullUrl)) {
       Request request = new Request();
-      if (null != authorization) {
+      if (authorization != null) {
         request.setAuthorization(authorization);
       }
       Response response = connection.get(request);

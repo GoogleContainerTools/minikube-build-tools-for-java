@@ -16,11 +16,11 @@
 
 package com.google.cloud.tools.crepecake.blob;
 
-import com.google.common.base.Charsets;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /** Static methods for {@link Blob}. */
 public class Blobs {
@@ -49,7 +49,7 @@ public class Blobs {
   public static String writeToString(Blob blob) throws IOException {
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     blob.writeTo(byteArrayOutputStream);
-    return new String(byteArrayOutputStream.toByteArray(), Charsets.UTF_8);
+    return new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
   }
 
   private Blobs() {}
