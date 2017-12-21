@@ -16,6 +16,8 @@
 
 package com.google.cloud.tools.crepecake.registry;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.api.client.http.HttpResponseException;
 import com.google.cloud.tools.crepecake.blob.Blobs;
 import com.google.cloud.tools.crepecake.http.Authorization;
@@ -49,21 +51,26 @@ public class ManifestPuller {
    * Instantiates a {@link ManifestTemplate} from a JSON string. This checks the {@code
    * schemaVersion} field of the JSON to determine which manifest version to use.
    */
-  public static ManifestTemplate getManifestTemplateFromJson(String jsonString)
+  private static ManifestTemplate getManifestTemplateFromJson(String jsonString)
       throws IOException, UnknownManifestFormatException {
-    ManifestTemplate manifestTemplate =
-        JsonTemplateMapper.readJson(jsonString, ManifestTemplate.class);
+    ObjectNode node = new ObjectMapper().readValue(jsonString, ObjectNode.class);
+    if (!node.has("schemaVersion")) {
+      throw new UnknownManifestFormatException("Cannot find field 'schemaVersion' in manifest");
+    }
 
-    switch (manifestTemplate.getSchemaVersion()) {
+    int schemaVersion = node.get("schemaVersion").asInt(-1);
+    switch (schemaVersion) {
       case 1:
         return JsonTemplateMapper.readJson(jsonString, V21ManifestTemplate.class);
 
       case 2:
         return JsonTemplateMapper.readJson(jsonString, V22ManifestTemplate.class);
 
+      case -1:
+        throw new UnknownManifestFormatException("`schemaVersion` field is not an integer");
+
       default:
-        throw new UnknownManifestFormatException(
-            "Unknown schemaVersion: " + manifestTemplate.getSchemaVersion());
+        throw new UnknownManifestFormatException("Unknown schemaVersion: " + schemaVersion);
     }
   }
 
