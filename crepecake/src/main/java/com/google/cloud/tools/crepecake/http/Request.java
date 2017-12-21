@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 public class Request {
 
   /** The HTTP request headers. */
-  private final HttpHeaders headers = new HttpHeaders();
+  private final HttpHeaders headers = new HttpHeaders().setAccept("*/*");
 
   /** The HTTP request body. */
   @Nullable private BlobHttpContent body;

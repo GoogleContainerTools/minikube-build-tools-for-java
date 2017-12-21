@@ -20,6 +20,8 @@ import com.google.cloud.tools.crepecake.image.json.ManifestTemplate;
 import com.google.cloud.tools.crepecake.image.json.UnknownManifestFormatException;
 import com.google.cloud.tools.crepecake.image.json.V21ManifestTemplate;
 import java.io.IOException;
+
+import com.google.cloud.tools.crepecake.image.json.V22ManifestTemplate;
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -54,7 +56,7 @@ public class ManifestPullerIntegrationTest {
   }
 
   @Test
-  public void testPull()
+  public void testPull_v21()
       throws IOException, RegistryErrorException, RegistryUnauthorizedException,
           UnknownManifestFormatException {
     ManifestPuller manifestPuller = new ManifestPuller(null, "localhost:5000", "busybox");
@@ -63,6 +65,18 @@ public class ManifestPullerIntegrationTest {
     Assert.assertEquals(1, manifestTemplate.getSchemaVersion());
     V21ManifestTemplate v21ManifestTemplate = (V21ManifestTemplate) manifestTemplate;
     Assert.assertTrue(0 < v21ManifestTemplate.getFsLayers().size());
+  }
+
+  @Test
+  public void testPull_v22()
+      throws IOException, RegistryErrorException, RegistryUnauthorizedException,
+      UnknownManifestFormatException {
+    ManifestPuller manifestPuller = new ManifestPuller(null, "gcr.io", "distroless/java");
+    ManifestTemplate manifestTemplate = manifestPuller.pull("latest");
+
+    Assert.assertEquals(2, manifestTemplate.getSchemaVersion());
+    V22ManifestTemplate v22ManifestTemplate = (V22ManifestTemplate) manifestTemplate;
+    Assert.assertTrue(0 < v22ManifestTemplate.getLayers().size());
   }
 
   @Test
