@@ -19,9 +19,8 @@ package com.google.cloud.tools.crepecake.registry;
 import com.google.cloud.tools.crepecake.image.json.ManifestTemplate;
 import com.google.cloud.tools.crepecake.image.json.UnknownManifestFormatException;
 import com.google.cloud.tools.crepecake.image.json.V21ManifestTemplate;
-import java.io.IOException;
-
 import com.google.cloud.tools.crepecake.image.json.V22ManifestTemplate;
+import java.io.IOException;
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -70,7 +69,7 @@ public class ManifestPullerIntegrationTest {
   @Test
   public void testPull_v22()
       throws IOException, RegistryErrorException, RegistryUnauthorizedException,
-      UnknownManifestFormatException {
+          UnknownManifestFormatException {
     ManifestPuller manifestPuller = new ManifestPuller(null, "gcr.io", "distroless/java");
     ManifestTemplate manifestTemplate = manifestPuller.pull("latest");
 

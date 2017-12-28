@@ -86,11 +86,11 @@ public class ManifestPuller {
     URL pullUrl = getApiRoute("/manifests/" + imageTag);
 
     try (Connection connection = new Connection(pullUrl)) {
-      Request request = new Request();
+      Request.Builder builder = Request.builder();
       if (authorization != null) {
-        request.setAuthorization(authorization);
+        builder.setAuthorization(authorization);
       }
-      Response response = connection.get(request);
+      Response response = connection.get(builder.build());
       String responseString = Blobs.writeToString(response.getBody());
 
       return getManifestTemplateFromJson(responseString);
@@ -109,7 +109,7 @@ public class ManifestPuller {
             registryErrorExceptionBuilder.addErrorEntry(errorEntry);
           }
 
-          throw registryErrorExceptionBuilder.toRegistryHttpException();
+          throw registryErrorExceptionBuilder.build();
 
         case HttpURLConnection.HTTP_UNAUTHORIZED:
         case HttpURLConnection.HTTP_FORBIDDEN:

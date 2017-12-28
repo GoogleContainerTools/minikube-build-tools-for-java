@@ -55,7 +55,7 @@ public class RegistryAuthenticator {
   /** Sends the authentication request and retrieves the Bearer authorization token. */
   public Authorization authenticate() throws RegistryAuthenticationFailedException {
     try (Connection connection = new Connection(authenticationUrl)) {
-      Response response = connection.get(new Request());
+      Response response = connection.get(Request.builder().build());
       String responseString = Blobs.writeToString(response.getBody());
 
       AuthenticationResponseTemplate responseJson =
