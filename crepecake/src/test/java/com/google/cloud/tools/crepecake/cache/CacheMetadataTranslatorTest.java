@@ -50,7 +50,6 @@ public class CacheMetadataTranslatorTest {
   private DescriptorDigest baseLayerDiffId;
   private BlobDescriptor classesLayerBlobDescriptor;
   private DescriptorDigest classesLayerDiffId;
-  private List<String> classesLayerExistsOn;
   private List<String> classesLayerSourceDirectories;
   private long classesLayerLastModifiedTime;
 
@@ -72,7 +71,6 @@ public class CacheMetadataTranslatorTest {
     classesLayerDiffId =
         DescriptorDigest.fromDigest(
             "sha256:a3f3e99c29370df48e7377c8f9baa744a3958058a766793f821dadcb144a8372");
-    classesLayerExistsOn = Collections.singletonList("some/image/tag");
     classesLayerSourceDirectories =
         Collections.singletonList(Paths.get("some/source/path").toString());
     classesLayerLastModifiedTime = 255073580723571L;
@@ -102,7 +100,6 @@ public class CacheMetadataTranslatorTest {
         baseLayer.getContentFile());
     Assert.assertEquals(baseLayerBlobDescriptor, baseLayer.getBlobDescriptor());
     Assert.assertEquals(baseLayerDiffId, baseLayer.getDiffId());
-    Assert.assertEquals(0, baseLayer.getMetadata().getExistsOn().size());
 
     // Checks that the classses layer was translated correctly.
     CachedLayerWithMetadata classesLayer = layers.get(1);
@@ -112,7 +109,6 @@ public class CacheMetadataTranslatorTest {
         classesLayer.getContentFile());
     Assert.assertEquals(classesLayerBlobDescriptor, classesLayer.getBlobDescriptor());
     Assert.assertEquals(classesLayerDiffId, classesLayer.getDiffId());
-    Assert.assertEquals(classesLayerExistsOn, classesLayer.getMetadata().getExistsOn());
     Assert.assertEquals(
         classesLayerSourceDirectories, classesLayer.getMetadata().getSourceDirectories());
     Assert.assertEquals(
@@ -133,8 +129,7 @@ public class CacheMetadataTranslatorTest {
     CachedLayer baseCachedLayer =
         new CachedLayer(mockFile, baseLayerBlobDescriptor, baseLayerDiffId);
     LayerMetadata baseLayerMetadata =
-        new LayerMetadata(
-            CachedLayerType.BASE, Collections.emptyList(), Collections.emptyList(), -1);
+        new LayerMetadata(CachedLayerType.BASE, Collections.emptyList(), -1);
     CachedLayerWithMetadata baseLayer =
         new CachedLayerWithMetadata(baseCachedLayer, baseLayerMetadata);
 
@@ -142,10 +137,7 @@ public class CacheMetadataTranslatorTest {
         new CachedLayer(mockFile, classesLayerBlobDescriptor, classesLayerDiffId);
     LayerMetadata classesLayerMetadata =
         new LayerMetadata(
-            CachedLayerType.CLASSES,
-            classesLayerExistsOn,
-            classesLayerSourceDirectories,
-            classesLayerLastModifiedTime);
+            CachedLayerType.CLASSES, classesLayerSourceDirectories, classesLayerLastModifiedTime);
     CachedLayerWithMetadata classesLayer =
         new CachedLayerWithMetadata(classesCachedLayer, classesLayerMetadata);
 
