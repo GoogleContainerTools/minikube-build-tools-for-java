@@ -38,7 +38,7 @@ public class V22ManifestTemplateTest {
   public void testToJson() throws DigestException, IOException, URISyntaxException {
     // Loads the expected JSON string.
     Path jsonFile = Paths.get(Resources.getResource("json/v22manifest.json").toURI());
-    final String expectedJson = new String(Files.readAllBytes(jsonFile), StandardCharsets.UTF_8);
+    String expectedJson = new String(Files.readAllBytes(jsonFile), StandardCharsets.UTF_8);
 
     // Creates the JSON object to serialize.
     V22ManifestTemplate manifestJson = new V22ManifestTemplate();
