@@ -39,7 +39,7 @@ public class ContainerConfigurationTemplateTest {
   public void testToJson() throws IOException, URISyntaxException, DigestException {
     // Loads the expected JSON string.
     Path jsonFile = Paths.get(Resources.getResource("json/containerconfig.json").toURI());
-    final String expectedJson = new String(Files.readAllBytes(jsonFile), StandardCharsets.UTF_8);
+    String expectedJson = new String(Files.readAllBytes(jsonFile), StandardCharsets.UTF_8);
 
     // Creates the JSON object to serialize.
     ContainerConfigurationTemplate containerConfigJson = new ContainerConfigurationTemplate();
