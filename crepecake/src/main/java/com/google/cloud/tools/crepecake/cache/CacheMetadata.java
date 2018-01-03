@@ -35,7 +35,6 @@ class CacheMetadata {
     layers.add(layer);
   }
 
-  @VisibleForTesting
   ImageLayers<CachedLayerWithMetadata> getLayers() {
     return layers;
   }
