@@ -19,7 +19,6 @@ package com.google.cloud.tools.crepecake.cache;
 import com.google.cloud.tools.crepecake.image.DuplicateLayerException;
 import com.google.cloud.tools.crepecake.image.ImageLayers;
 import com.google.cloud.tools.crepecake.image.LayerPropertyNotFoundException;
-import com.google.common.annotations.VisibleForTesting;
 
 // TODO: Change this to match the new format of CacheMetadataTemplate.
 /**
