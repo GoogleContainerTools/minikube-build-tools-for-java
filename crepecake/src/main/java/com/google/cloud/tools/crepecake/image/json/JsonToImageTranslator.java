@@ -29,7 +29,6 @@ import com.google.cloud.tools.crepecake.image.ReferenceNoDiffIdLayer;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: Add translation of container configuration config.
 /** Translates {@link V21ManifestTemplate} and {@link V22ManifestTemplate} into {@link Image}. */
 public class JsonToImageTranslator {
 
