@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * This function that writes the contents of a BLOB. This functions should write the same BLOB
- * regardless of the number of times it is called.
+ * This function writes the contents of a BLOB. This function should write the same BLOB regardless
+ * of the number of times it is called.
  */
 @FunctionalInterface
 public interface BlobWriter {
