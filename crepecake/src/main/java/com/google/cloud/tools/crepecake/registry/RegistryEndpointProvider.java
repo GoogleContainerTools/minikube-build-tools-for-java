@@ -25,7 +25,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * Provides implementations for a registry endpoint.
+ * Provides implementations for a registry endpoint. Implementations should be immutable.
  *
  * @param <T> the type returned from handling the endpoint response
  */

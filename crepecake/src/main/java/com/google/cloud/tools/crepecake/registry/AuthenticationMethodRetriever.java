@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google Inc.
+ * Copyright 2018 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -19,33 +19,21 @@ package com.google.cloud.tools.crepecake.registry;
 import com.google.api.client.http.HttpMethods;
 import com.google.cloud.tools.crepecake.http.BlobHttpContent;
 import com.google.cloud.tools.crepecake.http.Response;
-import com.google.cloud.tools.crepecake.image.json.V22ManifestTemplate;
-import com.google.cloud.tools.crepecake.json.JsonTemplateMapper;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 
-/** Pushes an image's manifest. */
-class ManifestPusher implements RegistryEndpointProvider<Void> {
+/** Retrieves the {@code WWW-Authenticate} header from the registry API. */
+class AuthenticationMethodRetriever implements RegistryEndpointProvider<Void> {
 
   private final RegistryEndpointProperties registryEndpointProperties;
-  private final V22ManifestTemplate manifestTemplate;
-  private final String imageTag;
 
-  ManifestPusher(
-      RegistryEndpointProperties registryEndpointProperties,
-      V22ManifestTemplate manifestTemplate,
-      String imageTag) {
-    this.registryEndpointProperties = registryEndpointProperties;
-    this.manifestTemplate = manifestTemplate;
-    this.imageTag = imageTag;
-  }
-
+  @Nullable
   @Override
   public BlobHttpContent getContent() {
-    return new BlobHttpContent(
-        JsonTemplateMapper.toBlob(manifestTemplate), V22ManifestTemplate.MEDIA_TYPE);
+    return null;
   }
 
   @Override
@@ -60,22 +48,20 @@ class ManifestPusher implements RegistryEndpointProvider<Void> {
 
   @Override
   public URL getApiRoute(String apiRouteBase) throws MalformedURLException {
-    return new URL(
-        apiRouteBase + registryEndpointProperties.getImageName() + "/manifests/" + imageTag);
+    return new URL(apiRouteBase);
   }
 
   @Override
   public String getHttpMethod() {
-    return HttpMethods.PUT;
+    return HttpMethods.GET;
   }
 
   @Override
   public String getActionDescription() {
-    return "push image manifest for "
-        + registryEndpointProperties.getServerUrl()
-        + "/"
-        + registryEndpointProperties.getImageName()
-        + ":"
-        + imageTag;
+    return "retrieve authentication method for " + registryEndpointProperties.getServerUrl();
+  }
+
+  AuthenticationMethodRetriever(RegistryEndpointProperties registryEndpointProperties) {
+    this.registryEndpointProperties = registryEndpointProperties;
   }
 }
