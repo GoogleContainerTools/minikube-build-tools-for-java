@@ -104,17 +104,18 @@ public class RegistryClient {
     BlobPusher blobPusher = new BlobPusher(registryEndpointProperties, blobDigest, blob);
 
     // POST /v2/<name>/blobs/uploads/?mount={blob.digest}
-    String locationString = callRegistryEndpoint(blobPusher.initializer());
-    if (locationString == null) {
+    String locationHeader = callRegistryEndpoint(blobPusher.initializer());
+    if (locationHeader == null) {
+      // The BLOB exists already.
       return true;
     }
-    URL location = new URL(locationString);
+    URL patchLocation = new URL(locationHeader);
 
     // PATCH <Location> with BLOB
-    location = new URL(callRegistryEndpoint(blobPusher.writer(location)));
+    URL putLocation = new URL(callRegistryEndpoint(blobPusher.writer(patchLocation)));
 
     // PUT <Location>?digest={blob.digest}
-    callRegistryEndpoint(blobPusher.committer(location));
+    callRegistryEndpoint(blobPusher.committer(putLocation));
 
     return false;
   }
