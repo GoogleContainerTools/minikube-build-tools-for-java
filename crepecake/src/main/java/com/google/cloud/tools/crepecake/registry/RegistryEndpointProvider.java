@@ -16,6 +16,7 @@
 
 package com.google.cloud.tools.crepecake.registry;
 
+import com.google.api.client.http.HttpResponseException;
 import com.google.cloud.tools.crepecake.http.BlobHttpContent;
 import com.google.cloud.tools.crepecake.http.Response;
 import java.io.IOException;
@@ -49,6 +50,17 @@ interface RegistryEndpointProvider<T> {
 
   /** @return the HTTP method to send the request with */
   String getHttpMethod();
+
+  /**
+   * Handles an {@link HttpResponseException} that occurs.
+   *
+   * @param httpResponseException the {@link HttpResponseException} to handle
+   * @throws HttpResponseException {@code ex} if {@code ex} could not be handled
+   */
+  default T handleHttpResponseException(HttpResponseException httpResponseException)
+      throws HttpResponseException, RegistryErrorException {
+    throw httpResponseException;
+  }
 
   /**
    * @return a description of the registry action performed, used in error messages to describe the

@@ -52,39 +52,11 @@ public class RegistryClient {
   }
 
   /** Gets the {@link RegistryAuthenticator} to authenticate pulls from the registry. */
-  public RegistryAuthenticator getRegistryAuthenticator()
-      throws IOException, RegistryException, RegistryAuthenticationFailedException {
+  public RegistryAuthenticator getRegistryAuthenticator() throws IOException, RegistryException {
     // Gets the WWW-Authenticate header (eg. 'WWW-Authenticate: Bearer realm="https://gcr.io/v2/token",service="gcr.io"')
     AuthenticationMethodRetriever authenticationMethodRetriever =
         new AuthenticationMethodRetriever(registryEndpointProperties);
-
-    try {
-      callRegistryEndpoint(authenticationMethodRetriever);
-      throw new RegistryErrorExceptionBuilder(authenticationMethodRetriever.getActionDescription())
-          .addReason("Did not receive '401 Unauthorized' response")
-          .build();
-
-    } catch (RegistryUnauthorizedException ex) {
-      HttpResponseException httpResponseException = ex.getHttpResponseException();
-
-      // Only valid for status code of '401 Unauthorized'.
-      if (httpResponseException.getStatusCode() != HttpStatusCodes.STATUS_CODE_UNAUTHORIZED) {
-        throw httpResponseException;
-      }
-
-      // Checks if the 'WWW-Authenticate' header is present.
-      String authenticationMethod = httpResponseException.getHeaders().getAuthenticate();
-      if (authenticationMethod == null) {
-        throw new RegistryErrorExceptionBuilder(
-                authenticationMethodRetriever.getActionDescription(), httpResponseException)
-            .addReason("'WWW-Authenticate' header not found")
-            .build();
-      }
-
-      // Parses the header to retrieve the components.
-      return RegistryAuthenticator.fromAuthenticationMethod(
-          authenticationMethod, registryEndpointProperties.getImageName());
-    }
+    return callRegistryEndpoint(authenticationMethodRetriever);
   }
 
   /**
@@ -197,31 +169,41 @@ public class RegistryClient {
       return registryEndpointProvider.handleResponse(response);
 
     } catch (HttpResponseException ex) {
-      if (ex.getStatusCode() == HttpStatusCodes.STATUS_CODE_BAD_REQUEST
-          || ex.getStatusCode() == HttpStatusCodes.STATUS_CODE_NOT_FOUND
-          || ex.getStatusCode() == HttpStatusCodes.STATUS_CODE_METHOD_NOT_ALLOWED) {
-        // The name or reference was invalid.
-        ErrorResponseTemplate errorResponse =
-            JsonTemplateMapper.readJson(ex.getContent(), ErrorResponseTemplate.class);
-        RegistryErrorExceptionBuilder registryErrorExceptionBuilder =
-            new RegistryErrorExceptionBuilder(registryEndpointProvider.getActionDescription(), ex);
-        for (ErrorEntryTemplate errorEntry : errorResponse.getErrors()) {
-          registryErrorExceptionBuilder.addReason(errorEntry);
+      // First, see if the endpoint provider handles an exception as an expected response.
+      try {
+        return registryEndpointProvider.handleHttpResponseException(ex);
+
+      } catch (HttpResponseException httpResponseException) {
+        if (httpResponseException.getStatusCode() == HttpStatusCodes.STATUS_CODE_BAD_REQUEST
+            || httpResponseException.getStatusCode() == HttpStatusCodes.STATUS_CODE_NOT_FOUND
+            || httpResponseException.getStatusCode()
+                == HttpStatusCodes.STATUS_CODE_METHOD_NOT_ALLOWED) {
+          // The name or reference was invalid.
+          ErrorResponseTemplate errorResponse =
+              JsonTemplateMapper.readJson(
+                  httpResponseException.getContent(), ErrorResponseTemplate.class);
+          RegistryErrorExceptionBuilder registryErrorExceptionBuilder =
+              new RegistryErrorExceptionBuilder(
+                  registryEndpointProvider.getActionDescription(), httpResponseException);
+          for (ErrorEntryTemplate errorEntry : errorResponse.getErrors()) {
+            registryErrorExceptionBuilder.addReason(errorEntry);
+          }
+
+          throw registryErrorExceptionBuilder.build();
+
+        } else if (httpResponseException.getStatusCode() == HttpStatusCodes.STATUS_CODE_UNAUTHORIZED
+            || httpResponseException.getStatusCode() == HttpStatusCodes.STATUS_CODE_FORBIDDEN) {
+          throw new RegistryUnauthorizedException(httpResponseException);
+
+        } else if (httpResponseException.getStatusCode()
+            == HttpStatusCodes.STATUS_CODE_TEMPORARY_REDIRECT) {
+          return callRegistryEndpoint(
+              new URL(httpResponseException.getHeaders().getLocation()), registryEndpointProvider);
+
+        } else {
+          // Unknown
+          throw httpResponseException;
         }
-
-        throw registryErrorExceptionBuilder.build();
-
-      } else if (ex.getStatusCode() == HttpStatusCodes.STATUS_CODE_UNAUTHORIZED
-          || ex.getStatusCode() == HttpStatusCodes.STATUS_CODE_FORBIDDEN) {
-        throw new RegistryUnauthorizedException(ex);
-
-      } else if (ex.getStatusCode() == HttpStatusCodes.STATUS_CODE_TEMPORARY_REDIRECT) {
-        return callRegistryEndpoint(
-            new URL(ex.getHeaders().getLocation()), registryEndpointProvider);
-
-      } else {
-        // Unknown
-        throw ex;
       }
 
     } catch (NoHttpResponseException ex) {
