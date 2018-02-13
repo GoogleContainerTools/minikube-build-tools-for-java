@@ -14,26 +14,16 @@
  * the License.
  */
 
-package com.google.cloud.tools.minikube;
+package com.google.cloud.tools.minikube.maven;
 
-import com.google.cloud.tools.minikube.command.CommandExecutor;
-import com.google.common.annotations.VisibleForTesting;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
+import com.google.common.collect.ImmutableList;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
 
 @Mojo(name = "start")
-public class StartMojo extends AbstractMinikubeMojo {
+class StartMojo extends AbstractMinikubeMojo {
+
+  @Parameter private CommandConfiguration start = new CommandConfiguration();
 
   @Override
   String getDescription() {
@@ -43,5 +33,10 @@ public class StartMojo extends AbstractMinikubeMojo {
   @Override
   String getCommand() {
     return "start";
+  }
+
+  @Override
+  ImmutableList<String> getMoreFlags() {
+    return start.getFlags();
   }
 }

@@ -14,19 +14,29 @@
  * the License.
  */
 
-package com.google.cloud.tools.minikube.command;
+package com.google.cloud.tools.minikube.maven;
 
-// TODO: Share this with minikube-gradle-plugin.
-/** Implementations should be use build system-specific logging mechanisms. */
-public interface BuildLogger {
+import com.google.common.collect.ImmutableList;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
-  void lifecycle(CharSequence message);
+@Mojo(name = "delete")
+class DeleteMojo extends AbstractMinikubeMojo {
 
-  void info(CharSequence message);
+  @Parameter private CommandConfiguration delete;
 
-  void debug(CharSequence message);
+  @Override
+  String getDescription() {
+    return "Deleting minikube cluster";
+  }
 
-  void warn(CharSequence message);
+  @Override
+  String getCommand() {
+    return "delete";
+  }
 
-  void error(CharSequence message);
+  @Override
+  ImmutableList<String> getMoreFlags() {
+    return delete.getFlags();
+  }
 }

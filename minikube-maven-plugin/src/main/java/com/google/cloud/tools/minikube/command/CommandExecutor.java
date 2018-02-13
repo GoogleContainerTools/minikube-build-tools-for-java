@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google Inc.
+ * Copyright 2018 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -17,8 +17,6 @@
 package com.google.cloud.tools.minikube.command;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.codehaus.plexus.util.cli.CommandLineException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -38,11 +35,10 @@ import java.util.function.Supplier;
 /** Executes a shell command. */
 public class CommandExecutor {
 
-  @VisibleForTesting
-  static final int TIMEOUT_SECONDS = 5;
+  @VisibleForTesting static final int TIMEOUT_SECONDS = 5;
 
   private Supplier<ProcessBuilder> processBuilderSupplier = ProcessBuilder::new;
-  private Supplier<ExecutorService> executorServiceSupplier = Executors::newSingleThreadExecutor;;
+  private Supplier<ExecutorService> executorServiceSupplier = Executors::newSingleThreadExecutor;
   private BuildLogger logger;
   private Map<String, String> environment;
 
@@ -131,15 +127,16 @@ public class CommandExecutor {
   private Runnable makeOutputConsumerRunnable(Process process, List<String> output) {
     return () -> {
       try (InputStream processInputStream = process.getInputStream();
-           InputStreamReader inputStreamReader = new InputStreamReader(processInputStream, StandardCharsets.UTF_8);
-           BufferedReader br = new BufferedReader(inputStreamReader)) {
-        String line = br.readLine();
+          InputStreamReader inputStreamReader =
+              new InputStreamReader(processInputStream, StandardCharsets.UTF_8);
+          BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+        String line = bufferedReader.readLine();
         while (line != null) {
           if (logger != null) {
             logger.lifecycle(line);
           }
           output.add(line);
-          line = br.readLine();
+          line = bufferedReader.readLine();
         }
 
       } catch (IOException ex) {

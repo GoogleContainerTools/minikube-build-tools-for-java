@@ -1,0 +1,36 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.test</groupId>
+  <artifactId>simple</artifactId>
+  <version>1</version>
+
+  <properties>
+    <java.target.version>1.8</java.target.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <minikube-maven-plugin.version>@@PluginVersion@@</minikube-maven-plugin.version>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>minikube-maven-plugin</artifactId>
+        <version>${minikube-maven-plugin.version}</version>
+        <configuration>
+          <minikube>@@MinikubePath@@</minikube>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

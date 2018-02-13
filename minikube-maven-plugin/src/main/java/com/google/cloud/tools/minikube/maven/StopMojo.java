@@ -14,12 +14,16 @@
  * the License.
  */
 
-package com.google.cloud.tools.minikube;
+package com.google.cloud.tools.minikube.maven;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 @Mojo(name = "stop")
-public class StopMojo extends AbstractMinikubeMojo {
+class StopMojo extends AbstractMinikubeMojo {
+
+  @Parameter private CommandConfiguration stop;
 
   @Override
   String getDescription() {
@@ -29,5 +33,10 @@ public class StopMojo extends AbstractMinikubeMojo {
   @Override
   String getCommand() {
     return "stop";
+  }
+
+  @Override
+  ImmutableList<String> getMoreFlags() {
+    return stop.getFlags();
   }
 }

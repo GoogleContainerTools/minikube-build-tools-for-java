@@ -14,44 +14,56 @@
  * the License.
  */
 
-package com.google.cloud.tools.minikube;
+package com.google.cloud.tools.minikube.maven;
 
 import com.google.cloud.tools.minikube.command.CommandExecutor;
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
-
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Parameter;
 
-public class AbstractMinikubeMojo extends AbstractMojo {
+abstract class AbstractMinikubeMojo extends AbstractMojo {
 
   /** Path to minikube executable. */
   @Parameter(defaultValue = "minikube", required = true)
   private String minikube;
 
-  /** Flags to add when calling minikube. */
-  @Parameter
-  private List<String> flags = Collections.emptyList();
+  /** Common flags to add when calling minikube. */
+  @Parameter private ImmutableList<String> flags = ImmutableList.of();
 
   private Supplier<CommandExecutor> commandExecutorSupplier = CommandExecutor::new;
+  private MavenBuildLogger mavenBuildLogger = new MavenBuildLogger(getLog());
 
   @Override
   public void execute() throws MojoExecutionException {
     List<String> minikubeCommand = buildMinikubeCommand();
 
     try {
-      commandExecutorSupplier.get().setLogger(new MavenBuildLogger(getLog())).run(minikubeCommand);
+      commandExecutorSupplier.get().setLogger(mavenBuildLogger).run(minikubeCommand);
 
     } catch (InterruptedException | IOException ex) {
       throw new MojoExecutionException(getDescription() + " failed", ex);
     }
+  }
+
+  @VisibleForTesting
+  void setMinikube(String minikube) {
+    this.minikube = minikube;
+  }
+
+  @VisibleForTesting
+  void setFlags(ImmutableList<String> flags) {
+    this.flags = flags;
+  }
+
+  @VisibleForTesting
+  void setMavenBuildLogger(MavenBuildLogger mavenBuildLogger) {
+    this.mavenBuildLogger = mavenBuildLogger;
   }
 
   @VisibleForTesting
@@ -65,12 +77,16 @@ public class AbstractMinikubeMojo extends AbstractMojo {
   /** @return the minikube command this goal runs */
   abstract String getCommand();
 
+  /** @return command-specific flags */
+  abstract ImmutableList<String> getMoreFlags();
+
   @VisibleForTesting
   List<String> buildMinikubeCommand() {
     List<String> execString = new ArrayList<>();
     execString.add(minikube);
     execString.add(getCommand());
     execString.addAll(flags);
+    execString.addAll(getMoreFlags());
 
     return execString;
   }

@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.cloud.tools.minikube;
+package com.google.cloud.tools.minikube.maven;
 
 import com.google.cloud.tools.minikube.command.BuildLogger;
 import org.apache.maven.plugin.logging.Log;

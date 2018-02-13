@@ -14,20 +14,19 @@
  * the License.
  */
 
-package com.google.cloud.tools.minikube;
+package com.google.cloud.tools.minikube.maven;
 
-import org.apache.maven.plugins.annotations.Mojo;
+import com.google.common.collect.ImmutableList;
+import java.util.Collections;
+import java.util.List;
 
-@Mojo(name = "delete")
-public class DeleteMojo extends AbstractMinikubeMojo {
+/** Additional Maven configuration for commands. */
+class CommandConfiguration {
 
-  @Override
-  String getDescription() {
-    return "Deleting minikube cluster";
-  }
+  /** Additional flags to pass to the command. */
+  private List<String> flags = Collections.emptyList();
 
-  @Override
-  String getCommand() {
-    return "delete";
+  ImmutableList<String> getFlags() {
+    return ImmutableList.copyOf(flags);
   }
 }
