@@ -17,16 +17,19 @@
 package com.google.cloud.tools.minikube.maven;
 
 import com.google.common.collect.ImmutableList;
-import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /** Additional Maven configuration for commands. */
-class CommandConfiguration {
+public class CommandConfiguration {
 
   /** Additional flags to pass to the command. */
-  private List<String> flags = Collections.emptyList();
+  @Nullable private List<String> flags;
 
   ImmutableList<String> getFlags() {
+    if (flags == null) {
+      return ImmutableList.of();
+    }
     return ImmutableList.copyOf(flags);
   }
 }

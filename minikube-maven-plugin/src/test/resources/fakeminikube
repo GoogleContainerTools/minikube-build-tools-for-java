@@ -1,6 +1,4 @@
 #!/bin/bash
 
-# Simply outputs the arguments to the command, one per line.
-for i; do
-  echo $i
-done
+# Simply outputs the arguments to the command to "fakeminikube.log".
+echo -n $@ >> fakeminikube.log

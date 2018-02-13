@@ -37,6 +37,9 @@ class StopMojo extends AbstractMinikubeMojo {
 
   @Override
   ImmutableList<String> getMoreFlags() {
+    if (stop == null) {
+      return ImmutableList.of();
+    }
     return stop.getFlags();
   }
 }

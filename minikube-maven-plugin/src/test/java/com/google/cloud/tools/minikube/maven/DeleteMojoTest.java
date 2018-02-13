@@ -25,7 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /** Tests for {@link StartMojo}. */
-public class StartMojoTest {
+public class DeleteMojoTest {
 
   @ClassRule public static final TestPlugin testPlugin = new TestPlugin();
 
@@ -40,13 +40,13 @@ public class StartMojoTest {
 
   @Test
   public void testExecute_withProject() throws VerificationException, IOException {
-    minikubeVerifier.verify("start", "start");
+    minikubeVerifier.verify("delete", "delete");
   }
 
   @Test
   public void testExecute_withProject_andFlags() throws VerificationException, IOException {
     minikubeVerifier
-        .setProfile("startFlags")
-        .verify("start", "start someCommonFlag someStartFlag1 someStartFlag2");
+        .setProfile("deleteFlags")
+        .verify("delete", "delete someCommonFlag someDeleteFlag1 someDeleteFlag2");
   }
 }

@@ -37,6 +37,9 @@ class DeleteMojo extends AbstractMinikubeMojo {
 
   @Override
   ImmutableList<String> getMoreFlags() {
+    if (delete == null) {
+      return ImmutableList.of();
+    }
     return delete.getFlags();
   }
 }

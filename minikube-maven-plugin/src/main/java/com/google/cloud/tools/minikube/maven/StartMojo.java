@@ -17,13 +17,14 @@
 package com.google.cloud.tools.minikube.maven;
 
 import com.google.common.collect.ImmutableList;
+import javax.annotation.Nullable;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 @Mojo(name = "start")
 class StartMojo extends AbstractMinikubeMojo {
 
-  @Parameter private CommandConfiguration start = new CommandConfiguration();
+  @Parameter @Nullable private CommandConfiguration start;
 
   @Override
   String getDescription() {
@@ -37,6 +38,9 @@ class StartMojo extends AbstractMinikubeMojo {
 
   @Override
   ImmutableList<String> getMoreFlags() {
+    if (start == null) {
+      return ImmutableList.of();
+    }
     return start.getFlags();
   }
 }

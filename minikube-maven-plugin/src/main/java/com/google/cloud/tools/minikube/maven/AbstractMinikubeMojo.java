@@ -34,7 +34,7 @@ abstract class AbstractMinikubeMojo extends AbstractMojo {
   private String minikube;
 
   /** Common flags to add when calling minikube. */
-  @Parameter private ImmutableList<String> flags = ImmutableList.of();
+  @Parameter private List<String> flags;
 
   private Supplier<CommandExecutor> commandExecutorSupplier = CommandExecutor::new;
   private MavenBuildLogger mavenBuildLogger = new MavenBuildLogger(getLog());
@@ -85,7 +85,9 @@ abstract class AbstractMinikubeMojo extends AbstractMojo {
     List<String> execString = new ArrayList<>();
     execString.add(minikube);
     execString.add(getCommand());
-    execString.addAll(flags);
+    if (flags != null) {
+      execString.addAll(flags);
+    }
     execString.addAll(getMoreFlags());
 
     return execString;

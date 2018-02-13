@@ -12,6 +12,78 @@
     <minikube-maven-plugin.version>@@PluginVersion@@</minikube-maven-plugin.version>
   </properties>
 
+  <profiles>
+    <profile>
+      <id>startFlags</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.google.cloud.tools</groupId>
+            <artifactId>minikube-maven-plugin</artifactId>
+            <version>${minikube-maven-plugin.version}</version>
+            <configuration>
+              <start>
+                <flags>
+                  <flag>someStartFlag1</flag>
+                  <flag>someStartFlag2</flag>
+                </flags>
+              </start>
+              <flags>
+                <flag>someCommonFlag</flag>
+              </flags>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>stopFlags</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.google.cloud.tools</groupId>
+            <artifactId>minikube-maven-plugin</artifactId>
+            <version>${minikube-maven-plugin.version}</version>
+            <configuration>
+              <stop>
+                <flags>
+                  <flag>someStopFlag1</flag>
+                  <flag>someStopFlag2</flag>
+                </flags>
+              </stop>
+              <flags>
+                <flag>someCommonFlag</flag>
+              </flags>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>deleteFlags</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.google.cloud.tools</groupId>
+            <artifactId>minikube-maven-plugin</artifactId>
+            <version>${minikube-maven-plugin.version}</version>
+            <configuration>
+              <delete>
+                <flags>
+                  <flag>someDeleteFlag1</flag>
+                  <flag>someDeleteFlag2</flag>
+                </flags>
+              </delete>
+              <flags>
+                <flag>someCommonFlag</flag>
+              </flags>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <build>
     <plugins>
       <plugin>
