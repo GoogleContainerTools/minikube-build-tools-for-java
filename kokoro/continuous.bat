@@ -7,6 +7,5 @@ rem we porbably also have to install VirtualBox or some other VM driver, it not 
 rem that kokoro will allow us to run a VM.
 
 cd minikube-gradle-plugin && call gradlew.bat clean build && ^
-cd ../minikube-maven-plugin && call mvnw.bat clean install && ^
-cd ../crepecake && call gradlew.bat clean build --info
+cd ../minikube-maven-plugin && call mvnw.bat clean install
 exit /b %ERRORLEVEL%
