@@ -31,9 +31,9 @@ CheckVersion() {
 # Usage: IncrementVersion <version>
 IncrementVersion() {
     local version=$1
-    local minorVersion=$(echo $version | sed 's/[0-9][0-9]*\.[0-9][0-9]*\.\([0-9][0-9]\)*/\1/')
+    local minorVersion=$(echo $version | sed 's/[0-9][0-9]*\.[0-9][0-9]*\.\([0-9][0-9]*\).*/\1/')
     local nextMinorVersion=$((minorVersion+1))
-    echo $version | sed "s/\([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]*/\1.$nextMinorVersion/"
+    echo $version | sed "s/\([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]*\(.*\)/\1.$nextMinorVersion\2/"
 }
 
 [ $# -ne 2 ] || DieUsage
