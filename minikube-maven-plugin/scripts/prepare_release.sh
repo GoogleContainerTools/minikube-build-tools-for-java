@@ -25,7 +25,7 @@ DieUsage() {
 
 # Usage: CheckVersion <version>
 CheckVersion() {
-    [[ $1 =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || Die "Version not in ###.###.### format."
+    [[ $1 =~ ^[0-9]+\.[0-9]+\.[0-9]+(-alpha.[0-9]+)?$ ]] || Die "Version not in ###.###.###(-alpha.###) format."
 }
 
 # Usage: IncrementVersion <version>
