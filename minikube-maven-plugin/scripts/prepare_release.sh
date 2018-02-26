@@ -20,20 +20,30 @@ Die() {
 }
 
 DieUsage() {
-    Die "Usage: ./prepare_release.sh <release version>"
+  Die "Usage: ./prepare_release.sh <release version>"
 }
 
 # Usage: CheckVersion <version>
 CheckVersion() {
-    [[ $1 =~ ^[0-9]+\.[0-9]+\.[0-9]+(-alpha.[0-9]+)?$ ]] || Die "Version not in ###.###.###(-alpha.###) format."
+  [[ $1 =~ ^[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+)?$ ]] || Die "Version not in ###.###.###(-alpha.###) format."
+}
+
+# Usage: HasSuffix <version>
+HasSuffix() {
+  $1 =~ ^[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+$
+}
+
+# Usage: StripSuffix <version>
+StripSuffix() {
+  echo $1 | sed 's/\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/'
 }
 
 # Usage: IncrementVersion <version>
 IncrementVersion() {
-    local version=$1
-    local minorVersion=$(echo $version | sed 's/[0-9][0-9]*\.[0-9][0-9]*\.\([0-9][0-9]*\).*/\1/')
-    local nextMinorVersion=$((minorVersion+1))
-    echo $version | sed "s/\([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]*\(.*\)/\1.$nextMinorVersion\2/"
+  local version=$1
+  local minorVersion=$(echo $version | sed 's/[0-9][0-9]*\.[0-9][0-9]*\.\([0-9][0-9]*\)/\1/')
+  local nextMinorVersion=$((minorVersion+1))
+  echo $version | sed "s/\([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]*/\1.$nextMinorVersion/"
 }
 
 [ $# -ne 2 ] || DieUsage
@@ -43,7 +53,11 @@ EchoGreen '===== RELEASE SETUP SCRIPT ====='
 VERSION=$1
 CheckVersion ${VERSION}
 
-NEXT_VERSION=$(IncrementVersion $VERSION)
+if [[ $(HasSuffix $VERSION) ]]; then
+  NEXT_VERSION=$(IncrementVersion $VERSION)
+else
+  NEXT_VERSION=$(StripSuffix $VERSION)
+fi
 CheckVersion ${NEXT_VERSION}
 
 if [[ $(git status -uno --porcelain) ]]; then
