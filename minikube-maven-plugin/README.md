@@ -4,7 +4,7 @@ Minikube Maven Plugin
 ======================
 This plugin provides tasks and configuration to manage a minikube lifecycle for Maven developers.
 
-Now available on [Maven Central]().
+Now available on the [Central repository](https://maven-badges.herokuapp.com/maven-central/com.google.cloud.tools/minikube-maven-plugin).
 
 This plugin requires that you have Minikube [installed](https://kubernetes.io/docs/tasks/tools/install-minikube/).
 
