@@ -21,9 +21,13 @@ dependencies {
   testCompile 'org.mockito:mockito-core:2.+'
 }
 
-task wrapper(type: Wrapper) {
+tasks.withType(Wrapper) {
   gradleVersion = "4.1"
 }
+
+//task wrapper(type: Wrapper) {
+//  gradleVersion = "4.1"
+//}
 
 group = 'com.google.cloud.tools'
 
