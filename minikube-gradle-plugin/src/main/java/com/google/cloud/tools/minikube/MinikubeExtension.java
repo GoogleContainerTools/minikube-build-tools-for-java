@@ -18,48 +18,69 @@ package com.google.cloud.tools.minikube;
 
 import com.google.cloud.tools.minikube.util.CommandExecutorFactory;
 import com.google.cloud.tools.minikube.util.MinikubeDockerEnvParser;
+import org.gradle.api.Project;
+import org.gradle.api.provider.PropertyState;
+import org.gradle.internal.impldep.com.google.common.base.Preconditions;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.gradle.api.Project;
-import org.gradle.api.provider.PropertyState;
 
-/** Minikube configuration extension. */
+/**
+ * Minikube configuration extension.
+ */
 public class MinikubeExtension {
-  private final PropertyState<String> minikube;
 
-  private final CommandExecutorFactory commandExecutorFactory;
+    private final PropertyState<String> minikube;
 
-  public MinikubeExtension(Project project, CommandExecutorFactory commandExecutorFactory) {
-    minikube = project.property(String.class);
-    setMinikube("minikube");
+    private final CommandExecutorFactory commandExecutorFactory;
 
-    this.commandExecutorFactory = commandExecutorFactory;
-  }
+    public MinikubeExtension(Project project, CommandExecutorFactory commandExecutorFactory) {
+        minikube = project.property(String.class);
+        setMinikube("minikube");
 
-  public String getMinikube() {
-    return minikube.get();
-  }
+        this.commandExecutorFactory = commandExecutorFactory;
+    }
 
-  public void setMinikube(String minikube) {
-    this.minikube.set(minikube);
-  }
+    public String getMinikube() {
+        return minikube.get();
+    }
 
-  public PropertyState<String> getMinikubeProvider() {
-    return minikube;
-  }
+    public void setMinikube(String minikube) {
+        this.minikube.set(minikube);
+    }
 
-  /**
-   * Gets the minikube docker environment variables by running the command 'minikube docker-env
-   * --shell=none'.
-   */
-  public Map<String, String> getDockerEnv() throws IOException, InterruptedException {
-    List<String> minikubeDockerEnvCommand =
-        Arrays.asList(minikube.get(), "docker-env", "--shell=none");
-    List<String> dockerEnv =
-        commandExecutorFactory.newCommandExecutor().run(minikubeDockerEnvCommand);
+    public PropertyState<String> getMinikubeProvider() {
+        return minikube;
+    }
 
-    return MinikubeDockerEnvParser.parse(dockerEnv);
-  }
+    /**
+     * Gets the minikube docker environment variables by running the command 'minikube docker-env
+     * --shell=none'.
+     *
+     * @return A map of docker environment variables and their values
+     */
+    public Map<String, String> getDockerEnv() throws IOException, InterruptedException {
+        return getDockerEnv("");
+    }
+
+    /**
+     * Gets the minikube docker environment variables by running the command 'minikube docker-env
+     * --shell=none'.
+     *
+     * @param profile Target minikube profile
+     * @return A map of docker environment variables and their values
+     */
+    public Map<String, String> getDockerEnv(String profile) throws IOException, InterruptedException {
+        Preconditions.checkNotNull(profile, "Minikube profile must not be null");
+
+        List<String> minikubeDockerEnvCommand =
+                Arrays.asList(minikube.get(), "docker-env", "--shell=none", "--profile=".concat(profile));
+
+        List<String> dockerEnv =
+                commandExecutorFactory.newCommandExecutor().run(minikubeDockerEnvCommand);
+
+        return MinikubeDockerEnvParser.parse(dockerEnv);
+    }
 }
