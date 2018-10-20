@@ -16,6 +16,9 @@
 
 package com.google.cloud.tools.minikube.util;
 
+import org.gradle.api.GradleException;
+import org.gradle.api.logging.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,8 +28,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.gradle.api.GradleException;
-import org.gradle.api.logging.Logger;
 
 /** Executes a shell command. */
 public class CommandExecutor {
@@ -137,7 +138,7 @@ public class CommandExecutor {
         String line = br.readLine();
         while (line != null) {
           if (logger != null) {
-            logger.lifecycle(line);
+            logger.info(line);
           }
           output.add(line);
           line = br.readLine();
