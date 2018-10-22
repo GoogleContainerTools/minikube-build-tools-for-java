@@ -61,7 +61,7 @@ public class MinikubeExtensionTest {
     minikube.setMinikube("/test/path/to/minikube");
 
     expectedCommand =
-        new LinkedList<>(Arrays.asList("/test/path/to/minikube", "docker-env", "--shell=none"));
+        new ArrayList<>(Arrays.asList("/test/path/to/minikube", "docker-env", "--shell=none"));
   }
 
   /*
