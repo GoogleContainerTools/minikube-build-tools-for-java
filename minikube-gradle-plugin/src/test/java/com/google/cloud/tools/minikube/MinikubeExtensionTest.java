@@ -35,7 +35,7 @@ public class MinikubeExtensionTest {
   private CommandExecutorFactory commandExecutorFactoryMock;
   private MinikubeExtension minikube;
 
-  List<String> expectedCommand;
+  private List<String> expectedCommand;
   private static final List<String> dockerEnvOutput =
       Arrays.asList("ENV_VAR1=VAL1", "ENV_VAR2=VAL2");
   private static final Map<String, String> expectedMap;
@@ -47,9 +47,6 @@ public class MinikubeExtensionTest {
     expectedMap = Collections.unmodifiableMap(map);
   }
 
-  /*
-   * Reinitialise variables before each test.
-   */
   @Before
   public void setUp() {
     Project project = ProjectBuilder.builder().build();
@@ -106,8 +103,14 @@ public class MinikubeExtensionTest {
   /*
    * getDockerEnv() should not permit null values
    */
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testGetDockerEnvWithNullProfile() throws IOException, InterruptedException {
-    minikube.getDockerEnv(null);
+    try {
+      minikube.getDockerEnv(null);
+      Assert.fail("getDockerEnv() should not permit null values");
+    } catch (NullPointerException ex) {
+      Assert.assertNotNull(ex.getMessage());
+      Assert.assertEquals("Minikube profile must not be null", ex.getMessage());
+    }
   }
 }

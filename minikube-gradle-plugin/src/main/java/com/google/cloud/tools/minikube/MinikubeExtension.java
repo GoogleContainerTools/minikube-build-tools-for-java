@@ -18,13 +18,13 @@ package com.google.cloud.tools.minikube;
 
 import com.google.cloud.tools.minikube.util.CommandExecutorFactory;
 import com.google.cloud.tools.minikube.util.MinikubeDockerEnvParser;
+import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.gradle.api.Project;
 import org.gradle.api.provider.PropertyState;
-import org.gradle.internal.impldep.com.google.common.base.Preconditions;
 
 /** Minikube configuration extension. */
 public class MinikubeExtension {
@@ -66,14 +66,14 @@ public class MinikubeExtension {
    * Gets the minikube docker environment variables by running the command 'minikube docker-env
    * --shell=none'.
    *
-   * @param profile Target minikube profile
+   * @param profile target minikube profile
    * @return A map of docker environment variables and their values
    */
   public Map<String, String> getDockerEnv(String profile) throws IOException, InterruptedException {
     Preconditions.checkNotNull(profile, "Minikube profile must not be null");
 
     List<String> minikubeDockerEnvCommand =
-        Arrays.asList(minikube.get(), "docker-env", "--shell=none", "--profile=".concat(profile));
+        Arrays.asList(minikube.get(), "docker-env", "--shell=none", "--profile=" + profile);
 
     List<String> dockerEnv =
         commandExecutorFactory.newCommandExecutor().run(minikubeDockerEnvCommand);

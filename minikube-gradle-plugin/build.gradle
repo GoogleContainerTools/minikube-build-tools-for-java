@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
   compile gradleApi()
+  compile 'com.google.guava:guava:23.5-jre'
   testCompile 'junit:junit:4.11'
   testCompile 'org.apache.commons:commons-lang3:3.6'
   testCompile 'org.mockito:mockito-core:2.+'
