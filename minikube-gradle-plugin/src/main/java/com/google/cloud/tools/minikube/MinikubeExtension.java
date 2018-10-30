@@ -18,7 +18,6 @@ package com.google.cloud.tools.minikube;
 
 import com.google.cloud.tools.minikube.util.CommandExecutorFactory;
 import com.google.cloud.tools.minikube.util.MinikubeDockerEnvParser;
-import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -70,7 +69,9 @@ public class MinikubeExtension {
    * @return A map of docker environment variables and their values
    */
   public Map<String, String> getDockerEnv(String profile) throws IOException, InterruptedException {
-    Preconditions.checkNotNull(profile, "Minikube profile must not be null");
+    if (profile == null) {
+      throw new NullPointerException("Minikube profile must not be null");
+    }
 
     List<String> minikubeDockerEnvCommand =
         Arrays.asList(minikube.get(), "docker-env", "--shell=none", "--profile=" + profile);

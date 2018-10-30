@@ -16,7 +16,10 @@
 
 package com.google.cloud.tools.minikube;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.google.cloud.tools.minikube.util.CommandExecutor;
 import com.google.cloud.tools.minikube.util.CommandExecutorFactory;
