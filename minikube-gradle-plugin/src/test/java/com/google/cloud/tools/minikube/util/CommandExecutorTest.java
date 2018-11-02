@@ -128,8 +128,8 @@ public class CommandExecutorTest {
 
     // Verifies the logger messages were logged.
     loggerInOrder.verify(loggerMock).debug("Running command : someCommand someOption");
-    loggerInOrder.verify(loggerMock).lifecycle("some output line 1");
-    loggerInOrder.verify(loggerMock).lifecycle("some output line 2");
+    loggerInOrder.verify(loggerMock).info("some output line 1");
+    loggerInOrder.verify(loggerMock).info("some output line 2");
   }
 
   @Test
