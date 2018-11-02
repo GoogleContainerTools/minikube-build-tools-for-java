@@ -27,6 +27,7 @@ import org.gradle.api.provider.PropertyState;
 
 /** Minikube configuration extension. */
 public class MinikubeExtension {
+
   private final PropertyState<String> minikube;
 
   private final CommandExecutorFactory commandExecutorFactory;
@@ -53,10 +54,28 @@ public class MinikubeExtension {
   /**
    * Gets the minikube docker environment variables by running the command 'minikube docker-env
    * --shell=none'.
+   *
+   * @return A map of docker environment variables and their values
    */
   public Map<String, String> getDockerEnv() throws IOException, InterruptedException {
+    return getDockerEnv("");
+  }
+
+  /**
+   * Gets the minikube docker environment variables by running the command 'minikube docker-env
+   * --shell=none'.
+   *
+   * @param profile target minikube profile
+   * @return A map of docker environment variables and their values
+   */
+  public Map<String, String> getDockerEnv(String profile) throws IOException, InterruptedException {
+    if (profile == null) {
+      throw new NullPointerException("Minikube profile must not be null");
+    }
+
     List<String> minikubeDockerEnvCommand =
-        Arrays.asList(minikube.get(), "docker-env", "--shell=none");
+        Arrays.asList(minikube.get(), "docker-env", "--shell=none", "--profile=" + profile);
+
     List<String> dockerEnv =
         commandExecutorFactory.newCommandExecutor().run(minikubeDockerEnvCommand);
 
