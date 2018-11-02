@@ -137,7 +137,7 @@ public class CommandExecutor {
         String line = br.readLine();
         while (line != null) {
           if (logger != null) {
-            logger.lifecycle(line);
+            logger.info(line);
           }
           output.add(line);
           line = br.readLine();
