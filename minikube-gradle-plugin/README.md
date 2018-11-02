@@ -41,12 +41,13 @@ task minikubeCustom(type: com.google.cloud.tools.minikube.MinikubeTask) {
 }
 ```
 
-The `minikube` extension also provides a method to obtain the environment variables necessary for working with minikube's docker daemon:
-(See [`docker-machine env` reference](https://docs.docker.com/machine/reference/env/))
+The `minikube` extension also provides a method to obtain the environment variables necessary for working with minikube's docker daemon (See [`docker-machine env` reference](https://docs.docker.com/machine/reference/env/))
+:
+```
+def minikubeDockerEnv = minikube.getDockerEnv(<profile>)
+```
 
-```
-def minikubeDockerEnv = minikube.getDockerEnv()
-```
+Optional parameter `<profile>` sets target minikube instance (minikube --profile <profile>). 
 
 `minikubeDockerEnv` is a map containing these fields:
  

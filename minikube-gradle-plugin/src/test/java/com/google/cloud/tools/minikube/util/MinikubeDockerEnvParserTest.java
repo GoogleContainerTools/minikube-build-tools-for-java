@@ -16,7 +16,10 @@
 
 package com.google.cloud.tools.minikube.util;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
