@@ -47,7 +47,7 @@ The `minikube` extension also provides a method to obtain the environment variab
 def minikubeDockerEnv = minikube.getDockerEnv(<profile>)
 ```
 
-Optional parameter `<profile>` sets target minikube instance (minikube --profile <profile>). 
+Optional parameter `<profile>` sets target minikube instance (`minikube --profile <profile>`). 
 
 `minikubeDockerEnv` is a map containing these fields:
  
