@@ -53,7 +53,7 @@ check.dependsOn verifyGoogleJavaFormat
 
 /* CHECKSTYLE */
 checkstyle {
-  toolVersion = "7.6.1"
+  toolVersion = "8.18"
 
   // get the google_checks.xml file from the checkstyle jar and take out the java checks
   def googleChecks = resources.text.fromArchiveEntry(configurations.checkstyle[0], 'google_checks.xml').asString()
