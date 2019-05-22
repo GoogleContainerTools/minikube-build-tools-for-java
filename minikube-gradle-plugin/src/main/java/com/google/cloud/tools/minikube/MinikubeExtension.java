@@ -23,17 +23,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.gradle.api.Project;
-import org.gradle.api.provider.PropertyState;
+import org.gradle.api.provider.Property;
 
 /** Minikube configuration extension. */
 public class MinikubeExtension {
 
-  private final PropertyState<String> minikube;
+  private final Property<String> minikube;
 
   private final CommandExecutorFactory commandExecutorFactory;
 
   public MinikubeExtension(Project project, CommandExecutorFactory commandExecutorFactory) {
-    minikube = project.property(String.class);
+    minikube = project.getObjects().property(String.class);
     setMinikube("minikube");
 
     this.commandExecutorFactory = commandExecutorFactory;
@@ -47,7 +47,7 @@ public class MinikubeExtension {
     this.minikube.set(minikube);
   }
 
-  public PropertyState<String> getMinikubeProvider() {
+  public Property<String> getMinikubeProvider() {
     return minikube;
   }
 

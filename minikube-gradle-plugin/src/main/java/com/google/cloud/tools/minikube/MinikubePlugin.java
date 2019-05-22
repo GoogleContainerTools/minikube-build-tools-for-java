@@ -39,7 +39,8 @@ public class MinikubePlugin implements Plugin<Project> {
     createMinikubeDeleteTask();
   }
 
-  // Configure tasks as they are added. This allows us to configure our own AND any user configured tasks.
+  // Configure tasks as they are added. This allows us to configure our own AND any user configured
+  // tasks.
   private void configureMinikubeTaskAdditionCallback(
       CommandExecutorFactory commandExecutorFactory) {
     project
