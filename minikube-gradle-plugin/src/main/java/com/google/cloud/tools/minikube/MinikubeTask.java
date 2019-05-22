@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.provider.PropertyState;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
@@ -30,7 +30,7 @@ import org.gradle.api.tasks.TaskAction;
 public class MinikubeTask extends DefaultTask {
 
   /** minikube executable : lazily evaluated from extension input */
-  private PropertyState<String> minikube;
+  private Property<String> minikube;
   /** The minikube command: start, stop, etc. */
   private String command;
   /** Flag passthrough */
@@ -39,7 +39,7 @@ public class MinikubeTask extends DefaultTask {
   private CommandExecutorFactory commandExecutorFactory;
 
   public MinikubeTask() {
-    minikube = getProject().property(String.class);
+    minikube = getProject().getObjects().property(String.class);
   }
 
   public MinikubeTask setCommandExecutorFactory(CommandExecutorFactory commandExecutorFactory) {
@@ -56,7 +56,7 @@ public class MinikubeTask extends DefaultTask {
     this.minikube.set(minikube);
   }
 
-  public void setMinikube(PropertyState<String> minikube) {
+  public void setMinikube(Property<String> minikube) {
     this.minikube = minikube;
   }
 
