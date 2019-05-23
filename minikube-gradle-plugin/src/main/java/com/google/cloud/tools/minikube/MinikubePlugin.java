@@ -64,15 +64,18 @@ public class MinikubePlugin implements Plugin<Project> {
   private void createMinikubeStartTask() {
     MinikubeTask task = project.getTasks().create("minikubeStart", MinikubeTask.class);
     task.setCommand("start");
+    task.setDescription("Starts the minikube cluster.");
   }
 
   private void createMinikubeStopTask() {
     MinikubeTask task = project.getTasks().create("minikubeStop", MinikubeTask.class);
     task.setCommand("stop");
+    task.setDescription("Stops the minikube cluster.");
   }
 
   private void createMinikubeDeleteTask() {
     MinikubeTask task = project.getTasks().create("minikubeDelete", MinikubeTask.class);
     task.setCommand("delete");
+    task.setDescription("Deletes the minikube cluster.");
   }
 }
