@@ -84,9 +84,9 @@ pluginBundle {
 
 // Release plugin (git release commits and version updates)
 release {
-  tagTemplate = 'v$version'
+  tagTemplate = 'v$version-gradle'
   git {
-    requireBranch = /^release_v\d+.*$/  //regex
+    requireBranch = /^gradle_release_v[0-9A-Za-z.-]+.*$/  //regex
   }
 }
 /* RELEASE */
