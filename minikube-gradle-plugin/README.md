@@ -1,3 +1,8 @@
+| ⛔⛔⛔ DEPRECATED ⛔⛔⛔ |
+| :----- |
+| These plugins are not maintained, no more updates or releases will be made. Users may fork and update this project on their own. |
+
+
 Minikube Gradle Plugin
 ======================
 This plugin provides tasks and configuration to manage a minikube lifecycle for gradle developers.
