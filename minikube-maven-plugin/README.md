@@ -1,3 +1,7 @@
+| ⛔⛔⛔ DEPRECATED ⛔⛔⛔ |
+| :----- |
+| These plugins are not maintained, no more updates or releases will be made. Users may fork and update this project on their own. |
+
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.google.cloud.tools/minikube-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.google.cloud.tools/minikube-maven-plugin)
 
 Minikube Maven Plugin
